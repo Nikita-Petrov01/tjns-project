@@ -1,27 +1,35 @@
 import React from 'react';
-import { Button, Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import { Outlet } from 'react-router';
-import { useAppDispatch } from '../../shared/lib/hooks';
+import { Button, Container, Nav, Navbar } from 'react-bootstrap';
+import { Link, Outlet } from 'react-router';
+import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
+import { logoutUser } from '../../entities/user/model/userThunks';
 
 function Layout(): React.JSX.Element {
+  const user = useAppSelector((state) => state.user.user);
+  const dispatch = useAppDispatch();
   return (
     <>
-      <Navbar expand="lg" className="bg-body-tertiary" data-bs-theme="dark">
+      <Navbar expand="lg" bg="dark" variant="dark" className="shadow">
         <Container>
-          <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="#home">Home</Nav.Link>
-              <Nav.Link href="#link">Link</Nav.Link>
-              <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-                <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-                <NavDropdown.Divider />
-              </NavDropdown>
-            </Nav>
-          </Navbar.Collapse>
+          <Navbar.Brand as={Link} to="/">
+            Elbrus-Yelp
+          </Navbar.Brand>
+
+          <Nav className="ms-auto d-flex align-items-center gap-2">
+            {user ? (
+              <>
+                <Button variant="outline-light" onClick={() => void dispatch(logoutUser())}>
+                  Выйти
+                </Button>
+                <Button variant="outline-light">Создать ресторан</Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline-light">Войти</Button>
+                <Button variant="outline-light">Зарегистрироваться</Button>
+              </>
+            )}
+          </Nav>
         </Container>
       </Navbar>
       <Outlet />

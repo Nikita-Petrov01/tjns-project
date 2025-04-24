@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router';
 import { useAppDispatch } from '../../shared/lib/hooks';
-
 import { refreshUser } from '../../entities/user/model/userThunks';
-import Layout from '../../pages/Layout/Layout';
 import CategoryPage from '../../pages/CategoryPage/CategoryPage';
 import CategoryUpdate from '../../features/categoryOptions/categoryUpdate/ui/CategoryUpdate';
 import CategoryCreate from '../../features/categoryOptions/categoryCreate/ui/CategoryCreate';
+import Layout from '../../pages/Layout/Layout';
 
 function RouterProvider(): React.JSX.Element {
   const dispatch = useAppDispatch();
