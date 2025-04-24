@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { ProductSliceT } from './types';
-import { create, deleteById, getById, getProducts, update } from './productThunk';
+import { create, deleteById, getById, getOneProduct, getProducts, update } from './productThunk';
 
 const initialState: ProductSliceT = {
   products: [],
   loading: false,
   product: null,
+  productCategory: null,
 };
 
 export const companySlice = createSlice({
@@ -27,14 +28,29 @@ export const companySlice = createSlice({
       state.loading = true;
     });
 
-    // По id
-    builder.addCase(getById.fulfilled, (state, action) => {
+    // Продукт по id
+    builder.addCase(getOneProduct.fulfilled, (state, action) => {
       state.loading = false;
       state.product = action.payload;
     });
-    builder.addCase(getById.rejected, (state, action) => {
+    builder.addCase(getOneProduct.rejected, (state, action) => {
       state.loading = false;
       state.product = null;
+      console.error(action.error);
+    });
+    builder.addCase(getOneProduct.pending, (state) => {
+      state.loading = true;
+      state.product = null;
+    });
+
+    // По id категории
+    builder.addCase(getById.fulfilled, (state, action) => {
+      state.loading = false;
+      state.productCategory = action.payload;
+    });
+    builder.addCase(getById.rejected, (state, action) => {
+      state.loading = false;
+      state.productCategory = null;
       console.error(action.error);
     });
     builder.addCase(getById.pending, (state) => {

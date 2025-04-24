@@ -1,13 +1,18 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import ProductsService from '../api/ProductsService';
-import type { ProductT } from './types';
+import type { NewProductT, ProductT } from './types';
 
 export const getProducts = createAsyncThunk('products/getProducts', async () =>
   ProductsService.getProducts(),
 );
 
 export const getById = createAsyncThunk('products/getById', async (id: ProductT['id']) =>
-  ProductsService.getById(id),
+  ProductsService.getProductsById(id),
+);
+
+export const getOneProduct = createAsyncThunk(
+  'products/getOneProduct',
+  async (id: ProductT['id']) => ProductsService.getOneProduct(id),
 );
 
 export const deleteById = createAsyncThunk(
@@ -18,10 +23,10 @@ export const deleteById = createAsyncThunk(
   },
 );
 
-export const create = createAsyncThunk('products/create', async (product: ProductT) =>
+export const create = createAsyncThunk('products/create', (product: NewProductT) =>
   ProductsService.create(product),
 );
 
-export const update = createAsyncThunk('products/update', async (product: ProductT) =>
+export const update = createAsyncThunk('products/update', (product: ProductT) =>
   ProductsService.update(product),
 );

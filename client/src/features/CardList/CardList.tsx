@@ -1,58 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
-import type { Props } from '../productCard/ProductCard';
 import ProductCard from '../productCard/ProductCard';
+import { useNavigate } from 'react-router';
+import { getProducts } from '../../entities/products/model/productThunk';
+import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 
 export default function CardList(): React.JSX.Element {
-  // const dispatch = useAppDispatch();
-  // useEffect(() => {
-  //   void dispatch(getProducts());
-  // }, [dispatch]);
-  // const products = useSelector((state: RootState) => state.products.products);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    void dispatch(getProducts());
+  }, [dispatch]);
+  const products = useAppSelector((state) => state.products.products);
 
-  const products: Props[] = [
-    {
-      id: 1,
-      name: 'Notebook 1',
-      description: 'Notebook description',
-      image:
-        'https://avatars.mds.yandex.net/i?id=875c32f9a15715741cf554790eb5e4a4cd19a57b-4514866-images-thumbs&n=13',
-      price: 100,
-    },
-    {
-      id: 2,
-      name: 'Notebook 2',
-      description: 'Notebook description',
-      image:
-        'https://avatars.mds.yandex.net/i?id=875c32f9a15715741cf554790eb5e4a4cd19a57b-4514866-images-thumbs&n=13',
-      price: 200,
-    },
-    {
-      id: 3,
-      name: 'Notebook 3',
-      description: 'Notebook description',
-      image:
-        'https://avatars.mds.yandex.net/i?id=875c32f9a15715741cf554790eb5e4a4cd19a57b-4514866-images-thumbs&n=13',
-      price: 300,
-    },
-    {
-      id: 4,
-      name: 'Notebook 4',
-      description: 'Notebook description',
-      image:
-        'https://avatars.mds.yandex.net/i?id=875c32f9a15715741cf554790eb5e4a4cd19a57b-4514866-images-thumbs&n=13',
-      price: 400,
-    },
-    {
-      id: 5,
-      name: 'Notebook 5',
-      description: 'Notebook description',
-      image:
-        'https://avatars.mds.yandex.net/i?id=875c32f9a15715741cf554790eb5e4a4cd19a57b-4514866-images-thumbs&n=13',
-      price: 500,
-    },
-  ];
-
+  const navigate = useNavigate();
 
   return (
     <Container>
@@ -63,7 +23,7 @@ export default function CardList(): React.JSX.Element {
           </Col>
         ))}
       </Row>
-      <button>Add</button>
+      <button onClick={() => navigate('/products/create')}>Add</button>
     </Container>
   );
 }

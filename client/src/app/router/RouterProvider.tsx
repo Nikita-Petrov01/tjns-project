@@ -4,6 +4,8 @@ import { useAppDispatch } from '../../shared/lib/hooks';
 
 import { refreshUser } from '../../entities/user/model/userThunks';
 import MainPage from '../../pages/Main/MainPage';
+import CreatePage from '../../pages/CreatePage/CreatePage';
+import UpdatePage from '../../pages/UpdatePage/UpdatePage';
 
 function RouterProvider(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -15,6 +17,8 @@ function RouterProvider(): React.JSX.Element {
   return (
     <Routes>
       <Route path="/" element={<MainPage />} />
+      <Route path="/products/create" element={<CreatePage />} />
+      <Route path="/products/edit/:id" element={<UpdatePage />} />
     </Routes>
   );
 }
