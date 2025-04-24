@@ -12,5 +12,6 @@ categoryRouter
   .put(CategoryController.updateCategory)
   .delete(CategoryController.deleteCategory);
 
-module.exports = categoryRouter;
+categoryRouter.route('/:id/products').get(CategoryController.getProductsByCategoryId);
 
+module.exports = categoryRouter;

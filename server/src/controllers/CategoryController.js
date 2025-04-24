@@ -52,6 +52,20 @@ class CategoryController {
       res.status(500).send('Ошибка сервера при удалении категории');
     }
   }
+
+  static async getProductsByCategoryId(req, res) {
+    try {
+      const { id } = req.params;
+      const products = await CategoryService.getProductsByCategory(id);
+      res.json(products);
+    } catch (error) {
+      console.error(
+        { error: error.message },
+        'Ошибка при получении товаров по категории',
+      );
+      res.status(500).send('Ошибка сервера при получении товаров по категории');
+    }
+  }
 }
 
 module.exports = CategoryController;
