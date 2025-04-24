@@ -6,6 +6,11 @@ class ProductService {
     return products;
   }
 
+  static async getProductById(id) {
+    const product = await Product.findByPk(id);
+    return product;
+  }
+
   static async getAllProductsByCategoryId(id) {
     const products = await Product.findAll({ where: { categoryId: id } });
     return products;

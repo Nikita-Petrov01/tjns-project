@@ -12,6 +12,17 @@ class ProductController {
         }
     }
 
+    static async getProductById(req, res) {
+        try {
+            const {id} = req.params
+            const product = await ProductService.getProductById(id);
+            res.json(product)
+        } catch (error) {
+            console.error({error: error.message}, 'Ошибка при получении товара');
+            res.status(500).send('Ошибка сервера при получении товара');
+        }
+    }
+
     static async getAllProductsByCategoryId(req, res) {
         try {
             const {id} = req.params
