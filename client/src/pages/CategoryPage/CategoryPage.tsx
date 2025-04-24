@@ -76,7 +76,7 @@ const products = [
 console.log(categories);
 console.log(products);
 
-export default function CategoryPage(): React.ReactElement {
+export default function CategoryPage(): React.JSX.Element {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
