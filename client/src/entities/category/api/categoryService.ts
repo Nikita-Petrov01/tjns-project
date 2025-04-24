@@ -1,7 +1,7 @@
 import type { AxiosInstance } from 'axios';
 import axiosInstance from '../../../shared/api/axiosInstance';
 import type { CategoryT, NewCategoryT } from '../model/categoryType';
-import { categorySchema } from '../model/categorySchema';
+import { categorySchema, newCategorySchema } from '../model/categorySchema';
 
 class CategoryService {
   constructor(private readonly client: AxiosInstance) {
@@ -38,8 +38,10 @@ class CategoryService {
     }
   }
 
-  async updateCategory(id: number, data: NewCategoryT): Promise<CategoryT> {
+  async updateCategory(data: CategoryT): Promise<CategoryT> {
     try {
+      const { id } = data;
+      newCategorySchema.parse(data);
       const updatedCategory = await this.client.put(`/categories/${id.toString()}`, data);
       return categorySchema.parse(updatedCategory.data);
     } catch (error) {

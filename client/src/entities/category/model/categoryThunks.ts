@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import categoryService from '../api/categoryService';
-import type { CategoryT } from './categoryType';
+import type { CategoryT, NewCategoryT } from './categoryType';
 
 export const getCategories = createAsyncThunk('categories/getCategories', async () => {
   const allCategories = await categoryService.getCategories();
@@ -17,7 +17,7 @@ export const getCategory = createAsyncThunk(
 
 export const createCategory = createAsyncThunk(
   'categories/createCategory',
-  async (data: CategoryT) => {
+  async (data: NewCategoryT) => {
     const newCategory = await categoryService.createCategory(data);
     return newCategory;
   },
@@ -25,8 +25,8 @@ export const createCategory = createAsyncThunk(
 
 export const updateCategory = createAsyncThunk(
   'categories/updateCategory',
-  async ({ id, data }: { id: CategoryT['id']; data: CategoryT }) => {
-    const updatedCategory = await categoryService.updateCategory(id, data);
+  async (data: CategoryT) => {
+    const updatedCategory = await categoryService.updateCategory(data);
     return updatedCategory;
   },
 );
