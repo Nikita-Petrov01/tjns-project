@@ -6,7 +6,9 @@ class ProductService {
     return products;
   }
 
-  static async getProductById(id) {
+
+  static async getProductsById(id) {
+
     const product = await Product.findByPk(id);
     return product;
   }
@@ -20,7 +22,13 @@ class ProductService {
     if (!name || !description || !images || !price || !categoryId) {
       throw new Error('Не хватает данных для создания товара');
     }
-    const product = await Product.create({ name, description, images, price, categoryId });
+    const product = await Product.create({
+      name,
+      description,
+      images,
+      price,
+      categoryId,
+    });
     return product;
   }
 

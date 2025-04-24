@@ -3,7 +3,6 @@ import { Button, Container, Nav, Navbar } from 'react-bootstrap';
 import { Link, Outlet } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { logoutUser } from '../../entities/user/model/userThunks';
-import { openAddModal } from '../../entities/restaurant/model/restaurantSlice';
 
 function NavLayout(): React.JSX.Element {
   const user = useAppSelector((state) => state.user.user);
@@ -22,9 +21,7 @@ function NavLayout(): React.JSX.Element {
                 <Button variant="outline-light" onClick={() => void dispatch(logoutUser())}>
                   Выйти
                 </Button>
-                <Button onClick={() => dispatch(openAddModal())} variant="outline-light">
-                  Создать ресторан
-                </Button>
+                <Button variant="outline-light">Создать ресторан</Button>
               </>
             ) : (
               <>
