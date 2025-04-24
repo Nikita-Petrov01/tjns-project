@@ -13,3 +13,4 @@ categoryRouter
   .delete(CategoryController.deleteCategory);
 
 module.exports = categoryRouter;
+

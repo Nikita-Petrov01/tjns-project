@@ -6,7 +6,9 @@ class ProductService {
     return products;
   }
 
+
   static async getProductsById(id) {
+
     const product = await Product.findByPk(id);
     return product;
   }
