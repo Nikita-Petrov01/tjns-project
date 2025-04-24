@@ -3,9 +3,9 @@ import { Route, Routes } from 'react-router';
 import { useAppDispatch } from '../../shared/lib/hooks';
 
 import { refreshUser } from '../../entities/user/model/userThunks';
+import MainPage from '../../pages/Main/MainPage';
 
 function RouterProvider(): React.JSX.Element {
-
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -14,7 +14,7 @@ function RouterProvider(): React.JSX.Element {
 
   return (
     <Routes>
-      <Route/>
+      <Route path="/" element={<MainPage />} />
     </Routes>
   );
 }
