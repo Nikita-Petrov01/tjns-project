@@ -41,6 +41,15 @@ module.exports = {
         },
         onDelete: 'CASCADE',
       },
+      addressId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'Addresses',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
