@@ -22,11 +22,11 @@ function RouterProvider(): React.JSX.Element {
 
   return (
     <Routes>
+      <Route element={<Layout />}>
 
       <Route path="/" element={<MainPage />} />
       <Route path="/products/create" element={<CreatePage />} />
       <Route path="/products/edit/:id" element={<UpdatePage />} />
-      <Route element={<Layout />}>
         <Route path="/categories" element={<CategoryPage />} />
         <Route path="/categories/create" element={<CategoryCreate />} />
         <Route path="/categories/:id/edit" element={<CategoryUpdate />} />
