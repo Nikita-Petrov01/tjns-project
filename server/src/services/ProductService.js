@@ -50,7 +50,6 @@ class ProductService {
     if (deleteProduct === 0) {
       throw new Error('Товар не найдена');
     }
-
     return deleteProduct;
   }
 
