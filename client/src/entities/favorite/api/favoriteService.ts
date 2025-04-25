@@ -1,0 +1,41 @@
+import type { AxiosInstance } from 'axios';
+import axiosInstance from '../../../shared/api/axiosInstance';
+import type { FavoriteT, NewFavoriteT } from '../model/favoriteType';
+import { favoriteSchema } from '../model/favoriteSchema';
+
+class FavoriteService {
+  constructor(private readonly client: AxiosInstance) {
+    this.client = client;
+  }
+
+  async getFavorites(): Promise<FavoriteT[]> {
+    try {
+      const allFavorites = await this.client.get('/favorites');
+      return favoriteSchema.array().parse(allFavorites.data);
+    } catch (error) {
+      console.error('Ошибка загрузки избранных товаров', error);
+      throw error;
+    }
+  }
+
+  async createFavorite(data: NewFavoriteT): Promise<FavoriteT> {
+    try {
+      const newFavorite = await this.client.post('/favorites', data);
+      return favoriteSchema.parse(newFavorite.data);
+    } catch (error) {
+      console.error('Ошибка создания избранного товара', error);
+      throw error;
+    }
+  }
+
+  async deleteFavorite(id: FavoriteT['id']): Promise<void> {
+    try {
+      await this.client.delete(`/favorites/${id.toString()}`);
+    } catch (error) {
+      console.error('Ошибка удаления избранного товара', error);
+      throw error;
+    }
+  }
+}
+
+export default new FavoriteService(axiosInstance);

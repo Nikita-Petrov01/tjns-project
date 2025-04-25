@@ -6,7 +6,6 @@ import { getProducts } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import ProductSortButtons from '../ProducSortButton/ProducSortButton';
 
-
 export default function CardList(): React.JSX.Element {
   const dispatch = useAppDispatch();
   useEffect(() => {
