@@ -20,7 +20,7 @@ class ProductsService {
 
   async getOneProduct(id: number): Promise<ProductT> {
     try {
-      const response = await this.client.get(`/products/prod/${id.toString()}`);
+      const response = await this.client.get(`/products/${id.toString()}`);
       return productSchema.parse(response.data);
     } catch (error) {
       console.error(error);
@@ -30,7 +30,7 @@ class ProductsService {
 
   async getProductsById(id: number): Promise<ProductT[]> {
     try {
-      const response = await this.client.get(`/products/${id.toString()}`);
+      const response = await this.client.get(`/products/category/${id.toString()}`);
       return productSchema.array().parse(response.data);
     } catch (error) {
       console.error(error);

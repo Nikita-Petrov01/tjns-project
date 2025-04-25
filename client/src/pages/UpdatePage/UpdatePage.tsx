@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import { productSchema } from '../../entities/products/model/schema';
 import { getOneProduct, update } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 export default function UpdatePage(): React.JSX.Element {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { id } = useParams();
 
@@ -22,6 +23,7 @@ export default function UpdatePage(): React.JSX.Element {
     const validatedData = productSchema.parse({
       ...data,
       id: Number(id),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
       images: imgArray.split(','),
       price: Number(data.price),
       categoryId: Number(data.categoryId),
@@ -48,7 +50,9 @@ export default function UpdatePage(): React.JSX.Element {
           <input type="number" defaultValue={product?.price} name="price" />
           <div>categoryId</div>
           <input type="text" defaultValue={product?.categoryId} name="categoryId" />
-          <button type="submit">Submit</button>
+          <button type="submit" onClick={() => navigate('/')}>
+            Submit
+          </button>
         </form>
       )}
     </>

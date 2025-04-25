@@ -1,3 +1,4 @@
+import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 import type { ProductSliceT } from './types';
 import { create, deleteById, getById, getOneProduct, getProducts, update } from './productThunk';
@@ -6,13 +7,47 @@ const initialState: ProductSliceT = {
   products: [],
   loading: false,
   product: null,
-  productCategory: null,
+  productsByCategory: null,
+  sortBy: 'price',
+  sortOrder: 1,
 };
 
 export const companySlice = createSlice({
   name: 'products',
   initialState,
-  reducers: {},
+
+  reducers: {
+    setSortBy: (state, action: PayloadAction<ProductSliceT['sortBy']>) => {
+      state.sortBy = action.payload;
+      state.products.sort((a, b) => {
+        const valueA = a[action.payload];
+        const valueB = b[action.payload];
+
+        if (typeof valueA === 'number' && typeof valueB === 'number')
+          return (valueA - valueB) * state.sortOrder;
+        if (typeof valueA === 'string' && typeof valueB === 'string')
+          return valueA.localeCompare(valueB) * state.sortOrder;
+        return 1;
+      });
+      if (state.productsByCategory) {
+        state.productsByCategory.sort((a, b) => {
+          const valueA = a[action.payload];
+          const valueB = b[action.payload];
+
+          if (typeof valueA === 'number' && typeof valueB === 'number')
+            return (valueA - valueB) * state.sortOrder;
+          if (typeof valueA === 'string' && typeof valueB === 'string')
+            return valueA.localeCompare(valueB) * state.sortOrder;
+          return 1;
+        });
+      }
+    },
+    reverseSortOrder: (state) => {
+      state.sortOrder *= -1;
+      state.products.reverse();
+    },
+  },
+
   extraReducers: (builder) => {
     // Все продукты
     builder.addCase(getProducts.fulfilled, (state, action) => {
@@ -46,11 +81,11 @@ export const companySlice = createSlice({
     // По id категории
     builder.addCase(getById.fulfilled, (state, action) => {
       state.loading = false;
-      state.productCategory = action.payload;
+      state.productsByCategory = action.payload;
     });
     builder.addCase(getById.rejected, (state, action) => {
       state.loading = false;
-      state.productCategory = null;
+      state.productsByCategory = null;
       console.error(action.error);
     });
     builder.addCase(getById.pending, (state) => {
@@ -101,6 +136,6 @@ export const companySlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-// export const {} = companySlice.actions;
+export const { setSortBy, reverseSortOrder } = companySlice.actions;
 
 export default companySlice.reducer;

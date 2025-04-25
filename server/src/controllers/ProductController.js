@@ -14,7 +14,7 @@ class ProductController {
   static async getProductById(req, res) {
     try {
       const { id } = req.params;
-      const product = await ProductService.getProductById(id);
+      const product = await ProductService.getProductsById(id);
       res.json(product);
     } catch (error) {
       console.error({ error: error.message }, 'Ошибка при получении товара');
