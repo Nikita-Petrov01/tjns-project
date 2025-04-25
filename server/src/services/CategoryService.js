@@ -1,4 +1,4 @@
-const { Category } = require('../../db/models');
+const { Category, Product } = require('../../db/models');
 
 class CategoryService {
   static async getAllCategories() {
@@ -41,6 +41,13 @@ class CategoryService {
     }
 
     return deleteCategory;
+  }
+
+  static async getProductsByCategory(categoryId) {
+    const products = await Product.findAll({
+      where: { categoryId },
+    });
+    return products;
   }
 }
 
