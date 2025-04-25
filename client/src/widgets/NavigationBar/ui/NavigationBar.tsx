@@ -6,6 +6,7 @@ import { getCategories } from '../../../entities/category/model/categoryThunks';
 import { logoutUser } from '../../../entities/user/model/userThunks';
 import SearchComponent from '../../../features/searchOptions/ui/SearchComponent';
 
+
 export default function NavigationBar(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
@@ -27,7 +28,7 @@ export default function NavigationBar(): React.JSX.Element {
       <Navbar.Brand as={Link} to="/" style={{ color: 'red' }}>
         TJNS - мир бытовых техник
       </Navbar.Brand>
-      <Container style={{}}>
+      <Container>
         <NavDropdown
           title="Категория товаров"
           id="collapsible-nav-dropdown"
@@ -36,16 +37,13 @@ export default function NavigationBar(): React.JSX.Element {
           {categories.map((category) => (
             <NavDropdown.Item
               key={category.id}
-              href={`/categories/${category.id.toString()}/edit`}
+              as={Link}
+              to={`/categories/${category.id.toString()}`}
               style={{ fontSize: '18px' }}
             >
               {category.name}
             </NavDropdown.Item>
           ))}
-          <NavDropdown.Divider />
-          <NavDropdown.Item href="#action/3.4" style={{ fontSize: '18px' }}>
-            Выберите категорию
-          </NavDropdown.Item>
         </NavDropdown>
 
         <SearchComponent />
