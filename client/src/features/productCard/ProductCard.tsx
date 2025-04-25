@@ -4,6 +4,8 @@ import { useAppDispatch } from '../../shared/lib/hooks';
 import { Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
 import { BiEdit, BiTrash } from 'react-icons/bi';
+import { deleteFavorite } from '../../entities/favorite/model/favoriteThunks';
+import { useState } from 'react';
 
 type Props = {
   product: ProductT;
@@ -12,6 +14,16 @@ type Props = {
 export default function ProductCard({ product }: Props): React.ReactElement {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const [isLiked, setIsLiked] = useState(false);
+
+  // const deleteFavoriteHandler = async () => {
+  //   try {
+  //     await dispatch(deleteFavorite(product.id));
+  //   } catch (error) {
+  //     console.error('Ошибка удаления избранного товара', error);
+  //   }
+  // };
 
   return (
     <Card
@@ -25,6 +37,12 @@ export default function ProductCard({ product }: Props): React.ReactElement {
     >
       {/* Кнопки действий */}
       <div className="position-absolute top-0 end-0 p-2 d-flex gap-2 z-1">
+        <Button variant="outline-primary" size="sm" title="favorite">
+          ❤️
+        </Button>
+
+        {/* "❤️ Unlike" : "🤍 Like" */}
+
         <Button
           variant="outline-primary"
           size="sm"
