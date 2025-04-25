@@ -2,12 +2,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import userReducer from '../entities/user/model/userSlice';
 import productsReducer from '../entities/products/model/productsSlice';
 import { categorySlice } from '../entities/category/model/categorySlice';
+import searchReducer from '../entities/searchOptions/model/searchSlice';
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
     products: productsReducer,
     categories: categorySlice.reducer,
+    search: searchReducer,
   },
 });
 

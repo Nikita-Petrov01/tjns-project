@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+/* Импорт стилей Flowbite */
+@import 'flowbite/dist/flowbite.min.css';
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";

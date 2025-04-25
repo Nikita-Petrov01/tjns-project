@@ -6,7 +6,9 @@ import {
   getCategory,
   updateCategory,
 } from './categoryThunks';
+
 import type { CatSliceT } from './categoryType';
+
 
 const initialState: CatSliceT = {
   categories: [],
