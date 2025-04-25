@@ -1,6 +1,6 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import type { ProductSliceT, ProductT } from './types';
+import type { ProductSliceT } from './types';
 import { create, deleteById, getById, getOneProduct, getProducts, update } from './productThunk';
 
 const initialState: ProductSliceT = {
@@ -47,10 +47,13 @@ export const companySlice = createSlice({
     reverseSortOrder: (state) => {
       state.sortOrder *= -1;
       state.products.reverse();
+      if (state.productsByCategory) {
+        state.productsByCategory.reverse();
+      }
     },
 
     // searchProducts
-    setSearchProducts: (state, action: PayloadAction<ProductT['searchProducts']>) => {
+    setSearchProducts: (state, action: PayloadAction<ProductSliceT['searchProducts']>) => {
       state.searchProducts = action.payload;
     },
   },
