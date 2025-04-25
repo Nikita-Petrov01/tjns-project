@@ -47,6 +47,9 @@ export const companySlice = createSlice({
     reverseSortOrder: (state) => {
       state.sortOrder *= -1;
       state.products.reverse();
+      if (state.productsByCategory) {
+        state.productsByCategory.reverse();
+      }
     },
 
     // searchProducts

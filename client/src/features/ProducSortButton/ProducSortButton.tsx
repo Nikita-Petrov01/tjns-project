@@ -25,4 +25,3 @@ export default function ProductSortButtons(): React.JSX.Element {
     </ButtonGroup>
   );
 }
-

@@ -1,6 +1,6 @@
 'use strict';
 
-const { User, Product, Category } = require('../models');
+const { User, Product, Category,Review } = require('../models');
 const bcrypt = require('bcrypt');
 
 /** @type {import('sequelize-cli').Migration} */
@@ -123,6 +123,14 @@ module.exports = {
         price: 89990,
         categoryId: 4,
       },
+    ]);
+
+    await Review.bulkCreate([
+      { rating: 5, text: 'Хороший товар', productId: 1, userId: 1 },
+      { rating: 4, text: 'Хороший товар', productId: 2, userId: 1 },
+      { rating: 3, text: 'Хороший товар', productId: 3, userId: 1 },
+      { rating: 2, text: 'Хороший товар', productId: 4, userId: 1 },
+      { rating: 1, text: 'Хороший товар', productId: 5, userId: 1 },
     ]);
   },
 
