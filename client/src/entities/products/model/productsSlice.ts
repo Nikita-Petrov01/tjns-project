@@ -1,6 +1,6 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import type { ProductSliceT } from './types';
+import type { ProductSliceT, ProductT } from './types';
 import { create, deleteById, getById, getOneProduct, getProducts, update } from './productThunk';
 
 const initialState: ProductSliceT = {
@@ -8,14 +8,16 @@ const initialState: ProductSliceT = {
   loading: false,
   product: null,
   productsByCategory: null,
+
   sortBy: 'price',
   sortOrder: 1,
+
+  searchProducts: '',
 };
 
 export const companySlice = createSlice({
   name: 'products',
   initialState,
-
   reducers: {
     setSortBy: (state, action: PayloadAction<ProductSliceT['sortBy']>) => {
       state.sortBy = action.payload;
@@ -45,6 +47,11 @@ export const companySlice = createSlice({
     reverseSortOrder: (state) => {
       state.sortOrder *= -1;
       state.products.reverse();
+    },
+
+    // searchProducts
+    setSearchProducts: (state, action: PayloadAction<ProductT['searchProducts']>) => {
+      state.searchProducts = action.payload;
     },
   },
 
@@ -136,6 +143,6 @@ export const companySlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setSortBy, reverseSortOrder } = companySlice.actions;
+export const { setSortBy, reverseSortOrder, setSearchProducts } = companySlice.actions;
 
 export default companySlice.reducer;
