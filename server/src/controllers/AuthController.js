@@ -3,6 +3,7 @@ const generateTokens = require('../utils/generateTokens');
 const cookieConfig = require('../configs/cookieConfig');
 
 class AuthController {
+    
     static async signup(req, res) {
         try {
             const user = await AuthService.signup(req.body)
