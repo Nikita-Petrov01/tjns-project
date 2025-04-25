@@ -4,14 +4,18 @@ import { useParams } from 'react-router';
 import { getOneProduct } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
+import { getReviewsByProductId } from '../../entities/review/model/reviewThunk';
 
 export default function OneProductPage(): React.JSX.Element {
   const { id } = useParams();
 
   const dispatch = useAppDispatch();
   const product = useAppSelector((state) => state.products.product);
+  const comments = useAppSelector((state) => state.rewiew.reviewsByProduct);
+
   useEffect(() => {
     void dispatch(getOneProduct(Number(id)));
+    void dispatch(getReviewsByProductId(Number(id)));
   }, [dispatch, id]);
 
   const [mainImageIndex, setMainImageIndex] = useState(0);
@@ -25,6 +29,9 @@ export default function OneProductPage(): React.JSX.Element {
     if (!product) return;
     setMainImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
   };
+
+  const rate =
+    comments.map((comment) => comment.rating).reduce((a, b) => a + b, 0) / comments.length;
 
   return (
     <div className="container mt-4">
@@ -73,9 +80,14 @@ export default function OneProductPage(): React.JSX.Element {
           </div>
         </div>
 
-        {/* Информация */}
+        {/* Информация о товаре */}
         <div className="col-md-6">
-          <h1 className="mb-3">{product?.name}</h1>
+          {rate > 0 ? (
+            <span className="text-warning fs-3"> ★{rate}</span>
+          ) : (
+            <span className="text-muted fs-3"> ★ 0</span>
+          )}
+          <h1 className="mb-3">{product?.name} </h1>
 
           <div className="mb-4">
             <h2 className="text-danger">{product?.price.toFixed(2)} ₽</h2>
@@ -94,6 +106,39 @@ export default function OneProductPage(): React.JSX.Element {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="mt-5">
+        <h3 className="mb-4">Отзывы о товаре</h3>
+
+        {comments.length ? (
+          <div className="row g-3">
+            {comments.map((comment) => (
+              <div key={comment.id} className="col-12">
+                <div className="card shadow-sm">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <div className="d-flex align-items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <span
+                            key={i}
+                            className={`fs-5 ${i < comment.rating ? 'text-warning' : 'text-muted'}`}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <small className="text-muted">Пользователь #{comment.userId}</small>
+                    </div>
+                    <p className="card-text">{comment.text}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="alert alert-info">Пока нет отзывов о этом товаре</div>
+        )}
       </div>
     </div>
   );
