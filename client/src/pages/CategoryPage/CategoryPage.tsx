@@ -33,7 +33,7 @@ export default function CategoryPage(): React.JSX.Element {
                 src="../../../../../public/icons/edit.png"
                 alt="Удалить"
                 style={{ width: '20px', marginRight: '10px' }}
-                onClick={() => navigate(`/categories/${category.id}/edit`)}
+                onClick={() => navigate(`/categories/${category.id.toString()}/edit`)}
               />
               <img
                 src="../../../../../public/icons/delete-2.png"

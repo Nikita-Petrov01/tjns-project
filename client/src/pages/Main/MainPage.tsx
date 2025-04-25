@@ -1,15 +1,10 @@
 import React from 'react';
-import { Container, Row } from 'react-bootstrap';
 
 import CardList from '../../features/CardList/CardList';
 // import { useAppDispatch } from '../../shared/lib/hooks';
 
 function MainPage(): React.JSX.Element {
-  return (
-    <Container>
-      <CardList />
-    </Container>
-  );
+  return <CardList />;
 }
 
 export default MainPage;

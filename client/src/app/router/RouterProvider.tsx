@@ -11,6 +11,8 @@ import CategoryCreate from '../../features/categoryOptions/categoryCreate/ui/Cat
 import SignupPage from '../../pages/Signup/SignupPage';
 import LoginPage from '../../pages/Login/LoginPage';
 import Layout from '../../pages/Layout/Layout';
+import OneProductPage from '../../pages/OneProductPage/OneProductPage';
+import FilteredCardList from '../../features/FilteredCardList/FilteredCardList';
 
 function RouterProvider(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -27,11 +29,11 @@ function RouterProvider(): React.JSX.Element {
         <Route path="/" element={<MainPage />} />
         <Route path="/products/create" element={<CreatePage />} />
         <Route path="/products/edit/:id" element={<UpdatePage />} />
-        <Route element={<Layout />}>
-          <Route path="/categories" element={<CategoryPage />} />
-          <Route path="/categories/create" element={<CategoryCreate />} />
-          <Route path="/categories/:id/edit" element={<CategoryUpdate />} />
-        </Route>{' '}
+        <Route path="/categories" element={<CategoryPage />} />
+        <Route path="/categories/create" element={<CategoryCreate />} />
+        <Route path="/categories/:id/edit" element={<CategoryUpdate />} />
+        <Route path="/products/:id" element={<OneProductPage />} />
+        <Route path='categories/:id' element={<FilteredCardList />} />
       </Route>
     </Routes>
   );
