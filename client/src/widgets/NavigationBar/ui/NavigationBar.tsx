@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../../shared/lib/hooks';
 import { getCategories } from '../../../entities/category/model/categoryThunks';
 import { logoutUser } from '../../../entities/user/model/userThunks';
+import SearchComponent from '../../../features/searchOptions/ui/SearchComponent';
 
 export default function NavigationBar(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -47,6 +48,7 @@ export default function NavigationBar(): React.JSX.Element {
           </NavDropdown.Item>
         </NavDropdown>
 
+        <SearchComponent />
         <Nav className="ms-auto d-flex align-items-center gap-2">
           {user ? (
             <>

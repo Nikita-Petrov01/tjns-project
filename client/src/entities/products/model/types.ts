@@ -8,6 +8,8 @@ export type ProductSliceT = {
   loading: boolean;
   product: ProductT | null;
   productCategory: ProductT[] | null;
+
+  searchProducts: string;
 };
 
 export type NewProductT = z.infer<typeof newProductSchema>;

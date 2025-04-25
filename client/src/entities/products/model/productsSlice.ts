@@ -1,5 +1,6 @@
+import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import type { ProductSliceT } from './types';
+import type { ProductSliceT, ProductT } from './types';
 import { create, deleteById, getById, getOneProduct, getProducts, update } from './productThunk';
 
 const initialState: ProductSliceT = {
@@ -7,12 +8,20 @@ const initialState: ProductSliceT = {
   loading: false,
   product: null,
   productCategory: null,
+
+  searchProducts: '',
 };
 
 export const companySlice = createSlice({
   name: 'products',
   initialState,
-  reducers: {},
+  reducers: {
+    // searchProducts
+    setSearchProducts: (state, action: PayloadAction<ProductT['searchProducts']>) => {
+      state.searchProducts = action.payload;
+    },
+  },
+
   extraReducers: (builder) => {
     // Все продукты
     builder.addCase(getProducts.fulfilled, (state, action) => {
@@ -101,6 +110,6 @@ export const companySlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-// export const {} = companySlice.actions;
+export const { setSearchProducts } = companySlice.actions;
 
 export default companySlice.reducer;
