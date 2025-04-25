@@ -3,9 +3,10 @@
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    static associate({ Review, Order }) {
+    static associate({ Review, Order, Address }) {
       this.hasMany(Review, { foreignKey: 'userId' });
       this.hasMany(Order, { foreignKey: 'userId' });
+      this.hasMany(Address, { foreignKey: 'userId' });
     }
   }
   User.init(
@@ -17,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: '',
       },
+      status: DataTypes.ENUM('superadmin', 'admin', 'user'),
     },
     {
       sequelize,
