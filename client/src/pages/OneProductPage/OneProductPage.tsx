@@ -91,7 +91,7 @@ export default function OneProductPage(): React.JSX.Element {
         {/* Информация о товаре */}
         <div className="col-md-6">
           {rate > 0 ? (
-            <span className="text-warning fs-3"> ★{rate}</span>
+            <span className="text-warning fs-3"> ★{rate.toFixed(1)}</span>
           ) : (
             <span className="text-muted fs-3"> ★ 0</span>
           )}

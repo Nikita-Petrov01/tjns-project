@@ -7,6 +7,7 @@ export const productSchema = z.object({
   images: z.array(z.string()),
   price: z.number(),
   categoryId: z.number(),
+  averageRating: z.number().optional(),
 });
 
 export const newProductSchema = z.object({

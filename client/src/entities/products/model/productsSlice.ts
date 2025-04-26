@@ -8,7 +8,6 @@ const initialState: ProductSliceT = {
   loading: false,
   product: null,
   productsByCategory: null,
-  rating: 0,
 
   sortBy: 'price',
   sortOrder: 1,
@@ -20,10 +19,7 @@ export const companySlice = createSlice({
   name: 'products',
   initialState,
   reducers: {
-    setRating: (state, action: PayloadAction<ProductSliceT['rating']>) => {
-      state.rating = action.payload;
-    },
-    setSortBy: (state, action: PayloadAction<ProductSliceT['sortBy']>) => {
+    setSortBy: (state, action: PayloadAction<'price' | 'name' | 'averageRating'>) => {
       state.sortBy = action.payload;
       state.products.sort((a, b) => {
         const valueA = a[action.payload];
@@ -33,8 +29,9 @@ export const companySlice = createSlice({
           return (valueA - valueB) * state.sortOrder;
         if (typeof valueA === 'string' && typeof valueB === 'string')
           return valueA.localeCompare(valueB) * state.sortOrder;
-        return 1;
+        return 0;
       });
+
       if (state.productsByCategory) {
         state.productsByCategory.sort((a, b) => {
           const valueA = a[action.payload];
@@ -44,7 +41,7 @@ export const companySlice = createSlice({
             return (valueA - valueB) * state.sortOrder;
           if (typeof valueA === 'string' && typeof valueB === 'string')
             return valueA.localeCompare(valueB) * state.sortOrder;
-          return 1;
+          return 0;
         });
       }
     },
@@ -150,6 +147,6 @@ export const companySlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setSortBy, reverseSortOrder, setSearchProducts,setRating } = companySlice.actions;
+export const { setSortBy, reverseSortOrder, setSearchProducts, setRating } = companySlice.actions;
 
 export default companySlice.reducer;
