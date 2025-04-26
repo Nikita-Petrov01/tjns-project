@@ -2,6 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 import type { CartItemT, CartSliceT } from './cartTypes';
 import { addCartItem, deleteCart, deleteCartItem, getCart, getCartItems, updateCartItem } from './cartThunks';
+import { cartItemArraySchem } from './cartSchema';
 
 const initialState: CartSliceT = {
   cart: null,
@@ -37,7 +38,7 @@ export const cartSlice = createSlice({
     loadFromLocalStorage(state) {
       const savedCart = localStorage.getItem('guestCart');
       if (savedCart) {
-        state.items = JSON.parse(savedCart);
+        state.items = cartItemArraySchem.parse(JSON.parse(savedCart));
       }
     },
     clearCartLocally(state) {
