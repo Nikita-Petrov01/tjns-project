@@ -7,12 +7,11 @@ export type ProductSliceT = {
   products: ProductT[];
   loading: boolean;
   product: ProductT | null;
-  rating: number;
 
   searchProducts: string;
 
   productsByCategory: ProductT[] | null;
-  sortBy: keyof ProductT ;
+  sortBy: 'price' | 'name' | 'averageRating';
   sortOrder: 1 | -1;
 };
 

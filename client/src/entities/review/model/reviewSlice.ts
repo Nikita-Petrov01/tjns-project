@@ -1,15 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { ReviewSliceT } from './types';
-import { createReview, deleteReview, getReviewById, getReviews, getReviewsByProductId } from './reviewThunk';
+import {
+  createReview,
+  deleteReview,
+  getReviewById,
+  getReviews,
+  getReviewsByProductId,
+} from './reviewThunk';
 
 const initialState: ReviewSliceT = {
   reviews: [],
   loading: false,
   review: null,
   reviewsByProduct: [],
-  sortBy: 'price',
-  sortOrder: 1,
-
 };
 
 export const reviewSlice = createSlice({
@@ -60,7 +63,6 @@ export const reviewSlice = createSlice({
       state.loading = true;
       state.reviewsByProduct = [];
     });
-    
 
     // добавление
     builder.addCase(createReview.fulfilled, (state, action) => {
