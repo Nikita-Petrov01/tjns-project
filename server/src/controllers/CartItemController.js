@@ -4,7 +4,7 @@ class CartItemController {
     
   static async getAll(req, res) {
     try {
-      const items = await CartItemService.getItems(req.user.id);
+      const items = await CartItemService.getItems(res.locals.user.id);
       res.json(items);
     } catch (e) {
       res.status(400).json({ error: e.message });
@@ -14,7 +14,7 @@ class CartItemController {
   static async add(req, res) {
     try {
       const item = await CartItemService.addItem({
-        userId: req.user.id,
+        userId: res.locals.user.id,
         ...req.body,
       });
       res.status(201).json(item);

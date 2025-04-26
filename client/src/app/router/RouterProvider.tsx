@@ -13,6 +13,7 @@ import LoginPage from '../../pages/Login/LoginPage';
 import Layout from '../../pages/Layout/Layout';
 import OneProductPage from '../../pages/OneProductPage/OneProductPage';
 import FilteredCardList from '../../features/FilteredCardList/FilteredCardList';
+import CartPage from '../../pages/CartPage';
 
 function RouterProvider(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -34,6 +35,7 @@ function RouterProvider(): React.JSX.Element {
         <Route path="/categories/:id/edit" element={<CategoryUpdate />} />
         <Route path="/products/:id" element={<OneProductPage />} />
         <Route path='categories/:id' element={<FilteredCardList />} />
+        <Route path='/cart' element={<CartPage />} />
       </Route>
     </Routes>
   );

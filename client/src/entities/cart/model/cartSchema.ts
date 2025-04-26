@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { productSchema } from "../../products/model/schema";
 
 // схема для корзины
 
@@ -22,8 +21,17 @@ export const cartItemSchema = z.object({
     productId: z.number(),
     quantity: z.number().min(1, 'Количество не может быть меньше 1'),
     price: z.number().min(0, 'Цена не может быть отрицательной'),
-    product: productSchema.optional(),
+    product: z.object({
+        id: z.number(),
+        name: z.string(),
+        description: z.string(),
+        images: z.array(z.string()),
+        price: z.number(),
+        categoryId: z.number(),
+    }).optional(),
 });
+
+export const cartItemArraySchem = z.array(cartItemSchema);
 
 // Схема для добавления элемента в корзину
 export const newCartItemSchema = z.object({
