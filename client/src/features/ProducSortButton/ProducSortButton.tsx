@@ -8,7 +8,7 @@ export default function ProductSortButtons(): React.JSX.Element {
   const sortBy = useAppSelector((store) => store.products.sortBy);
   const sortOrder = useAppSelector((store) => store.products.sortOrder);
 
-  const keys: ProductSliceT['sortBy'][] = ['price'];
+  const keys: (ProductSliceT['sortBy'] | 'rating')[] = ['price', 'rating'];
 
   return (
     <ButtonGroup aria-label="Basic button group">

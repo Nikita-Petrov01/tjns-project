@@ -8,6 +8,7 @@ const initialState: ProductSliceT = {
   loading: false,
   product: null,
   productsByCategory: null,
+  rating: 0,
 
   sortBy: 'price',
   sortOrder: 1,
@@ -19,6 +20,9 @@ export const companySlice = createSlice({
   name: 'products',
   initialState,
   reducers: {
+    setRating: (state, action: PayloadAction<ProductSliceT['rating']>) => {
+      state.rating = action.payload;
+    },
     setSortBy: (state, action: PayloadAction<ProductSliceT['sortBy']>) => {
       state.sortBy = action.payload;
       state.products.sort((a, b) => {
@@ -146,6 +150,6 @@ export const companySlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setSortBy, reverseSortOrder, setSearchProducts } = companySlice.actions;
+export const { setSortBy, reverseSortOrder, setSearchProducts,setRating } = companySlice.actions;
 
 export default companySlice.reducer;

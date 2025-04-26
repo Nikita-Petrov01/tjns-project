@@ -7,6 +7,9 @@ const initialState: ReviewSliceT = {
   loading: false,
   review: null,
   reviewsByProduct: [],
+  sortBy: 'price',
+  sortOrder: 1,
+
 };
 
 export const reviewSlice = createSlice({

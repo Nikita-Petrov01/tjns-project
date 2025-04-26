@@ -7,7 +7,9 @@ export type ReviewSliceT = {
   reviews: ReviewT[];
   loading: boolean;
   review: ReviewT | null;
-  reviewsByProduct: ReviewT[]
+  reviewsByProduct: ReviewT[];
+  sortBy: keyof ReviewT;
+  sortOrder: 1 | -1;
 };
 
 export type NewReviewT = z.infer<typeof newReviewSchema>;
