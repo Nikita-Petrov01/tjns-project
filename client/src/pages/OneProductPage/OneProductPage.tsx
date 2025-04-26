@@ -5,6 +5,7 @@ import { getOneProduct } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 import { getReviewsByProductId } from '../../entities/review/model/reviewThunk';
+import { useAddToCart } from '../../entities/cart/hooks/useAddToCart';
 
 export default function OneProductPage(): React.JSX.Element {
   const { id } = useParams();
@@ -13,12 +14,19 @@ export default function OneProductPage(): React.JSX.Element {
   const product = useAppSelector((state) => state.products.product);
   const comments = useAppSelector((state) => state.rewiew.reviewsByProduct);
 
+  const { addToCart } = useAddToCart();
+
   useEffect(() => {
     void dispatch(getOneProduct(Number(id)));
     void dispatch(getReviewsByProductId(Number(id)));
   }, [dispatch, id]);
 
   const [mainImageIndex, setMainImageIndex] = useState(0);
+
+  const handleAddToCart = (): void => {
+    if (!product) return;
+    addToCart({ id: product.id, price: product.price });
+  }
 
   const nextImage = (): void => {
     if (!product) return;
@@ -94,7 +102,7 @@ export default function OneProductPage(): React.JSX.Element {
           </div>
 
           <div className="d-flex gap-2 mb-4">
-            <button className="btn btn-danger py-2 flex-grow-1">В корзину</button>
+            <button className="btn btn-danger py-2 flex-grow-1" onClick={handleAddToCart}>В корзину</button>
           </div>
 
           <div className="card mb-4">

@@ -4,6 +4,7 @@ import productsReducer from '../entities/products/model/productsSlice';
 import { categorySlice } from '../entities/category/model/categorySlice';
 import searchReducer from '../entities/searchOptions/model/searchSlice';
 import reviewReducer from '../entities/review/model/reviewSlice';
+import cartReducer from '../entities/cart/model/cartSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     categories: categorySlice.reducer,
     search: searchReducer,
     rewiew: reviewReducer,
+    cart: cartReducer,
   },
 });
 
