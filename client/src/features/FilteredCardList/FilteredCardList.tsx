@@ -14,7 +14,7 @@ export default function FilteredCardList(): React.JSX.Element {
 
   useEffect(() => {
     void dispatch(getById(Number(id)));
-  }, [dispatch, id]);
+  }, [dispatch, id, prodByCat]);
 
   return (
     <Container>
