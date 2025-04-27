@@ -127,8 +127,11 @@ module.exports = {
 
     await Review.bulkCreate([
       { rating: 5, text: 'Хороший товар', productId: 1, userId: 1 },
+      { rating: 5, text: 'Плохой товар', productId: 1, userId: 1 },
       { rating: 4, text: 'Хороший товар', productId: 2, userId: 1 },
+      { rating: 4, text: 'Плохой товар', productId: 2, userId: 1 },
       { rating: 3, text: 'Хороший товар', productId: 3, userId: 1 },
+      { rating: 3, text: 'Плохой товар', productId: 3, userId: 1 },
       { rating: 2, text: 'Хороший товар', productId: 4, userId: 1 },
       { rating: 1, text: 'Хороший товар', productId: 5, userId: 1 },
     ]);

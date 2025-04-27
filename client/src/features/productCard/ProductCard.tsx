@@ -16,9 +16,10 @@ import TrialSearch from '../trialSerach/TrialSearch';
 
 type Props = {
   product: ProductT;
+  rating?: number;
 };
 
-export default function ProductCard({ product }: Props): React.ReactElement {
+export default function ProductCard({ product, rating }: Props): React.ReactElement {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -31,11 +32,31 @@ export default function ProductCard({ product }: Props): React.ReactElement {
   );
   const loading = useAppSelector((state) => state.favorites.loading);
 
+
   useEffect(() => {
     if (user) {
       void dispatch(getFavorites(user.id));
     }
   }, [dispatch, user]);
+
+  return (
+    <Card
+      className="h-100 shadow-sm position-relative"
+      style={{
+        cursor: 'pointer',
+        transition: 'transform 0.2s',
+        minHeight: '400px',
+      }}
+      onClick={() => navigate(`/products/${product.id.toString()}`)}
+    >
+      {rating !== undefined && <span className="text-warning fs-6"> ★</span>}
+      {rating !== undefined && <span>{rating.toFixed(1)}</span>}
+      {/* Кнопки действий */}
+      <div className="position-absolute top-0 end-0 p-2 d-flex gap-2 z-1">
+        <Button variant="outline-primary" size="sm" title="favorite">
+          ❤️
+        </Button>
+
 
   const deleteFavoriteHandler = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();

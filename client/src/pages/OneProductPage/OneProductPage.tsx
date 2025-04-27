@@ -4,21 +4,47 @@ import { useParams } from 'react-router';
 import { getOneProduct } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
-import { getReviewsByProductId } from '../../entities/review/model/reviewThunk';
+import { createReview, getReviewsByProductId } from '../../entities/review/model/reviewThunk';
+import { useAddToCart } from '../../entities/cart/hooks/useAddToCart';
+import { newReviewSchema, reviewSchema } from '../../entities/review/model/schema';
+import { Button, ButtonGroup } from 'react-bootstrap';
+import type { ReviewT } from '../../entities/review/model/types';
+import { setStateReview } from '../../entities/review/model/reviewSlice';
 
 export default function OneProductPage(): React.JSX.Element {
   const { id } = useParams();
 
+  const [selected, setSelected] = useState<number | null>(null);
+  const [allComments, setAllComments] = useState<ReviewT[]>([]);
+  const [value, setValue] = useState<string>('');
+
   const dispatch = useAppDispatch();
   const product = useAppSelector((state) => state.products.product);
   const comments = useAppSelector((state) => state.rewiew.reviewsByProduct);
+  const user = useAppSelector((state) => state.user.user);
+
+  const show = useAppSelector((state) => state.rewiew.stateReview);
+
+  const { addToCart } = useAddToCart();
 
   useEffect(() => {
     void dispatch(getOneProduct(Number(id)));
     void dispatch(getReviewsByProductId(Number(id)));
-  }, [dispatch, id]);
+    if (user) {
+      void dispatch(setStateReview(user.id));
+    }
+  }, [dispatch, id, user]);
+
+  useEffect(() => {
+    setAllComments(comments);
+  }, [comments]);
 
   const [mainImageIndex, setMainImageIndex] = useState(0);
+
+  const handleAddToCart = (): void => {
+    if (!product) return;
+    addToCart({ id: product.id, price: product.price });
+  };
 
   const nextImage = (): void => {
     if (!product) return;
@@ -28,6 +54,30 @@ export default function OneProductPage(): React.JSX.Element {
   const prevImage = (): void => {
     if (!product) return;
     setMainImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
+  };
+
+  // const findUserComennt = comments.find((comment) => comment.userId === user?.id);
+
+  const handleComment: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    // const data = Object.fromEntries(new FormData(e.currentTarget));
+    if (value.length > 1) {
+      const validatedData = newReviewSchema.parse({
+        text: value,
+        productId: product?.id,
+        userId: user?.id,
+        rating: selected,
+      });
+      void dispatch(createReview(validatedData));
+      setSelected(null);
+      setAllComments((prev = []) => [
+        ...prev,
+        {
+          ...validatedData,
+          id: 0,
+        },
+      ]);
+    }
   };
 
   const rate =
@@ -83,7 +133,7 @@ export default function OneProductPage(): React.JSX.Element {
         {/* Информация о товаре */}
         <div className="col-md-6">
           {rate > 0 ? (
-            <span className="text-warning fs-3"> ★{rate}</span>
+            <span className="text-warning fs-3"> ★{rate.toFixed(1)}</span>
           ) : (
             <span className="text-muted fs-3"> ★ 0</span>
           )}
@@ -94,7 +144,9 @@ export default function OneProductPage(): React.JSX.Element {
           </div>
 
           <div className="d-flex gap-2 mb-4">
-            <button className="btn btn-danger py-2 flex-grow-1">В корзину</button>
+            <button className="btn btn-danger py-2 flex-grow-1" onClick={handleAddToCart}>
+              В корзину
+            </button>
           </div>
 
           <div className="card mb-4">
@@ -111,9 +163,37 @@ export default function OneProductPage(): React.JSX.Element {
       <div className="mt-5">
         <h3 className="mb-4">Отзывы о товаре</h3>
 
-        {comments.length ? (
+        {show && !comments.some(c => c.userId === user?.id) && (
+          <>
+            <ButtonGroup aria-label="Rating buttons">
+              {[1, 2, 3, 4, 5].map((num) => (
+                <Button
+                  key={num}
+                  variant={selected === num ? 'primary' : 'outline-primary'}
+                  onClick={() => setSelected(num)}
+                >
+                  {num}
+                </Button>
+              ))}
+            </ButtonGroup>
+            <form onSubmit={handleComment}>
+              <input
+                type="text"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                className="form-control"
+                placeholder="Напишите свой отзыв"
+              />
+              <Button type="submit" disabled={!selected || value.length < 2}>
+                Отправить
+              </Button>
+            </form>
+          </>
+        )}
+
+        {allComments.length ? (
           <div className="row g-3">
-            {comments.map((comment) => (
+            {allComments.map((comment) => (
               <div key={comment.id} className="col-12">
                 <div className="card shadow-sm">
                   <div className="card-body">

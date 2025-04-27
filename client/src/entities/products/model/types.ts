@@ -11,7 +11,7 @@ export type ProductSliceT = {
   searchProducts: string;
 
   productsByCategory: ProductT[] | null;
-  sortBy: keyof ProductT;
+  sortBy: 'price' | 'name' | 'averageRating';
   sortOrder: 1 | -1;
 };
 
