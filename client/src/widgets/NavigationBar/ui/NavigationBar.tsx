@@ -23,7 +23,15 @@ export default function NavigationBar(): React.JSX.Element {
       bg="dark"
       variant="dark"
       className="shadow"
-      style={{ height: '12vh', marginBottom: '2rem', fontSize: '20px', padding: '0px 40px' }}
+      style={{
+        height: '12vh',
+        marginBottom: '2rem',
+        fontSize: '20px',
+        padding: '0px 40px',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+      }}
     >
       <Navbar.Brand as={Link} to="/" style={{ color: 'red' }}>
         TJNS - мир бытовых техник
@@ -57,28 +65,49 @@ export default function NavigationBar(): React.JSX.Element {
         <Nav className="ms-auto d-flex align-items-center gap-2">
           {user ? (
             <>
+              <Button variant="outline-light" onClick={() => void navigate('/categories/create')}>
+                Добавить категорию
+              </Button>
+
+              <Button variant="outline-light" onClick={() => void navigate('/products/create')}>
+                Добавить продукт
+              </Button>
+
+              <Nav style={{ color: 'white', margin: '0px 20px' }}>Здравствуйте, {user.name}</Nav>
+
               <Button
                 variant="outline-light"
                 onClick={() => void dispatch(logoutUser())}
-                style={{ fontSize: '18px', marginRight: '10px' }}
+                style={{ fontSize: '18px' }}
               >
                 Выйти
               </Button>
-              <Button variant="outline-light">Создать ресторан</Button>
             </>
           ) : (
             <>
               <Button
+
+                variant="outline-light"
+                style={{ fontSize: '18px', marginRight: '10px' }}
+                onClick={() => void navigate('/login')}
+
                 onClick={() => navigate('/login')}
                 variant="outline-light"
                 style={{ fontSize: '18px', marginRight: '10px' }}
+
               >
                 Войти
               </Button>
               <Button
+
+                variant="outline-light"
+                style={{ fontSize: '18px' }}
+                onClick={() => void navigate('/singup')}
+
                 onClick={() => navigate('/signup')}
                 variant="outline-light"
                 style={{ fontSize: '18px' }}
+
               >
                 Зарегистрироваться
               </Button>

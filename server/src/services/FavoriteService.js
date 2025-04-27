@@ -7,7 +7,6 @@ class FavoriteService {
     }
 
     static async deleteFavorite({userId, productId}) {
-
         const favorite = await Favorite.destroy({where: {userId, productId}});
         return favorite;
     }

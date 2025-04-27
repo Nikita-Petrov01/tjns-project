@@ -3,11 +3,11 @@ const FavoriteController = require('../controllers/FavoriteController');
 
 favoriteRouter
     .route('/')
-    .delete(FavoriteController.deleteFavorite)
     .post(FavoriteController.addFavorite);
 
 favoriteRouter
     .route('/:userId')
-    .get(FavoriteController.getAllFavoritesByUserId);
+    .get(FavoriteController.getAllFavoritesByUserId)
+    .delete(FavoriteController.deleteFavorite)
 
 module.exports = favoriteRouter;

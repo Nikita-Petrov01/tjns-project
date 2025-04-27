@@ -5,6 +5,7 @@ import { createFavorite, deleteFavorite, getFavorites } from './favoriteThunks';
 const initialState: FavoriteSliceT = {
   favorites: [],
   favorite: null,
+  loading: false,
 };
 
 export const favoriteSlice = createSlice({
@@ -15,9 +16,13 @@ export const favoriteSlice = createSlice({
     // getAllFavorites
     builder.addCase(getFavorites.fulfilled, (state, action) => {
       state.favorites = action.payload;
+      state.loading = false;
     });
     builder.addCase(getFavorites.rejected, (_, action) => {
       console.error(action.error);
+    });
+    builder.addCase(getFavorites.pending, (state) => {
+      state.loading = true;
     });
 
     // createFavorite
@@ -30,10 +35,14 @@ export const favoriteSlice = createSlice({
 
     // deleteFavorite
     builder.addCase(deleteFavorite.fulfilled, (state, action) => {
-      state.favorites = state.favorites.filter((favorite) => favorite.id !== action.meta.arg);
+      state.favorites = state.favorites.filter(
+        (favorite) => favorite.productId !== action.payload.productId,
+      );
     });
     builder.addCase(deleteFavorite.rejected, (_, action) => {
       console.error(action.error);
     });
   },
 });
+
+export default favoriteSlice.reducer;
