@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import ReviewService from '../api/ReviewService';
-import type { ReviewT } from './types';
+import type { NewReviewT, ReviewT } from './types';
 
 export const getReviews = createAsyncThunk('review/getReviews', async () =>
   ReviewService.getReviews(),
@@ -10,7 +10,7 @@ export const getReviewById = createAsyncThunk('review/getReviewById', async (id:
   ReviewService.getReviewById(id),
 );
 
-export const createReview = createAsyncThunk('review/createReview', (review: ReviewT) =>
+export const createReview = createAsyncThunk('review/createReview', (review: NewReviewT) =>
   ReviewService.createReview(review),
 );
 

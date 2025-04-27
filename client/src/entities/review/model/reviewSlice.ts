@@ -13,12 +13,22 @@ const initialState: ReviewSliceT = {
   loading: false,
   review: null,
   reviewsByProduct: [],
+  stateReview: false,
 };
 
 export const reviewSlice = createSlice({
   name: 'review',
   initialState,
-  reducers: {},
+  reducers: {
+    // будет приходить id user, нужно проверить в комментах есть ли его комментарий
+    setStateReview: (state, action) => {
+      // Проверяем есть ли у пользователя отзыв на текущий товар
+      const hasReview = state.reviewsByProduct.some(
+        (review) => review.userId === action.payload,
+      );
+      state.stateReview = !hasReview; // true - можно оставить отзыв, false - уже есть отзыв
+    },
+  },
   extraReducers: (builder) => {
     // Все продукты
     builder.addCase(getReviews.fulfilled, (state, action) => {
@@ -93,6 +103,6 @@ export const reviewSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-// export const { } = reviewSlice.actions;
+export const { setStateReview } = reviewSlice.actions;
 
 export default reviewSlice.reducer;

@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import { Button, Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../../shared/lib/hooks';
 import { getCategories } from '../../../entities/category/model/categoryThunks';
 import { logoutUser } from '../../../entities/user/model/userThunks';
 import SearchComponent from '../../../features/searchOptions/ui/SearchComponent';
 
-
 export default function NavigationBar(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
+  const navigate = useNavigate();
 
   useEffect(() => {
     void dispatch(getCategories());
@@ -29,6 +29,13 @@ export default function NavigationBar(): React.JSX.Element {
         TJNS - мир бытовых техник
       </Navbar.Brand>
       <Container>
+        <Button
+          variant="outline-light"
+          onClick={() => navigate('/cart')}
+          style={{ fontSize: '18px', marginRight: '10px' }}
+        >
+          Корзина
+        </Button>
         <NavDropdown
           title="Категория товаров"
           id="collapsible-nav-dropdown"
@@ -61,10 +68,18 @@ export default function NavigationBar(): React.JSX.Element {
             </>
           ) : (
             <>
-              <Button variant="outline-light" style={{ fontSize: '18px', marginRight: '10px' }}>
+              <Button
+                onClick={() => navigate('/login')}
+                variant="outline-light"
+                style={{ fontSize: '18px', marginRight: '10px' }}
+              >
                 Войти
               </Button>
-              <Button variant="outline-light" style={{ fontSize: '18px' }}>
+              <Button
+                onClick={() => navigate('/signup')}
+                variant="outline-light"
+                style={{ fontSize: '18px' }}
+              >
                 Зарегистрироваться
               </Button>
             </>

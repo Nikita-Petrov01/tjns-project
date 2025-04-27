@@ -15,7 +15,7 @@ function LoginForm(): React.JSX.Element {
     const validatedData = userLoginFormSchema.parse(data);
     dispatch(loginUser(validatedData))
       .unwrap()
-      .then(void navigate('/restaurants'))
+      .then(void navigate('/'))
       .catch(console.error);
   };
 
