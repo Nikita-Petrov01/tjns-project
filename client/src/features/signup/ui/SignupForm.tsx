@@ -15,7 +15,7 @@ function SignupForm(): React.JSX.Element {
     const validatedData = userFormSchema.parse(data);
     dispatch(signupUser(validatedData))
       .unwrap()
-      .then(void navigate('/restaurants'))
+      .then(void navigate('/'))
       .catch(console.error);
   };
 

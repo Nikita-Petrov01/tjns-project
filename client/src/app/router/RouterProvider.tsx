@@ -25,7 +25,7 @@ function RouterProvider(): React.JSX.Element {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/singup" element={<SignupPage />} />
+        <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<MainPage />} />
         <Route path="/products/create" element={<CreatePage />} />
