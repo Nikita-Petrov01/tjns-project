@@ -8,6 +8,7 @@ export type ReviewSliceT = {
   loading: boolean;
   review: ReviewT | null;
   reviewsByProduct: ReviewT[];
+  stateReview: boolean;
 };
 
 export type NewReviewT = z.infer<typeof newReviewSchema>;
