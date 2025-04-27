@@ -19,6 +19,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+const searchRouter = require('./routes/searchRouter');
 
 app.use('/api/auth', authRouter);
 
@@ -42,6 +43,6 @@ app.use('/api/carts', cartRouter);
 
 app.use('/api/cartItem', cartItemRouter);
 
-
+app.use('/api/search', searchRouter);
 
 module.exports = app;

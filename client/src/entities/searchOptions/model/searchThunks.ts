@@ -1,25 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import Fuse from 'fuse.js';
+import axiosInstance from '../../../shared/api/axiosInstance';
+import debounce from 'lodash.debounce';
 
-export const performSearch = createAsyncThunk(
-  'search/perform',
-  async ({ query, data }, { rejectWithValue }) => {
-    try {
-      if (!query || query.length < 2) return [];
+export const searchItems = createAsyncThunk('search/searchItems', async (query: string) => {
+  const response = await axiosInstance.get(`/search?q=${query}`);
+  return response.data;
+});
 
-      const options = {
-        keys: ['name', 'description', 'price'],
-        threshold: 0.4,
-        includeScore: true,
-        minMatchCharLength: 2,
-        ignoreLocation: true,
-        shouldSort: true, 
-      };
-
-      const fuse = new Fuse(data, options);
-      return fuse.search(query).map((item) => item.item);
-    } catch (err) {
-      return rejectWithValue(err.message);
-    }
-  },
-);
+export const debouncedSearch = debounce((dispatch: any, query: string) => {
+  if (query) {
+    dispatch(searchItems(query));
+  }
+}, 300);

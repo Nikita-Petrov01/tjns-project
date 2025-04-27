@@ -1,61 +1,30 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { performSearch } from './searchThunks';
-import type { CategoryT } from './searchType';
+import { searchItems } from './searchThunks';
 
-export type SearchSliceT = {
-  query: string;
-  results: CategoryT[];
-  suggestions: CategoryT[];
-  history: string[];
-  loading: boolean;
-  error: string | null;
-};
-
-const initialState: SearchSliceT = {
-  query: '',
+const initialState = {
   results: [],
-  suggestions: [],
-  history: [],
   loading: false,
   error: null,
 };
 
-const searchSlice = createSlice({
+export const searchSlice = createSlice({
   name: 'search',
-  initialState: {
-    query: '',
-    results: [],
-    suggestions: [],
-    history: [],
-    loading: false,
-    error: null,
-  },
-  reducers: {
-    setQuery: (state, action) => {
-      state.query = action.payload;
-    },
-    addToHistory: (state, action) => {
-      if (action.payload && !state.history.includes(action.payload)) {
-        state.history = [action.payload, ...state.history].slice(0, 10);
-      }
-    },
-  },
+  initialState,
+  reducers: {},
+
   extraReducers: (builder) => {
     builder
-      .addCase(performSearch.pending, (state) => {
+      .addCase(searchItems.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(performSearch.fulfilled, (state, action) => {
-        state.loading = false;
+      .addCase(searchItems.fulfilled, (state, action) => {
         state.results = action.payload;
-      })
-      .addCase(performSearch.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+      })
+      .addCase(searchItems.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });
-
-export const { setQuery, addToHistory } = searchSlice.actions;
-export default searchSlice.reducer;

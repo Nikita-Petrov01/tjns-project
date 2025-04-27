@@ -1,6 +1,6 @@
 import type { AxiosInstance } from 'axios';
 import axiosInstance from '../../../shared/api/axiosInstance';
-import type { FavoriteT, NewFavoriteT } from '../model/favoriteType';
+import type { DeleteFavoriteT, FavoriteT, NewFavoriteT } from '../model/favoriteType';
 import { favoriteSchema } from '../model/favoriteSchema';
 
 class FavoriteService {
@@ -8,9 +8,9 @@ class FavoriteService {
     this.client = client;
   }
 
-  async getFavorites(): Promise<FavoriteT[]> {
+  async getFavorites(userId: number): Promise<FavoriteT[]> {
     try {
-      const allFavorites = await this.client.get('/favorites');
+      const allFavorites = await this.client.get(`/favorites/${userId.toString()}`);
       return favoriteSchema.array().parse(allFavorites.data);
     } catch (error) {
       console.error('Ошибка загрузки избранных товаров', error);
@@ -28,9 +28,15 @@ class FavoriteService {
     }
   }
 
-  async deleteFavorite(id: FavoriteT['id']): Promise<void> {
+  async deleteFavorite({
+    userId,
+    productId,
+  }: {
+    userId: number;
+    productId: number;
+  }): Promise<DeleteFavoriteT> {
     try {
-      await this.client.delete(`/favorites/${id.toString()}`);
+      return await this.client.delete(`/favorites/${userId.toString()}`, { data: { productId } });
     } catch (error) {
       console.error('Ошибка удаления избранного товара', error);
       throw error;

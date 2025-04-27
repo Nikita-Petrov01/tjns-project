@@ -1,11 +1,18 @@
+import { toast } from 'react-toastify';
 import type { ProductT } from '../../entities/products/model/types';
 import { deleteById } from '../../entities/products/model/productThunk';
-import { useAppDispatch } from '../../shared/lib/hooks';
+import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
-import { BiEdit, BiTrash } from 'react-icons/bi';
-import { deleteFavorite } from '../../entities/favorite/model/favoriteThunks';
-import { useState } from 'react';
+import { BiEdit, BiHeart, BiSolidHeart, BiTrash } from 'react-icons/bi';
+import {
+  createFavorite,
+  deleteFavorite,
+  getFavorites,
+} from '../../entities/favorite/model/favoriteThunks';
+import { useEffect, useState } from 'react';
+import { LikeModal } from '../LikeModal/ui/LikeModal';
+import TrialSearch from '../trialSerach/TrialSearch';
 
 type Props = {
   product: ProductT;
@@ -15,84 +22,121 @@ export default function ProductCard({ product }: Props): React.ReactElement {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [isLiked, setIsLiked] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // const deleteFavoriteHandler = async () => {
-  //   try {
-  //     await dispatch(deleteFavorite(product.id));
-  //   } catch (error) {
-  //     console.error('Ошибка удаления избранного товара', error);
-  //   }
-  // };
+  const user = useAppSelector((state) => state.user.user);
+  const favorites = useAppSelector((state) => state.favorites.favorites);
+  const isLiked = favorites.some(
+    (favorite) => favorite.productId === product.id && favorite.userId === user?.id,
+  );
+  const loading = useAppSelector((state) => state.favorites.loading);
 
+  useEffect(() => {
+    if (user) {
+      void dispatch(getFavorites(user.id));
+    }
+  }, [dispatch, user]);
+
+  const deleteFavoriteHandler = async (e: React.MouseEvent): Promise<void> => {
+    e.stopPropagation();
+    if (!user) {
+      toast.info('Войдите, чтобы добавлять товары в избранное');
+      setShowAuthModal(true);
+      return;
+    }
+    try {
+      if (isLiked) {
+        await dispatch(deleteFavorite({ userId: user.id, productId: product.id })).unwrap();
+        toast.success('Товар удалён из избранного');
+      } else {
+        await dispatch(createFavorite({ userId: user.id, productId: product.id })).unwrap();
+        toast.success('Товар добавлен в избранное');
+      }
+    } catch (error) {
+      console.error('Ошибка удаления избранного товара', error);
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
   return (
-    <Card
-      className="h-100 shadow-sm position-relative"
-      style={{
-        cursor: 'pointer',
-        transition: 'transform 0.2s',
-        minHeight: '400px',
-      }}
-      onClick={() => navigate(`/products/${product.id.toString()}`)}
-    >
-      {/* Кнопки действий */}
-      <div className="position-absolute top-0 end-0 p-2 d-flex gap-2 z-1">
-        <Button variant="outline-primary" size="sm" title="favorite">
-          ❤️
-        </Button>
+    <>
+      <TrialSearch />
+      <Card
+        className="h-100 shadow-sm position-relative"
+        style={{
+          cursor: 'pointer',
+          transition: 'transform 0.2s',
+          minHeight: '400px',
+        }}
+        onClick={() => navigate(`/products/${product.id.toString()}`)}
+      >
+        <div className="position-absolute top-0 end-0 p-2 d-flex gap-2 z-1">
+          <Button
+            variant="outline-primary"
+            size="sm"
+            title="favorite"
+            onClick={deleteFavoriteHandler}
+          >
+            {isLiked ? <BiSolidHeart color="red" size={18} /> : <BiHeart size={18} />}
+          </Button>
 
-        {/* "❤️ Unlike" : "🤍 Like" */}
+          <Button
+            variant="outline-primary"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              void navigate(`/products/edit/${product.id.toString()}`);
+            }}
+            title="Edit"
+          >
+            <BiEdit />
+          </Button>
+          <Button
+            variant="outline-danger"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              void dispatch(deleteById(product.id));
+            }}
+            title="Delete"
+          >
+            <BiTrash />
+          </Button>
+        </div>
 
-        <Button
-          variant="outline-primary"
-          size="sm"
-          onClick={(e) => {
-            e.stopPropagation();
-            void navigate(`/products/edit/${product.id.toString()}`);
-          }}
-          title="Edit"
-        >
-          <BiEdit />
-        </Button>
-        <Button
-          variant="outline-danger"
-          size="sm"
-          onClick={(e) => {
-            e.stopPropagation();
-            void dispatch(deleteById(product.id));
-          }}
-          title="Delete"
-        >
-          <BiTrash />
-        </Button>
-      </div>
+        {/* Изображение товара */}
+        <div style={{ height: '200px', overflow: 'hidden' }}>
+          <Card.Img
+            variant="top"
+            src={product.images[0]}
+            alt={product.name}
+            className="h-100 object-fit-contain p-2"
+          />
+        </div>
 
-      {/* Изображение товара */}
-      <div style={{ height: '200px', overflow: 'hidden' }}>
-        <Card.Img
-          variant="top"
-          src={product.images[0]}
-          alt={product.name}
-          className="h-100 object-fit-contain p-2"
-        />
-      </div>
-
-      {/* Информация о товаре */}
-      <Card.Body className="d-flex flex-column">
-        <Card.Title className="text-truncate">{product.name}</Card.Title>
-        <Card.Text
-          className="flex-grow-1 text-muted"
-          style={{
-            display: '-webkit-box',
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}
-        >
-          {product.description}
-        </Card.Text>
-        <Card.Text className="fw-bold fs-5 mt-auto">{product.price.toLocaleString()} ₽</Card.Text>
-      </Card.Body>
-    </Card>
+        {/* Информация о товаре */}
+        <Card.Body className="d-flex flex-column">
+          <Card.Title className="text-truncate">{product.name}</Card.Title>
+          <Card.Text
+            className="flex-grow-1 text-muted"
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {product.description}
+          </Card.Text>
+          <Card.Text className="fw-bold fs-5 mt-auto">{product.price.toLocaleString()} ₽</Card.Text>
+        </Card.Body>
+      </Card>
+      <LikeModal
+        show={showAuthModal}
+        onHide={() => {
+          setShowAuthModal(false);
+        }}
+      />
+    </>
   );
 }

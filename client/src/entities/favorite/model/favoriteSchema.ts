@@ -6,6 +6,10 @@ export const favoriteSchema = z.object({
   productId: z.number(),
 });
 
+export const deleteFavoriteSchema = z.object({
+  data: favoriteSchema
+});
+
 export const newFavoriteSchema = z.object({
   userId: z.number(),
   productId: z.number(),
