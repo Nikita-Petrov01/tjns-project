@@ -2,6 +2,7 @@ import type { AxiosInstance } from 'axios';
 import axiosInstance from '../../../shared/api/axiosInstance';
 import type { CartItemT, CartT, NewCartItemT, UpdateCartItemT } from '../model/cartTypes';
 import { cartItemSchema, cartSchema, newCartItemSchema, updateCartItemSchema } from '../model/cartSchema';
+import { formatISO } from 'date-fns';
 
 class CartService {
   constructor(private readonly client: AxiosInstance) {}
@@ -41,9 +42,8 @@ class CartService {
 
   async addCartItem(item: NewCartItemT): Promise<CartItemT> {
     try {
-      newCartItemSchema.parse(item); // Валидация входных данных
-      const response = await this.client.post('/cartItem', item);
-      return cartItemSchema.parse(response.data);
+      const respose = await this.client.post('/cartItem', item);
+      return cartItemSchema.parse(respose.data);
     } catch (error) {
       console.error('Ошибка при добавлении элемента в корзину:', error);
       throw error;

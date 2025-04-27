@@ -26,6 +26,16 @@ module.exports = {
         type: Sequelize.INTEGER, 
         allowNull: false,
       },
+      brand: {
+        type: Sequelize.STRING, 
+        allowNull: false,
+        defaultValue: 'unknown',
+      },
+      stock: {
+        type: Sequelize.INTEGER, 
+        allowNull: false,
+        defaultValue: 0,
+      },
       categoryId: {
         type: Sequelize.INTEGER,
         allowNull: false,

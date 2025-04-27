@@ -6,6 +6,8 @@ export const productSchema = z.object({
   description: z.string(),
   images: z.array(z.string()),
   price: z.number(),
+  brand: z.string(),
+  stock: z.number(),
   categoryId: z.number(),
   averageRating: z.number().optional(),
 });
@@ -15,5 +17,7 @@ export const newProductSchema = z.object({
   description: z.string(),
   images: z.array(z.string()),
   price: z.number(),
+  brand: z.string(),
+  stock: z.number(),
   categoryId: z.number(),
 });
