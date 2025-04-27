@@ -10,9 +10,10 @@ export const deleteCart = createAsyncThunk('cart/deleteCart', () => CartService.
 
 export const getCartItems = createAsyncThunk('cart/getCartItems', () => CartService.getCartItems());
 
-export const addCartItem = createAsyncThunk('cart/addCartItem', (item: NewCartItemT) =>
-  CartService.addCartItem(item),
-);
+export const addCartItem = createAsyncThunk('cart/addCartItem', async (item: NewCartItemT) => {
+  const response = await CartService.addCartItem(item);
+  return response;
+});
 
 export const updateCartItem = createAsyncThunk(
   'cart/updateCartItem',
@@ -30,12 +31,16 @@ export const transferGuestCartToServer = createAsyncThunk('cart/transferGuestCar
 
   const items = cartItemArraySchem.parse(JSON.parse(guestCart));
 
+  const now = new Date();
+
   await Promise.all(
     items.map((item) => 
       CartService.addCartItem({
         productId: item.productId,
         quantity: item.quantity,
         price: item.price,
+        addedAt: item.addedAt ?? now.toISOString(),
+        expiresAt: item.expiresAt ?? new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
       })
     )
   );

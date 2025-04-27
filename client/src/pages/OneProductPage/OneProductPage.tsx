@@ -25,15 +25,20 @@ export default function OneProductPage(): React.JSX.Element {
 
   const show = useAppSelector((state) => state.rewiew.stateReview);
 
-  const { addToCart } = useAddToCart();
+  const { addToCart, increment, decrement, getQuantity } = useAddToCart();
+
+  const quantity = getQuantity(product?.id ?? 0);
 
   useEffect(() => {
-    void dispatch(getOneProduct(Number(id)));
-    void dispatch(getReviewsByProductId(Number(id)));
+    if (id) {
+      void dispatch(getOneProduct(Number(id)));
+      void dispatch(getReviewsByProductId(Number(id)));
+    }
     if (user) {
       void dispatch(setStateReview(user.id));
     }
   }, [dispatch, id, user]);
+
 
   useEffect(() => {
     setAllComments(comments);
@@ -45,6 +50,18 @@ export default function OneProductPage(): React.JSX.Element {
     if (!product) return;
     addToCart({ id: product.id, price: product.price });
   };
+
+  const handleIncrement = (): void => {
+    if (product) {
+      increment(product.id);
+    }
+  }
+
+  const handleDecrement = (): void => {
+    if (product) {
+      decrement(product.id);
+    }
+  }
 
   const nextImage = (): void => {
     if (!product) return;
@@ -144,9 +161,21 @@ export default function OneProductPage(): React.JSX.Element {
           </div>
 
           <div className="d-flex gap-2 mb-4">
-            <button className="btn btn-danger py-2 flex-grow-1" onClick={handleAddToCart}>
-              В корзину
-            </button>
+            {quantity === 0 ? (
+              <button className="btn btn-danger py-2 flex-grow-1" onClick={handleAddToCart}>
+                В корзину
+              </button>
+            ) : (
+              <div className="d-flex align-items-center gap-2">
+                <button className="btn btn-outline-danger" onClick={handleDecrement}>
+                  -
+                </button>
+                <span className="fs-4">{quantity}</span>
+                <button className="btn btn-outline-success" onClick={handleIncrement}>
+                  +
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="card mb-4">

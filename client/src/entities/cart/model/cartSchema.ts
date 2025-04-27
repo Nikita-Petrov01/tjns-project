@@ -21,6 +21,8 @@ export const cartItemSchema = z.object({
     productId: z.number(),
     quantity: z.number().min(1, 'Количество не может быть меньше 1'),
     price: z.number().min(0, 'Цена не может быть отрицательной'),
+    addedAt: z.string(),
+    expiresAt: z.string(),
     product: z.object({
         id: z.number(),
         name: z.string(),

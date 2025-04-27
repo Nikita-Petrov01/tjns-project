@@ -16,8 +16,8 @@ class ProductService {
     return products;
   }
 
-  static async createProduct({ name, description, images, price, categoryId }) {
-    if (!name || !description || !images || !price || !categoryId) {
+  static async createProduct({ name, description, images, price, categoryId, brand, stock }) {
+    if (!name || !description || !images || !price || !categoryId || !brand || stock === undefined) {
       throw new Error('Не хватает данных для создания товара');
     }
     const product = await Product.create({
@@ -26,21 +26,23 @@ class ProductService {
       images,
       price,
       categoryId,
+      brand,
+      stock,
     });
     return product;
   }
 
-  static async updateProduct(id, { name, description, images, price, categoryId }) {
+  static async updateProduct(id, { name, description, images, price, categoryId, brand, stock }) {
     const product = await Product.findByPk(id);
     if (!product) {
       throw new Error('Товар не найден');
     }
 
-    if (!name || !description || !images || !price || !categoryId) {
+    if (!name || !description || !images || !price || !categoryId || !brand || stock === undefined) {
       throw new Error('Не хватает данных для обновления товара');
     }
 
-    await product.update({ name, description, images, price, categoryId });
+    await product.update({ name, description, images, price, categoryId, brand, stock });
     return product;
   }
 
