@@ -5,4 +5,6 @@ const verifyAccessToken = require('../middlewares/verifyAccessToken');
 cartRouter.get('/', verifyAccessToken, CartController.getOrCreate);
 cartRouter.delete('/', CartController.delete)
 
+cartRouter.post('/with-items', verifyAccessToken, CartController.createCartWithItems);
+
 module.exports = cartRouter

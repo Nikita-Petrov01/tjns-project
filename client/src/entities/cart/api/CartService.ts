@@ -19,6 +19,16 @@ class CartService {
     }
   }
 
+  async createCartWithItems(items: NewCartItemT[]): Promise<CartT> {
+    try {
+      const response = await this.client.post('/carts/with-items', { items });
+      return cartSchema.parse(response.data);
+    } catch (error) {
+      console.error('Ошибка при создании корзины с элементами:', error);
+      throw error;
+    }
+  }
+
   async deleteCart(): Promise<void> {
     try {
       await this.client.delete('/carts');

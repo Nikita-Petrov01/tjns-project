@@ -52,6 +52,8 @@ module.exports = {
         ],
         price: 64990,
         categoryId: 1,
+        brand: 'Bosch',
+        stock: 5,
       },
       {
         name: 'Холодильник LG DoorCooling+',
@@ -62,6 +64,8 @@ module.exports = {
         ],
         price: 89990,
         categoryId: 1,
+        brand: 'LG',
+        stock: 20,
       },
       {
         name: 'Ноутбук Apple MacBook Pro 14',
@@ -72,6 +76,8 @@ module.exports = {
         ],
         price: 149990,
         categoryId: 2,
+        brand: 'Apple',
+        stock: 20,
       },
       {
         name: 'Ноутбук ASUS ROG Zephyrus G14',
@@ -82,6 +88,8 @@ module.exports = {
         ],
         price: 129990,
         categoryId: 2,
+        brand: 'ASUS',
+        stock: 20,
       },
       {
         name: 'iPhone 15 Pro',
@@ -92,6 +100,8 @@ module.exports = {
         ],
         price: 99990,
         categoryId: 3,
+        brand: 'Apple',
+        stock: 20,
       },
       {
         name: 'Samsung Galaxy S23 Ultra',
@@ -102,6 +112,8 @@ module.exports = {
         ],
         price: 89990,
         categoryId: 3,
+        brand: 'Samsung',
+        stock: 20,
       },
       {
         name: 'Фотоаппарат Sony Alpha A7 IV',
@@ -112,6 +124,8 @@ module.exports = {
         ],
         price: 199990,
         categoryId: 4,
+        brand: 'Sony',
+        stock: 20,
       },
       {
         name: 'Объектив Canon RF 50mm f/1.2',
@@ -122,6 +136,8 @@ module.exports = {
         ],
         price: 89990,
         categoryId: 4,
+        brand: 'Canon',
+        stock: 20,
       },
     ]);
 

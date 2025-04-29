@@ -67,7 +67,7 @@ export default function ProductCard({ product, rating }: Props): React.JSX.Eleme
           transition: 'transform 0.2s',
           minHeight: '400px',
         }}
-        onClick={() => navigate(`/products/${product.id.toString()}`)}
+        onClick={() => navigate(`/products/${product.id}`)}
       >
         {/* Рейтинг */}
         {rating !== undefined && (
@@ -110,7 +110,9 @@ export default function ProductCard({ product, rating }: Props): React.JSX.Eleme
           >
             {product.description}
           </Card.Text>
-          <Card.Text className="fw-bold fs-5 mt-auto">{product.price.toLocaleString()} ₽</Card.Text>
+          <Card.Text className="fw-bold fs-5 mt-auto">
+            {product.price.toLocaleString()} ₽
+          </Card.Text>
         </Card.Body>
       </Card>
 

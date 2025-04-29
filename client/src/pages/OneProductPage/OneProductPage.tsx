@@ -5,11 +5,12 @@ import { deleteById, getOneProduct } from '../../entities/products/model/product
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { BiChevronLeft, BiChevronRight, BiEdit, BiTrash } from 'react-icons/bi';
 import { createReview, getReviewsByProductId } from '../../entities/review/model/reviewThunk';
-import { useAddToCart } from '../../entities/cart/hooks/useAddToCart';
-import { newReviewSchema } from '../../entities/review/model/schema';
+import { newReviewSchema, reviewSchema } from '../../entities/review/model/schema';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import type { ReviewT } from '../../entities/review/model/types';
 import { setStateReview } from '../../entities/review/model/reviewSlice';
+import useGuestCart from '../../entities/cart/hooks/useGuestCart';
+import AddToCartButton from '../../entities/cart/ui/AddToCartButton';
 
 export default function OneProductPage(): React.JSX.Element {
   const { id } = useParams();
@@ -23,12 +24,14 @@ export default function OneProductPage(): React.JSX.Element {
   const product = useAppSelector((state) => state.products.product);
   const comments = useAppSelector((state) => state.rewiew.reviewsByProduct);
   const user = useAppSelector((state) => state.user.user);
+  const { quantity, add, remove } = useGuestCart(
+    product?.id ?? 0,
+    product?.stock ?? 0,
+    product?.price ?? 0,
+  );
 
   const show = useAppSelector((state) => state.rewiew.stateReview);
 
-  const { addToCart, increment, decrement, getQuantity } = useAddToCart();
-
-  const quantity = getQuantity(product?.id ?? 0);
 
   useEffect(() => {
     if (id) {
@@ -45,24 +48,7 @@ export default function OneProductPage(): React.JSX.Element {
   }, [comments]);
 
   const [mainImageIndex, setMainImageIndex] = useState(0);
-
-  const handleAddToCart = (): void => {
-    if (!product) return;
-    addToCart({ id: product.id, price: product.price });
-  };
-
-  const handleIncrement = (): void => {
-    if (product) {
-      increment(product.id);
-    }
-  };
-
-  const handleDecrement = (): void => {
-    if (product) {
-      decrement(product.id);
-    }
-  };
-
+  
   const nextImage = (): void => {
     if (!product) return;
     setMainImageIndex((prev) => (prev + 1) % product.images.length);
@@ -72,8 +58,6 @@ export default function OneProductPage(): React.JSX.Element {
     if (!product) return;
     setMainImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
   };
-
-  // const findUserComennt = comments.find((comment) => comment.userId === user?.id);
 
   const handleComment: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -101,6 +85,8 @@ export default function OneProductPage(): React.JSX.Element {
   const rate =
     comments.map((comment) => comment.rating).reduce((a, b) => a + b, 0) / comments.length;
 
+
+    
   return (
     <div className="container mt-4">
       {user && user.status !== 'user' && product && (
@@ -193,20 +179,13 @@ export default function OneProductPage(): React.JSX.Element {
           </div>
 
           <div className="d-flex gap-2 mb-4">
-            {quantity === 0 ? (
-              <button className="btn btn-danger py-2 flex-grow-1" onClick={handleAddToCart}>
-                В корзину
-              </button>
-            ) : (
-              <div className="d-flex align-items-center gap-2">
-                <button className="btn btn-outline-danger" onClick={handleDecrement}>
-                  -
-                </button>
-                <span className="fs-4">{quantity}</span>
-                <button className="btn btn-outline-success" onClick={handleIncrement}>
-                  +
-                </button>
-              </div>
+            {product && (
+              <AddToCartButton
+                quantity={quantity}
+                stock={product.stock}
+                add={add}
+                remove={remove}
+              />
             )}
           </div>
 
