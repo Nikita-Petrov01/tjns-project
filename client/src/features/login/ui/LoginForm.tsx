@@ -3,7 +3,7 @@ import { Button, Form } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router';
 import { useAppDispatch } from '../../../shared/lib/hooks';
 import { userLoginFormSchema } from '../../../entities/user/model/schema';
-import { loginUser } from '../../../entities/user/model/userThunks';
+import { loginUserThunk } from '../../../entities/user/model/userThunks'; // <<< меняем импорт
 
 function LoginForm(): React.JSX.Element {
   const navigate = useNavigate();
@@ -13,9 +13,10 @@ function LoginForm(): React.JSX.Element {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
     const validatedData = userLoginFormSchema.parse(data);
-    dispatch(loginUser(validatedData))
+
+    dispatch(loginUserThunk(validatedData)) // <<< меняем на loginUserThunk
       .unwrap()
-      .then(void navigate('/'))
+      .then(() => navigate('/'))
       .catch(console.error);
   };
 
@@ -43,7 +44,7 @@ function LoginForm(): React.JSX.Element {
         </Button>
 
         <div className="text-center">
-          <Link to="/signup">Нет аккаунта? Зарегистрируйтесь</Link>
+          <Link to="/signup">Нет аккаунта? Зарегистрируйтесь</Link>
         </div>
       </Form>
     </div>

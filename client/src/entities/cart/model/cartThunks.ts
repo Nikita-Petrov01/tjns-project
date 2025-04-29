@@ -31,21 +31,14 @@ export const transferGuestCartToServer = createAsyncThunk('cart/transferGuestCar
 
   const items = cartItemArraySchem.parse(JSON.parse(guestCart));
 
-  const now = new Date();
+  await CartService.getOrCreateCart();
 
-  await Promise.all(
-    items.map((item) => 
-      CartService.addCartItem({
-        productId: item.productId,
-        quantity: item.quantity,
-        price: item.price,
-        addedAt: item.addedAt ?? now.toISOString(),
-        expiresAt: item.expiresAt ?? new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
-      })
-    )
-  );
+    if (items.length > 0) {
+      // Если корзина только что создана — отправляем все товары одним запросом
+      await CartService.createCartWithItems(items);
+    }
 
-  dispatch(clearCartLocally());
-  void dispatch(getCartItems());
+    dispatch(clearCartLocally());
+    await dispatch(getCartItems());
   }
 );

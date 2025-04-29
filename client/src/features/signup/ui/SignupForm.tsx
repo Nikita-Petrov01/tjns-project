@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useAppDispatch } from '../../../shared/lib/hooks';
 import { userFormSchema } from '../../../entities/user/model/schema';
-import { signupUser } from '../../../entities/user/model/userThunks';
+import { signupUserThunk } from '../../../entities/user/model/userThunks'; // <<< меняем импорт
 import { Link, useNavigate } from 'react-router';
 
 function SignupForm(): React.JSX.Element {
@@ -13,9 +13,10 @@ function SignupForm(): React.JSX.Element {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
     const validatedData = userFormSchema.parse(data);
-    dispatch(signupUser(validatedData))
+
+    dispatch(signupUserThunk(validatedData)) // <<< меняем на signupUserThunk
       .unwrap()
-      .then(void navigate('/'))
+      .then(() => navigate('/'))
       .catch(console.error);
   };
 

@@ -12,7 +12,6 @@ import {
 } from '../../entities/favorite/model/favoriteThunks';
 import { useEffect, useState } from 'react';
 import { LikeModal } from '../LikeModal/ui/LikeModal';
-import TrialSearch from '../trialSerach/TrialSearch';
 
 type Props = {
   product: ProductT;
@@ -32,31 +31,11 @@ export default function ProductCard({ product, rating }: Props): React.ReactElem
   );
   const loading = useAppSelector((state) => state.favorites.loading);
 
-
   useEffect(() => {
     if (user) {
       void dispatch(getFavorites(user.id));
     }
   }, [dispatch, user]);
-
-  return (
-    <Card
-      className="h-100 shadow-sm position-relative"
-      style={{
-        cursor: 'pointer',
-        transition: 'transform 0.2s',
-        minHeight: '400px',
-      }}
-      onClick={() => navigate(`/products/${product.id.toString()}`)}
-    >
-      {rating !== undefined && <span className="text-warning fs-6"> ★</span>}
-      {rating !== undefined && <span>{rating.toFixed(1)}</span>}
-      {/* Кнопки действий */}
-      <div className="position-absolute top-0 end-0 p-2 d-flex gap-2 z-1">
-        <Button variant="outline-primary" size="sm" title="favorite">
-          ❤️
-        </Button>
-
 
   const deleteFavoriteHandler = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
@@ -74,14 +53,16 @@ export default function ProductCard({ product, rating }: Props): React.ReactElem
         toast.success('Товар добавлен в избранное');
       }
     } catch (error) {
-      console.error('Ошибка удаления избранного товара', error);
+      console.error('Ошибка при работе с избранным', error);
     }
   };
 
   if (loading) return <div>Loading...</div>;
+
   return (
     <>
-      <TrialSearch />
+    
+
       <Card
         className="h-100 shadow-sm position-relative"
         style={{
@@ -89,8 +70,16 @@ export default function ProductCard({ product, rating }: Props): React.ReactElem
           transition: 'transform 0.2s',
           minHeight: '400px',
         }}
-        onClick={() => navigate(`/products/${product.id.toString()}`)}
+        onClick={() => navigate(`/products/${product.id}`)}
       >
+        {/* Рейтинг */}
+        {rating !== undefined && (
+          <div className="position-absolute top-0 start-0 p-2 z-1 text-warning">
+            ★ {rating.toFixed(1)}
+          </div>
+        )}
+
+        {/* Кнопки действий */}
         <div className="position-absolute top-0 end-0 p-2 d-flex gap-2 z-1">
           <Button
             variant="outline-primary"
@@ -106,12 +95,13 @@ export default function ProductCard({ product, rating }: Props): React.ReactElem
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              void navigate(`/products/edit/${product.id.toString()}`);
+              navigate(`/products/edit/${product.id}`);
             }}
             title="Edit"
           >
             <BiEdit />
           </Button>
+
           <Button
             variant="outline-danger"
             size="sm"
@@ -149,9 +139,12 @@ export default function ProductCard({ product, rating }: Props): React.ReactElem
           >
             {product.description}
           </Card.Text>
-          <Card.Text className="fw-bold fs-5 mt-auto">{product.price.toLocaleString()} ₽</Card.Text>
+          <Card.Text className="fw-bold fs-5 mt-auto">
+            {product.price.toLocaleString()} ₽
+          </Card.Text>
         </Card.Body>
       </Card>
+
       <LikeModal
         show={showAuthModal}
         onHide={() => {

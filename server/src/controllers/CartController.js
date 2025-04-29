@@ -20,6 +20,23 @@ class CartController {
         res.status(500).send('Ошибка сервера при удалении корзины');
       }
     }
+
+    static async createCartWithItems(req, res) {
+      try {
+        const { items } = req.body;
+        console.log(items, '----------------------------------------------------------');
+
+        if (!Array.isArray(items)) {
+          return res.status(400).json({ error: 'Некорректные данные'});
+        }
+
+        await CartService.createCartWithItems(res.locals.user.id, items);
+        res.status(201).json({ message: 'Корзина с элементами успешно создана' });
+      } catch (error) {
+        console.error('Ошибка при создании корзины с элементами', error);
+        res.status(500).send('Ошибка сервера при создании корзины с элементами');
+      }
+    }
   }
   
   module.exports = CartController;

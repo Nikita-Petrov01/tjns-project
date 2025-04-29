@@ -13,7 +13,8 @@ import LoginPage from '../../pages/Login/LoginPage';
 import Layout from '../../pages/Layout/Layout';
 import OneProductPage from '../../pages/OneProductPage/OneProductPage';
 import FilteredCardList from '../../features/FilteredCardList/FilteredCardList';
-import CartPage from '../../pages/CartPage';
+import CartPage from '../../pages/CartPage/CartPage';
+
 
 function RouterProvider(): React.JSX.Element {
   const dispatch = useAppDispatch();
