@@ -8,4 +8,5 @@ export type UserLoginFormT = z.infer<typeof userLoginFormSchema>;
 export type UserSliceT = {
     user: UserT | null,
     isRefreshLoading: boolean;
+    admin: UserT[]
 }

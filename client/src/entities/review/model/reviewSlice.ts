@@ -23,9 +23,7 @@ export const reviewSlice = createSlice({
     // будет приходить id user, нужно проверить в комментах есть ли его комментарий
     setStateReview: (state, action) => {
       // Проверяем есть ли у пользователя отзыв на текущий товар
-      const hasReview = state.reviewsByProduct.some(
-        (review) => review.userId === action.payload,
-      );
+      const hasReview = state.reviewsByProduct.some((review) => review.userId === action.payload);
       state.stateReview = !hasReview; // true - можно оставить отзыв, false - уже есть отзыв
     },
   },
@@ -77,6 +75,7 @@ export const reviewSlice = createSlice({
     // добавление
     builder.addCase(createReview.fulfilled, (state, action) => {
       state.loading = false;
+      state.stateReview = false;
       state.reviews.push(action.payload);
     });
     builder.addCase(createReview.rejected, (state, action) => {

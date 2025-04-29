@@ -11,4 +11,4 @@ export const debouncedSearch = debounce((dispatch: any, query: string) => {
   if (query) {
     dispatch(searchItems(query));
   }
-}, 300);
+}, 1000);

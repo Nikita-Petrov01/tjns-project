@@ -1,10 +1,9 @@
 import { toast } from 'react-toastify';
 import type { ProductT } from '../../entities/products/model/types';
-import { deleteById } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
-import { BiEdit, BiHeart, BiSolidHeart, BiTrash } from 'react-icons/bi';
+import { BiHeart, BiSolidHeart } from 'react-icons/bi';
 import {
   createFavorite,
   deleteFavorite,
@@ -18,7 +17,7 @@ type Props = {
   rating?: number;
 };
 
-export default function ProductCard({ product, rating }: Props): React.ReactElement {
+export default function ProductCard({ product, rating }: Props): React.JSX.Element {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -61,8 +60,6 @@ export default function ProductCard({ product, rating }: Props): React.ReactElem
 
   return (
     <>
-    
-
       <Card
         className="h-100 shadow-sm position-relative"
         style={{
@@ -78,7 +75,6 @@ export default function ProductCard({ product, rating }: Props): React.ReactElem
             ★ {rating.toFixed(1)}
           </div>
         )}
-
         {/* Кнопки действий */}
         <div className="position-absolute top-0 end-0 p-2 d-flex gap-2 z-1">
           <Button
@@ -89,32 +85,7 @@ export default function ProductCard({ product, rating }: Props): React.ReactElem
           >
             {isLiked ? <BiSolidHeart color="red" size={18} /> : <BiHeart size={18} />}
           </Button>
-
-          <Button
-            variant="outline-primary"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/products/edit/${product.id}`);
-            }}
-            title="Edit"
-          >
-            <BiEdit />
-          </Button>
-
-          <Button
-            variant="outline-danger"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              void dispatch(deleteById(product.id));
-            }}
-            title="Delete"
-          >
-            <BiTrash />
-          </Button>
         </div>
-
         {/* Изображение товара */}
         <div style={{ height: '200px', overflow: 'hidden' }}>
           <Card.Img
@@ -124,7 +95,7 @@ export default function ProductCard({ product, rating }: Props): React.ReactElem
             className="h-100 object-fit-contain p-2"
           />
         </div>
-
+        Никита Петров, [27.04.2025 18:27]
         {/* Информация о товаре */}
         <Card.Body className="d-flex flex-column">
           <Card.Title className="text-truncate">{product.name}</Card.Title>

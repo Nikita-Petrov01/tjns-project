@@ -3,6 +3,12 @@ import type { UserFormT, UserLoginFormT } from './types';
 import userService from '../api/userService';
 import { getCartItems, transferGuestCartToServer } from '../../cart/model/cartThunks';
 
+export const signupAdmin = createAsyncThunk('user/signupAdmin', (data: UserFormT) =>
+  userService.sigupAdmin(data),
+);
+
+export const getAdmin = createAsyncThunk('user/getAdmin', () => userService.getAdmin());
+
 export const signupUser = createAsyncThunk('user/signupUser', (data: UserFormT) =>
   userService.signupUser(data),
 );

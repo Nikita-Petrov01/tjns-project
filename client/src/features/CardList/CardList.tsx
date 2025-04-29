@@ -6,6 +6,7 @@ import { getProducts } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { getReviews } from '../../entities/review/model/reviewThunk';
 import ProductSortButtons from '../ProducSortButton/ProducSortButton';
+import TrialSearch from '../trialSerach/TrialSearch';
 
 type RatingT = {
   sum: number;
@@ -14,12 +15,12 @@ type RatingT = {
 
 export default function CardList(): React.JSX.Element {
   const dispatch = useAppDispatch();
-  
+
   useEffect(() => {
     void dispatch(getProducts());
     void dispatch(getReviews());
   }, [dispatch]);
-  
+
   const navigate = useNavigate();
   const products = useAppSelector((store) => store.products.products);
   const reviews = useAppSelector((store) => store.rewiew.reviews);
@@ -46,9 +47,9 @@ export default function CardList(): React.JSX.Element {
     product.name.toLowerCase().includes(searched.toLowerCase()),
   );
 
-
   return (
     <Container>
+      <TrialSearch />
       <ProductSortButtons />
       <Row xs={1} sm={2} md={3} lg={4} className="g-4">
         {filteredProducts.map((product) => (
