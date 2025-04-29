@@ -27,6 +27,7 @@ export default function UpdatePage(): React.JSX.Element {
       images: imgArray.split(','),
       price: Number(data.price),
       categoryId: Number(data.categoryId),
+      stock: Number(data.stock),
     });
     console.log(product);
     void dispatch(update(validatedData));
@@ -50,6 +51,10 @@ export default function UpdatePage(): React.JSX.Element {
           <input type="number" defaultValue={product?.price} name="price" />
           <div>categoryId</div>
           <input type="text" defaultValue={product?.categoryId} name="categoryId" />
+          <div>brand</div>
+          <input type="text" defaultValue={product?.brand} name="brand" />
+          <div>value</div>
+          <input type="number" defaultValue={product?.stock} name="stock" />
           <button type="submit" onClick={() => navigate('/')}>
             Submit
           </button>
