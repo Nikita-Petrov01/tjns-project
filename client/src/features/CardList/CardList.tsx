@@ -33,6 +33,8 @@ export default function CardList(): React.JSX.Element {
   const searchedProducts = useAppSelector((store) => store.search.results);
   const searchQuery = useAppSelector((store) => store.search.query);
 
+
+
   const averageRatings = reviews.reduce((acc: Record<number, RatingT>, review) => {
     if (!(review.productId in acc)) {
       acc[review.productId] = { sum: 0, count: 0 };
@@ -53,9 +55,9 @@ export default function CardList(): React.JSX.Element {
 
 
   const sortedProducts = React.useMemo(() => {
-    if (sortType === 'none') return filteredProducts;
+    if (sortType === 'none') return productsWithRating;
 
-    return [...filteredProducts].sort((a, b) => {
+    return [...productsWithRating].sort((a, b) => {
       switch (sortType) {
         case 'rating-asc':
           return a.averageRating - b.averageRating;
@@ -69,7 +71,7 @@ export default function CardList(): React.JSX.Element {
           return 0;
       }
     });
-  }, [filteredProducts, sortType]);
+  }, [productsWithRating, sortType]);
 
   const itemsPerPage = 12;
   const pageCount = Math.ceil(sortedProducts.length / itemsPerPage);
