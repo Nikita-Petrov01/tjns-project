@@ -27,7 +27,7 @@ export default function CardList(): React.JSX.Element {
     void dispatch(getReviews());
   }, [dispatch]);
 
-  const navigate = useNavigate();
+  
   const products = useAppSelector((store) => store.products.products);
   const reviews = useAppSelector((store) => store.rewiew.reviews);
   const searchedProducts = useAppSelector((store) => store.search.results);
@@ -45,6 +45,14 @@ export default function CardList(): React.JSX.Element {
   }, {});
 
   const productsWithRating = products.map((product) => ({
+    ...product,
+    averageRating:
+      product.id in averageRatings
+        ? averageRatings[product.id].sum / averageRatings[product.id].count
+        : 0,
+  }));
+
+  const searchRat = searchedProducts.map((product) => ({
     ...product,
     averageRating:
       product.id in averageRatings
@@ -80,7 +88,7 @@ export default function CardList(): React.JSX.Element {
   
   
     // Определяем какие продукты показывать
-  const productsToDisplay = searchQuery.length > 0 ? searchedProducts : currentItems;
+  const productsToDisplay = searchQuery.length > 0 ? searchRat : currentItems;
   
 
   const handlePageClick = (event: { selected: number }) => {
