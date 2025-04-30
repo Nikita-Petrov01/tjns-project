@@ -4,9 +4,11 @@ import { searchProducts } from './searchThunks';
 
 const initialState: SearchSliceT = {
   query: '',
+  categoryName: '',
   results: [],
   loading: false,
   error: null,
+  currentCategory: null,
 };
 
 export const searchSlice = createSlice({
