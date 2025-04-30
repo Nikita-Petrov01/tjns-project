@@ -71,7 +71,7 @@ module.exports = {
         price: 89990,
         categoryId: 1,
         brand: 'LG',
-        stock: 20,
+        stock: 0,
       },
       {
         name: 'Ноутбук Apple MacBook Pro 14',
@@ -95,7 +95,7 @@ module.exports = {
         price: 129990,
         categoryId: 2,
         brand: 'ASUS',
-        stock: 20,
+        stock: 1,
       },
       {
         name: 'iPhone 15 Pro',
@@ -107,7 +107,7 @@ module.exports = {
         price: 99990,
         categoryId: 3,
         brand: 'Apple',
-        stock: 20,
+        stock: 0,
       },
       {
         name: 'Samsung Galaxy S23 Ultra',
@@ -131,7 +131,7 @@ module.exports = {
         price: 199990,
         categoryId: 4,
         brand: 'Sony',
-        stock: 20,
+        stock: 1,
       },
       {
         name: 'Объектив Canon RF 50mm f/1.2',
@@ -143,7 +143,7 @@ module.exports = {
         price: 89990,
         categoryId: 4,
         brand: 'Canon',
-        stock: 20,
+        stock: 1,
       },
       {
         name: 'Телевизор Samsung Neo QLED',

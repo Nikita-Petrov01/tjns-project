@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { UserSliceT } from './types';
 import { getAdmin, loginUser, logoutUser, refreshUser, signupAdmin, signupUser } from './userThunks';
-
+import { v4 as uuidv4 } from 'uuid';
 const initialState: UserSliceT = {
   user: null,
   isRefreshLoading: false,
   admin: [],
+  guestId: null,
 };
 
 export const userSlice = createSlice({
@@ -15,6 +16,14 @@ export const userSlice = createSlice({
       setAdmin: (state, action) => {
       state.admin.push(action.payload);
     },
+    initGuestId: (state) => {
+      let id = localStorage.getItem('guestId');
+      if (!id) {
+        id = uuidv4();
+        localStorage.setItem('guestId', id);
+      }
+      state.guestId = id;
+    }
     },
     extraReducers(builder) {
       builder.addCase(signupAdmin.fulfilled, (_, action) => {
@@ -69,6 +78,6 @@ export const userSlice = createSlice({
     }
 })
 
-export const { setAdmin } = userSlice.actions;
+export const { initGuestId, setAdmin } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -4,10 +4,10 @@ class CartItemService {
   static async getItems(userId) {
     const cart = await Cart.findOne({ where: { userId } });
     if (!cart) return [];
-    
+
     const cartItem = await CartItem.findAll({
       where: { cartId: cart.id },
-      include: [{model: Product}],
+      include: [{ model: Product }],
     });
 
     const result = cartItem.map((item) => {
@@ -16,9 +16,9 @@ class CartItemService {
       return {
         ...plain,
         product: plain.Product,
-      }
-    })
-    
+      };
+    });
+
     return result;
   }
 
@@ -36,11 +36,11 @@ class CartItemService {
     if (cartItem) {
       if (product.stock < cartItem.quantity + quantity) {
         throw new Error('Нельзя добавить больше товара, чем есть на складе');
-      } 
+      }
       await cartItem.update({
-      quantity: cartItem.quantity + quantity,
-      expiresAt: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-    })
+        quantity: cartItem.quantity + quantity,
+        expiresAt: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+      });
     } else {
       cartItem = await CartItem.create({
         cartId: cart.id,
@@ -78,16 +78,24 @@ class CartItemService {
         errors.push({
           productId: cartItem.productId,
           message: 'Товар не найден',
-        })
+        });
         continue;
       }
 
-      updatedItems.push({
-        productId: product.id,
-        availableStock: product.stock,
-      });
+      // update user cartItem!
+      const actualQuantity = Math.min(cartItem.quantity, product.stock);
+
+    if (cartItem.quantity > product.stock) {
+      // Обновляем корзину, если количество превышает остаток
+      await CartItemService.updateItem(cartItem.id, actualQuantity);
     }
-    return {errors, updatedItems};
+
+    updatedItems.push({
+      productId: product.id,
+      availableStock: actualQuantity,
+    });
+    }
+    return { errors, updatedItems };
   }
 }
 
