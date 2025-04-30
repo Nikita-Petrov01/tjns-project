@@ -13,6 +13,7 @@ export default function CardList(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const [currentPage, setCurrentPage] = useState(0);
 
+
   const products = useAppSelector((store) => store.products.products);
   const reviews = useAppSelector((store) => store.rewiew.reviews);
   const searchedProducts = useAppSelector((store) => store.search.results);
@@ -23,14 +24,18 @@ export default function CardList(): React.JSX.Element {
     void dispatch(getReviews());
   }, [dispatch]);
 
+
   const { sortedProducts, sortType, setSortType } = useSortedProducts(products, reviews);
+
 
   const itemsPerPage = 12;
   const pageCount = Math.ceil(sortedProducts.length / itemsPerPage);
   const offset = currentPage * itemsPerPage;
   const currentItems = sortedProducts.slice(offset, offset + itemsPerPage);
 
+
   const productsToDisplay = searchQuery.length > 0 ? searchedProducts : currentItems;
+
 
   const handlePageClick = (event: { selected: number }) => {
     setCurrentPage(event.selected);
