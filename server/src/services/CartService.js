@@ -1,12 +1,12 @@
-const { Cart, CartItem, Product, sequelize } = require('../../db/models');
+const { Cart, CartItem, Product } = require('../../db/models');
 
 class CartService {
   static async getOrCreateCart(userId) {
-    let cart = await Cart.findOne({ where: { userId } });
-    if (!cart) {
-      cart = await Cart.create({ userId });
-    }
-    return cart;
+  let cart = await Cart.findOne({ where: { userId } });
+  if (!cart) {
+    cart = await Cart.create({ userId });
+  }
+  return cart;
   }
 
   static async createCartWithItems(userId, items) {
@@ -30,9 +30,6 @@ class CartService {
         addedAt: now,
         expiresAt,
       });
-
-      // eslint-disable-next-line no-await-in-loop
-      await product.update({ stock: product.stock - item.quantity });
     }
     return { message: 'Корзина создана с товарами' };
   }

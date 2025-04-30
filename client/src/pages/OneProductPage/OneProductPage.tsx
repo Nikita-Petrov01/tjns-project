@@ -6,30 +6,33 @@ import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { BiChevronLeft, BiChevronRight, BiEdit, BiTrash } from 'react-icons/bi';
 import { createReview, getReviewsByProductId } from '../../entities/review/model/reviewThunk';
 import { newReviewSchema } from '../../entities/review/model/schema';
-
 import type { ReviewT } from '../../entities/review/model/types';
 import { setStateReview } from '../../entities/review/model/reviewSlice';
 import useGuestCart from '../../entities/cart/hooks/useGuestCart';
 import AddToCartButton from '../../entities/cart/ui/AddToCartButton';
+import { addCartItem, updateCartItem } from '../../entities/cart/model/cartThunks';
 
 export default function OneProductPage(): React.JSX.Element {
   const { id } = useParams();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const prodByCat = useAppSelector((state) => state.products.productsByCategory);
 
   const [selected, setSelected] = useState<number | null>(null);
   const [allComments, setAllComments] = useState<ReviewT[]>([]);
   const [value, setValue] = useState<string>('');
+  const [mainImageIndex, setMainImageIndex] = useState(0);
 
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const product = useAppSelector((state) => state.products.product);
   const comments = useAppSelector((state) => state.rewiew.reviewsByProduct);
   const user = useAppSelector((state) => state.user.user);
-  const { quantity, add, remove } = useGuestCart(
+  const items = useAppSelector((state) => state.cart.items);
+
+  const guestCart = useGuestCart(
     product?.id ?? 0,
     product?.stock ?? 0,
-    product?.price ?? 0,
+    product?.price ?? 0
   );
 
   const show = useAppSelector((state) => state.rewiew.stateReview);
@@ -50,8 +53,6 @@ export default function OneProductPage(): React.JSX.Element {
   }, [comments, dispatch, product?.categoryId]);
 
   const recommended = prodByCat?.filter((item) => item.id !== product?.id).slice(0, 2);
-  const [mainImageIndex, setMainImageIndex] = useState(0);
-
   const nextImage = (): void => {
     if (!product) return;
     setMainImageIndex((prev) => (prev + 1) % product.images.length);
@@ -87,6 +88,56 @@ export default function OneProductPage(): React.JSX.Element {
 
   const rate =
     comments.map((comment) => comment.rating).reduce((a, b) => a + b, 0) / comments.length;
+  
+    const quantity = user
+    ? items.find((i) => i.productId === product?.id)?.quantity ?? 0
+    : guestCart.quantity;
+
+    const add = (): void => {
+      if (!product) return;
+  
+      if (quantity >= product.stock) {
+        // Больше на складе нет — ничего не делаем
+        return;
+      }
+  
+      if (user) {
+        const existingItem = items.find((i) => i.productId === product.id);
+        if (existingItem) {
+          void dispatch(updateCartItem({
+            itemId: existingItem.id,
+            updateData: { quantity: existingItem.quantity + 1 }
+          }));
+        } else {
+          void dispatch(addCartItem({
+            productId: product.id,
+            quantity: 1,
+            price: product.price,
+          }));
+        }
+      } else {
+        guestCart.add();
+      }
+    };
+
+    
+    const remove = (): void => {
+      if (!product) return;
+  
+      if (user) {
+        const existingItem = items.find((i) => i.productId === product.id);
+        if (existingItem && existingItem.quantity > 1) {
+          void dispatch(updateCartItem({
+            itemId: existingItem.id,
+            updateData: { quantity: existingItem.quantity - 1 }
+          }));
+        }
+        // Если quantity === 1 — кнопку "-" можно скрыть или дизейблить
+      } else {
+        guestCart.remove();
+      }
+    };
+    
 
   return (
     <div className="container mx-auto mt-4 px-4">
@@ -96,7 +147,7 @@ export default function OneProductPage(): React.JSX.Element {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/products/edit/${product.id}`);
+              void navigate(`/products/edit/${product.id.toString()}`);
             }}
             className="p-2 border border-blue-500 text-blue-500 rounded hover:bg-blue-50 transition-colors"
             title="Редактировать"

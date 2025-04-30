@@ -8,9 +8,7 @@ async function syncCartWithServer(items: CartItemT[], dispatch: AppDispatch): Pr
   try {
     const productIds = items.map((item) => item.productId);
 
-    const response = await api.get<
-      { id: number; stock: number; name: string; price: number; images: string[] }[]
-    >(`/products`, {
+    const response = await api.get<{ id: number; stock: number; name: string; price: number; images: string[] }[]>(`/products`, {
       params: { ids: productIds },
     });
 

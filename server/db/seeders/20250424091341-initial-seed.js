@@ -59,7 +59,7 @@ module.exports = {
         price: 64990,
         categoryId: 1,
         brand: 'Bosch',
-        stock: 5,
+        stock: 0,
       },
       {
         name: 'Холодильник LG DoorCooling+',
@@ -83,7 +83,7 @@ module.exports = {
         price: 149990,
         categoryId: 2,
         brand: 'Apple',
-        stock: 20,
+        stock: 1,
       },
       {
         name: 'Ноутбук ASUS ROG Zephyrus G14',

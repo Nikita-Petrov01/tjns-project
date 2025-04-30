@@ -1,8 +1,10 @@
 import React from 'react';
 import { useAppDispatch } from '../../../shared/lib/hooks';
 import { userFormSchema } from '../../../entities/user/model/schema';
-import { signupUserThunk } from '../../../entities/user/model/userThunks';
 import { Link, useNavigate } from 'react-router';
+import { signupUser } from '../../../entities/user/model/userThunks';
+import { transferGuestCartToServer } from '../../../entities/cart/model/cartThunks';
+import { clearCartLocally } from '../../../entities/cart/model/cartSlice';
 
 export default function SignupForm(): React.JSX.Element {
   const navigate = useNavigate();
@@ -12,11 +14,15 @@ export default function SignupForm(): React.JSX.Element {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
     const validatedData = userFormSchema.parse(data);
-
-    dispatch(signupUserThunk(validatedData))
-      .unwrap()
-      .then(() => navigate('/'))
-      .catch(console.error);
+    try {
+      void dispatch(signupUser(validatedData))
+        .then(() => dispatch(transferGuestCartToServer()).unwrap())
+        .then(() => navigate('/'))
+        .then(() => dispatch(clearCartLocally()))
+        .catch(console.error);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
