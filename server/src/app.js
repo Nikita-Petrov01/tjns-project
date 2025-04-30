@@ -12,8 +12,13 @@ const addressRouter = require('./routes/addressRouter');
 const favoriteRouter = require('./routes/favoriteRouter');
 const cartRouter = require('./routes/cartRouter');
 const cartItemRouter = require('./routes/cartItemRouter');
+const chatRouter = require('./routes/chatRouter');
+const messageRouter = require('./routes/messageRouter');
+
+
 const searchRouter = require('./routes/searchRouter');
 const path = require('path');
+
 const app = express();
 
 app.use('/uploads', express.static('uploads'));
@@ -45,5 +50,9 @@ app.use('/api/carts', cartRouter);
 app.use('/api/cartItem', cartItemRouter);
 
 app.use('/api/search', searchRouter);
+
+app.use('/api/chats', chatRouter);
+
+app.use('/api/messages', messageRouter);
 
 module.exports = app;

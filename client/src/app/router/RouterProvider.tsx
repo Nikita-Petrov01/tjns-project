@@ -16,13 +16,19 @@ import FilteredCardList from '../../features/FilteredCardList/FilteredCardList';
 import CartPage from '../../pages/CartPage/CartPage';
 import SuperAdminPage from '../../pages/SuperAdminPage/SuperAdminPage';
 import ProtectedRoute from '../../shared/ui/ProtectedRoute';
+
+import ChatWidget from '../../features/Chat/ChatWidget';
+import { initGuestId } from '../../entities/user/model/userSlice';
+
 import FavoritePage from '../../pages/FavoritePage/FavoritePage';
+
 
 function RouterProvider(): React.JSX.Element {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     void dispatch(refreshUser());
+    void dispatch(initGuestId());
   }, [dispatch]);
 
   return (
@@ -34,7 +40,11 @@ function RouterProvider(): React.JSX.Element {
         <Route path="/products/:id" element={<OneProductPage />} />
         <Route path="categories/:id" element={<FilteredCardList />} />
         <Route path="/cart" element={<CartPage />} />
+
+        <Route path="/chat" element={<ChatWidget />} />
+
         <Route path="/favorites" element={<FavoritePage />} />
+
 
         <Route element={<ProtectedRoute />}>
           <Route path="/products/create" element={<CreatePage />} />
@@ -43,6 +53,7 @@ function RouterProvider(): React.JSX.Element {
           <Route path="/categories/create" element={<CategoryCreate />} />
           <Route path="/categories/:id/edit" element={<CategoryUpdate />} />
           <Route path="/products/edit/:id" element={<UpdatePage />} />
+          
         </Route>
 
         <Route path="*" element={<MainPage />} />

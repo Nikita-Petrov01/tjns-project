@@ -14,16 +14,17 @@ import {
   getCartItems,
   updateCartItem,
 } from '../../entities/cart/model/cartThunks';
-import { toast } from 'react-toastify';
 import syncCartWithServer from '../../entities/cart/api/syncCartWithServer';
+import { store } from '../../app/store';
+import { toast } from 'react-toastify';
+import type { CartItemT } from '../../entities/cart/model/cartTypes';
+import { z } from 'zod';
+import { zip } from 'lodash';
 
 export default function CartPage(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const items = useAppSelector((state) => state.cart.items);
-  const cart = useAppSelector((state) => state.cart);
   const isRefreshLoading = useAppSelector((state) => state.user.isRefreshLoading);
-  console.log(cart, '???????????????????????????????????');
-  console.log(items, '---------------------------------');
   const user = useAppSelector((state) => state.user.user);
 
   useEffect(() => {
@@ -32,9 +33,93 @@ export default function CartPage(): React.JSX.Element {
       void dispatch(getCart())
         .unwrap()
         .then(() => dispatch(getCartItems()))
+        .then(() => {
+          const currentItems = store.getState().cart.items;
+
+          const cartItemsToCheck = currentItems.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          }));
+
+          return dispatch(checkCartItems(cartItemsToCheck))
+            .unwrap()
+            .then((result) => {
+              const changedItems = result.updatedItems.filter((serverItem) => {
+                const localItem = currentItems.find((i) => i.productId === serverItem.productId);
+                console.log('inside filter', localItem, serverItem.availableStock);
+                return localItem && localItem.quantity > serverItem.availableStock;
+              });
+
+              if (changedItems.length > 0) {
+                toast.info('Некоторые товары были изменены. Корзина обновлена.');
+                const updatedItems = currentItems.map((item) => {
+                  const serverItem = result.updatedItems.find(
+                    (s) => s.productId === item.productId,
+                  );
+                  if (!serverItem) return item;
+
+                  return {
+                    ...item,
+                    quantity: Math.min(item.quantity, serverItem.availableStock),
+                    product: item.product
+                      ? { ...item.product, stock: serverItem.availableStock }
+                      : undefined,
+                  };
+                });
+                dispatch(setCartItems(updatedItems));
+              }
+            });
+        })
         .catch(console.error);
     } else {
       dispatch(loadFromLocalStorage());
+
+      const localCartRaw = localStorage.getItem('guestCart');
+      if (!localCartRaw) return;
+
+      const localCartItems = JSON.parse(localCartRaw) as CartItemT[];
+
+      const cartItemsToCheck = localCartItems.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      }));
+
+      void dispatch(checkCartItems(cartItemsToCheck))
+        .unwrap()
+        .then((result) => {
+          const changedItems = result.updatedItems.filter((serverItem) => {
+            const localItem = localCartItems.find((i) => i.productId === serverItem.productId);
+            return localItem && localItem.quantity > serverItem.availableStock;
+          });
+
+          if (changedItems.length > 0) {
+            toast.info('Некоторые товары были изменены. Корзина обновлена.');
+
+            const updatedItems = localCartItems.map((item) => {
+              const serverItem = result.updatedItems.find((s) => s.productId === item.productId);
+              if (!serverItem) return item;
+
+              return {
+                ...item,
+                quantity: Math.min(item.quantity, serverItem.availableStock),
+                product: item.product
+                  ? {
+                      id: item.product.id,
+                      name: item.product.name,
+                      description: item.product.description,
+                      images: item.product.images,
+                      price: item.product.price, // ⬅ обязательно!
+                      categoryId: item.product.categoryId,
+                      stock: serverItem.availableStock,
+                    }
+                  : undefined,
+              };
+            });
+            localStorage.setItem('guestCart', JSON.stringify(updatedItems));
+            dispatch(setCartItems(updatedItems));
+          }
+        })
+        .catch(console.error);
     }
   }, [dispatch, user, isRefreshLoading]);
 
@@ -43,49 +128,6 @@ export default function CartPage(): React.JSX.Element {
       void syncCartWithServer(items, dispatch);
     }
   }, []);
-
-  const handleCheckout = async (): Promise<void> => {
-    console.log('🛒 handleCheckout вызван');
-    try {
-      const cartItemsToCheck = items.map((item) => ({
-        productId: item.productId,
-        quantity: item.quantity,
-      }));
-      console.log('🛒 Отправляем на проверку:', cartItemsToCheck);
-
-      const result = await dispatch(checkCartItems(cartItemsToCheck)).unwrap();
-      console.log('🛒 Ответ сервера:', result);
-
-      const changedItems = result.updatedItems.filter((serverItem) => {
-        const localItem = items.find((i) => i.productId === serverItem.productId);
-        return localItem && localItem.quantity > serverItem.availableStock;
-      });
-
-      if (changedItems.length > 0) {
-        toast.info('Количество некоторых товаров изменилось! Корзина обновлена.');
-
-        const updatedItems = items.map((item) => {
-          const serverItem = result.updatedItems.find((si) => si.productId === item.productId);
-          if (!serverItem) return item;
-
-          return {
-            ...item,
-            quantity: Math.min(item.quantity, serverItem.availableStock),
-            product: item.product
-              ? {
-                  ...item.product,
-                  stock: serverItem.availableStock,
-                }
-              : undefined,
-          };
-        });
-        dispatch(setCartItems(updatedItems));
-      }
-    } catch (error) {
-      console.error('Ошибка при проверке корзины', error);
-      toast.error('Ошибка проверки корзины. Попробуйте позже.');
-    }
-  };
 
   const handleAdd = (productId: number): void => {
     const item = items.find((i) => i.productId === productId);
@@ -185,8 +227,23 @@ export default function CartPage(): React.JSX.Element {
 
       {items.length > 0 && (
         <div className="mt-4 text-end">
+          <button
+            style={{
+              position: 'absolute',
+              top: '50%',
+              right: '50%',
+              zIndex: '9999',
+              width: '50px',
+              height: '50px',
+            }}
+            onClick={() =>
+              void dispatch(updateCartItem({ itemId: items[0].id, updateData: { quantity: 100 } }))
+            }
+          >
+            ADD
+          </button>
           <h4>Итого: {total.toLocaleString()} ₽</h4>
-          <button className="btn btn-success mt-2" onClick={handleCheckout}>Оформить заказ</button>
+          <button className="btn btn-success mt-2">Офить заказ</button>
         </div>
       )}
     </div>
