@@ -1,3 +1,4 @@
+const e = require('express');
 const CartItemService = require('../services/CartItemService');
 
 class CartItemController {
@@ -45,6 +46,39 @@ class CartItemController {
       res.status(204).send();
     } catch (e) {
       res.status(400).json({ error: e.message });
+    }
+  }
+
+  static async validate(req, res) {
+    try {
+      console.log('Входные данные req.body:', req.body);
+    console.log('User ID:', res.locals.user?.id);
+
+    const { cartItems } = req.body;
+
+    // Проверяем, что cartItems — массив
+    if (!Array.isArray(cartItems)) {
+      console.log('Ошибка: cartItems не является массивом:', cartItems);
+      return res.status(400).json({ error: 'Некорректные данные' });
+    }
+
+    // Логируем cartItems перед вызовом сервиса
+    console.log('CartItems для валидации:', cartItems);
+
+    // Проверяем, что userId существует
+    if (!res.locals.user?.id) {
+      console.log('Ошибка: userId отсутствует в res.locals.user');
+      return res.status(401).json({ error: 'Пользователь не авторизован' });
+    }
+
+    // Вызываем сервис валидации
+    const result = await CartItemService.validateCartItems(res.locals.user.id, cartItems);
+    console.log('Результат валидации:', result);
+
+    res.json(result);
+    } catch (error) {
+      console.error('Ошибка при проверке корзины', error);
+      res.status(500).send('Ошибка сервера при проверке корзины');
     }
   }
 }

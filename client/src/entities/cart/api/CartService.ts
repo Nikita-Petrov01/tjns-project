@@ -1,8 +1,8 @@
 import type { AxiosInstance } from 'axios';
 import axiosInstance from '../../../shared/api/axiosInstance';
-import type { CartItemT, CartT, NewCartItemT, UpdateCartItemT } from '../model/cartTypes';
-import { cartItemSchema, cartSchema, newCartItemSchema, updateCartItemSchema } from '../model/cartSchema';
-import { formatISO } from 'date-fns';
+import type { CartItemCheckT, CartItemT, CartItemValidationResponseT, CartT, NewCartItemT, UpdateCartItemT } from '../model/cartTypes';
+import { cartItemSchema, cartSchema, updateCartItemSchema } from '../model/cartSchema';
+import type { GuestCartItemT } from '../model/guestCartTypes';
 
 class CartService {
   constructor(private readonly client: AxiosInstance) {}
@@ -19,10 +19,9 @@ class CartService {
     }
   }
 
-  async createCartWithItems(items: NewCartItemT[]): Promise<CartT> {
+  async createCartWithItems(items: GuestCartItemT[]): Promise<void> {
     try {
-      const response = await this.client.post('/carts/with-items', { items });
-      return cartSchema.parse(response.data);
+      await this.client.post('/carts/with-items', { items });
     } catch (error) {
       console.error('Ошибка при создании корзины с элементами:', error);
       throw error;
@@ -74,13 +73,22 @@ class CartService {
   async deleteCartItem(itemId: number): Promise<number> {
     try {
       await this.client.delete(`/cartItem/${itemId.toString()}`);
-      return itemId
+      return itemId;
     } catch (error) {
       console.error('Ошибка при удалении элемента корзины:', error);
       throw error;
     }
   }
 
+  async checkCartItems(cartItems: CartItemCheckT[]): Promise<CartItemValidationResponseT> {
+    try {
+      const response = await this.client.post('/cartItem/validate', { cartItems });
+      return response.data;
+    } catch (error) {
+      console.error('Ошибка при проверке элементов корзины:', error);
+      throw error;
+    }
+  }
 }
 
 export default new CartService(axiosInstance);

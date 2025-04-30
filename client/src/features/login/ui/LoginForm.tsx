@@ -3,7 +3,8 @@ import { Button, Form } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router';
 import { useAppDispatch } from '../../../shared/lib/hooks';
 import { userLoginFormSchema } from '../../../entities/user/model/schema';
-import { loginUserThunk } from '../../../entities/user/model/userThunks'; // <<< меняем импорт
+import { loginUser } from '../../../entities/user/model/userThunks';
+import { transferGuestCartToServer } from '../../../entities/cart/model/cartThunks';
 
 function LoginForm(): React.JSX.Element {
   const navigate = useNavigate();
@@ -14,10 +15,14 @@ function LoginForm(): React.JSX.Element {
     const data = Object.fromEntries(new FormData(e.currentTarget));
     const validatedData = userLoginFormSchema.parse(data);
 
-    dispatch(loginUserThunk(validatedData)) // <<< меняем на loginUserThunk
-      .unwrap()
+    try {
+      void dispatch(loginUser(validatedData))
+      dispatch(transferGuestCartToServer()).unwrap()
       .then(() => navigate('/'))
       .catch(console.error);
+    } catch (error) {
+      console.error(error)
+    }
   };
 
   return (

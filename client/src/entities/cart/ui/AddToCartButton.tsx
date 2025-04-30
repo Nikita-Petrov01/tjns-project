@@ -8,43 +8,40 @@ type AddToCartButtonProps = {
 }
 
 function AddToCartButton({ quantity, stock, add, remove }: AddToCartButtonProps): React.JSX.Element {
-    const isUserFilledStock = quantity >= stock; // ⚡ Пользователь уже набрал максимум товаров
+  const isOutOfStock = stock === 0;
+  const isMaxReached = quantity >= stock;
 
-  if (stock === 0) {
-    return (
-      <div className="btn btn-secondary py-2 flex-grow-1 disabled">
-        Товар закончился
-      </div>
-    );
-  }
-
-  if (isUserFilledStock) {
-    return (
-      <div className="btn btn-secondary py-2 flex-grow-1 disabled">
-        Товар закончился
-      </div>
-    );
-  }
-
-  if (quantity === 0) {
-    return (
-      <button className="btn btn-danger py-2 flex-grow-1" onClick={add}>
-        В корзину
-      </button>
-    );
+  if (isOutOfStock) {
+    return <span className="text-danger">Нет в наличии</span>;
   }
 
   return (
-    <div className="d-flex align-items-center gap-2">
-      <button className="btn btn-outline-danger" onClick={remove}>
-        -
+    <div className="d-flex align-items-center gap-2 flex-wrap">
+      {quantity > 0 && (
+        <>
+          <button className="btn btn-outline-danger" onClick={remove} disabled={quantity <= 0}>
+            -
+          </button>
+          <span>{quantity}</span>
+        </>
+      )}
+      <button
+        className="btn btn-outline-success"
+        onClick={add}
+        disabled={isMaxReached}
+      >
+        {quantity > 0 ? '+' : 'В корзину'}
       </button>
-      <span className="fs-4">{quantity}</span>
-      <button className="btn btn-outline-success" onClick={add}>
-        +
-      </button>
+
+      {/* Добавляем надпись, если больше добавить нельзя */}
+      {isMaxReached && (
+        <span className="text-danger small">
+          Максимальное количество товара
+        </span>
+      )}
     </div>
   );
+
   }
 
 export default AddToCartButton

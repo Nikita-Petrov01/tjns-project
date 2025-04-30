@@ -5,28 +5,32 @@ import { getOneProduct } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 import { createReview, getReviewsByProductId } from '../../entities/review/model/reviewThunk';
-import { newReviewSchema, reviewSchema } from '../../entities/review/model/schema';
+import { newReviewSchema } from '../../entities/review/model/schema';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import type { ReviewT } from '../../entities/review/model/types';
 import { setStateReview } from '../../entities/review/model/reviewSlice';
 import useGuestCart from '../../entities/cart/hooks/useGuestCart';
 import AddToCartButton from '../../entities/cart/ui/AddToCartButton';
+import { addCartItem, updateCartItem } from '../../entities/cart/model/cartThunks';
 
 export default function OneProductPage(): React.JSX.Element {
   const { id } = useParams();
+  const dispatch = useAppDispatch();
 
   const [selected, setSelected] = useState<number | null>(null);
   const [allComments, setAllComments] = useState<ReviewT[]>([]);
   const [value, setValue] = useState<string>('');
+  const [mainImageIndex, setMainImageIndex] = useState(0);
 
-  const dispatch = useAppDispatch();
   const product = useAppSelector((state) => state.products.product);
   const comments = useAppSelector((state) => state.rewiew.reviewsByProduct);
   const user = useAppSelector((state) => state.user.user);
-  const { quantity, add, remove } = useGuestCart(
+  const items = useAppSelector((state) => state.cart.items);
+
+  const guestCart = useGuestCart(
     product?.id ?? 0,
     product?.stock ?? 0,
-    product?.price ?? 0,
+    product?.price ?? 0
   );
 
   const show = useAppSelector((state) => state.rewiew.stateReview);
@@ -46,7 +50,7 @@ export default function OneProductPage(): React.JSX.Element {
     setAllComments(comments);
   }, [comments]);
 
-  const [mainImageIndex, setMainImageIndex] = useState(0);
+  
 
   const nextImage = (): void => {
     if (!product) return;
@@ -85,7 +89,54 @@ export default function OneProductPage(): React.JSX.Element {
   const rate =
     comments.map((comment) => comment.rating).reduce((a, b) => a + b, 0) / comments.length;
 
+    const quantity = user
+    ? items.find((i) => i.productId === product?.id)?.quantity ?? 0
+    : guestCart.quantity;
 
+    const add = (): void => {
+      if (!product) return;
+  
+      if (quantity >= product.stock) {
+        // Больше на складе нет — ничего не делаем
+        return;
+      }
+  
+      if (user) {
+        const existingItem = items.find((i) => i.productId === product.id);
+        if (existingItem) {
+          void dispatch(updateCartItem({
+            itemId: existingItem.id,
+            updateData: { quantity: existingItem.quantity + 1 }
+          }));
+        } else {
+          void dispatch(addCartItem({
+            productId: product.id,
+            quantity: 1,
+            price: product.price,
+          }));
+        }
+      } else {
+        guestCart.add();
+      }
+    };
+
+    
+    const remove = (): void => {
+      if (!product) return;
+  
+      if (user) {
+        const existingItem = items.find((i) => i.productId === product.id);
+        if (existingItem && existingItem.quantity > 1) {
+          void dispatch(updateCartItem({
+            itemId: existingItem.id,
+            updateData: { quantity: existingItem.quantity - 1 }
+          }));
+        }
+        // Если quantity === 1 — кнопку "-" можно скрыть или дизейблить
+      } else {
+        guestCart.remove();
+      }
+    };
     
   return (
     <div className="container mt-4">
@@ -124,11 +175,7 @@ export default function OneProductPage(): React.JSX.Element {
                 style={{ width: '80px', height: '80px', cursor: 'pointer' }}
                 onClick={() => setMainImageIndex(index)}
               >
-                <img
-                  src={img}
-                  className="w-100 h-100 object-fit-contain"
-                  alt={`${product.name} preview ${index}`}
-                />
+                <img src={img} className="w-100 h-100 object-fit-contain" alt={`${product?.name} preview ${index}`} />
               </div>
             ))}
           </div>
@@ -136,15 +183,11 @@ export default function OneProductPage(): React.JSX.Element {
 
         {/* Информация о товаре */}
         <div className="col-md-6">
-          {rate > 0 ? (
-            <span className="text-warning fs-3"> ★{rate.toFixed(1)}</span>
-          ) : (
-            <span className="text-muted fs-3"> ★ 0</span>
-          )}
-          <h1 className="mb-3">{product?.name} </h1>
+          <span className="fs-3">{rate > 0 ? `★ ${rate.toFixed(1)}` : '★ 0'}</span>
+          <h1 className="mb-3">{product?.name}</h1>
 
           <div className="mb-4">
-            <h2 className="text-danger">{product?.price.toFixed(2)} ₽</h2>
+            <h2 className="text-danger">{product?.price.toLocaleString()} ₽</h2>
           </div>
 
           <div className="d-flex gap-2 mb-4">
@@ -169,6 +212,7 @@ export default function OneProductPage(): React.JSX.Element {
         </div>
       </div>
 
+      {/* Отзывы */}
       <div className="mt-5">
         <h3 className="mb-4">Отзывы о товаре</h3>
 
@@ -200,7 +244,7 @@ export default function OneProductPage(): React.JSX.Element {
           </>
         )}
 
-        {allComments.length ? (
+        {allComments.length > 0 ? (
           <div className="row g-3">
             {allComments.map((comment) => (
               <div key={comment.id} className="col-12">

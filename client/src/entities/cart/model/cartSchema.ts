@@ -19,7 +19,7 @@ export const cartItemSchema = z.object({
     id: z.number(),
     cartId: z.number(),
     productId: z.number(),
-    quantity: z.number().min(1, 'Количество не может быть меньше 1'),
+    quantity: z.number().min(0, 'Количество не может быть меньше 0'),
     price: z.number().min(0, 'Цена не может быть отрицательной'),
     addedAt: z.string(),
     expiresAt: z.string(),
@@ -38,7 +38,7 @@ export const guestCartItemSchema = z.object({
     id: z.number(),
     cartId: z.number(),
     productId: z.number(),
-    quantity: z.number().min(1, "Количество не может быть меньше 1"),
+    quantity: z.number().min(0, "Количество не может быть меньше 0"),
     price: z.number().min(0, "Цена не может быть отрицательной"),
     addedAt: z.string(),
     expiresAt: z.string(),
@@ -68,3 +68,10 @@ export const newCartItemSchema = z.object({
 export const updateCartItemSchema = z.object({
     quantity: z.number().min(1, 'Количество не может быть меньше 1'),
 });
+
+export const cartItemCheckSchema = z.object({
+    productId: z.number(),
+    quantity: z.number().min(0, 'Количество не может быть меньше 0'),
+})
+
+export const cartItemCheckArraySchema = z.array(cartItemCheckSchema);

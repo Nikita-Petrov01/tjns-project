@@ -5,17 +5,21 @@ import { useAppDispatch, useAppSelector } from '../../../shared/lib/hooks';
 import { getCategories } from '../../../entities/category/model/categoryThunks';
 import { logoutUser } from '../../../entities/user/model/userThunks';
 import SearchComponent from '../../../features/searchOptions/ui/SearchComponent';
+// import { getCart } from '../../../entities/cart/model/cartThunks';
 
 export default function NavigationBar(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
   const navigate = useNavigate();
+  const categories = useAppSelector((store) => store.categories.categories);
 
   useEffect(() => {
     void dispatch(getCategories());
   }, [dispatch]);
 
-  const categories = useAppSelector((store) => store.categories.categories);
+  // const handleCreateCart = (): void => {
+  //   void dispatch(getCart()).unwrap().then(() => navigate('/cart'));
+  // };
 
   return (
     <Navbar

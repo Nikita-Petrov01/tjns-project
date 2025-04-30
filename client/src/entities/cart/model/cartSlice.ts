@@ -124,7 +124,9 @@ export const cartSlice = createSlice({
     builder.addCase(updateCartItem.fulfilled, (state, action: PayloadAction<CartItemT>) => {
       state.loading = false;
       state.items = state.items.map((item) =>
-        item.id === action.payload.id ? action.payload : item,
+        item.id === action.payload.id
+          ? { ...item, ...action.payload } // 🔥 сохраняем старый product, дописываем новые поля
+          : item
       );
     });
     builder.addCase(updateCartItem.rejected, (state, action) => {
