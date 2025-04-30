@@ -1,7 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { searchItems } from './searchThunks';
+import type { SearchSliceT } from './searchType';
+import { searchProducts } from './searchThunks';
 
-const initialState = {
+const initialState: SearchSliceT = {
+  query: '',
   results: [],
   loading: false,
   error: null,
@@ -10,21 +12,33 @@ const initialState = {
 export const searchSlice = createSlice({
   name: 'search',
   initialState,
-  reducers: {},
+  reducers: {
+    clearResults: (state) => {
+      state.results = [];
+      state.error = null;
+      state.query = '';
+    },
+  },
 
   extraReducers: (builder) => {
     builder
-      .addCase(searchItems.pending, (state) => {
+      .addCase(searchProducts.pending, (state, action) => {
         state.loading = true;
         state.error = null;
+        state.query = action.meta.arg;
       })
-      .addCase(searchItems.fulfilled, (state, action) => {
-        state.results = action.payload;
+      .addCase(searchProducts.fulfilled, (state, action) => {
         state.loading = false;
+        state.results = action.payload.results;
+        state.error = null;
       })
-      .addCase(searchItems.rejected, (state, action) => {
+      .addCase(searchProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload ?? 'Unknown error';
+        state.results = [];
       });
   },
 });
+
+export const { clearResults } = searchSlice.actions;
+export default searchSlice.reducer;

@@ -34,7 +34,7 @@ export default function NavigationBar(): React.JSX.Element {
       }}
     >
       <Navbar.Brand as={Link} to="/" style={{ color: 'red' }}>
-        TJNS - мир бытовых техник
+        TJNS - мир техник
       </Navbar.Brand>
       <Container>
         <Button
@@ -86,28 +86,22 @@ export default function NavigationBar(): React.JSX.Element {
           ) : (
             <>
               <Button
-
                 variant="outline-light"
                 style={{ fontSize: '18px', marginRight: '10px' }}
                 onClick={() => void navigate('/login')}
-
                 onClick={() => navigate('/login')}
                 variant="outline-light"
                 style={{ fontSize: '18px', marginRight: '10px' }}
-
               >
                 Войти
               </Button>
               <Button
-
                 variant="outline-light"
                 style={{ fontSize: '18px' }}
                 onClick={() => void navigate('/singup')}
-
                 onClick={() => navigate('/signup')}
                 variant="outline-light"
                 style={{ fontSize: '18px' }}
-
               >
                 Зарегистрироваться
               </Button>

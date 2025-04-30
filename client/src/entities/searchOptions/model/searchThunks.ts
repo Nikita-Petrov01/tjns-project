@@ -1,14 +1,21 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axiosInstance from '../../../shared/api/axiosInstance';
-import debounce from 'lodash.debounce';
+import SearchService from '../api/SearchService';
+import type { SearchT } from './searchType';
+// import debounce from 'lodash.debounce';
 
-export const searchItems = createAsyncThunk('search/searchItems', async (query: string) => {
-  const response = await axiosInstance.get(`/search?q=${query}`);
-  return response.data;
-});
+export const searchProducts = createAsyncThunk<SearchT, string, { rejectValue: string }>(
+  'search/searchProducts',
+  async (query, { rejectWithValue }) => {
+    try {
+      const data = await SearchService.getSearchResults(query);
 
-export const debouncedSearch = debounce((dispatch: any, query: string) => {
-  if (query) {
-    dispatch(searchItems(query));
-  }
-}, 1000);
+      if (!data.success) {
+        return rejectWithValue(data.error ?? data.message ?? 'Не удалось выполнить поиск');
+      }
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Неизвестная ошибка');
+    }
+  },
+);

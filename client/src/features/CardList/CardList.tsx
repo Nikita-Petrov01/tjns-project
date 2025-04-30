@@ -6,7 +6,6 @@ import { getProducts } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { getReviews } from '../../entities/review/model/reviewThunk';
 import ProductSortButtons from '../ProducSortButton/ProducSortButton';
-import TrialSearch from '../trialSerach/TrialSearch';
 
 type RatingT = {
   sum: number;
@@ -24,7 +23,8 @@ export default function CardList(): React.JSX.Element {
   const navigate = useNavigate();
   const products = useAppSelector((store) => store.products.products);
   const reviews = useAppSelector((store) => store.rewiew.reviews);
-  const searched = useAppSelector((store) => store.products.searchProducts);
+  const searchedProducts = useAppSelector((store) => store.search.results);
+  const searchQuery = useAppSelector((store) => store.search.query);
 
   const averageRatings = reviews.reduce((acc: Record<number, RatingT>, review) => {
     if (!(review.productId in acc)) {
@@ -43,16 +43,14 @@ export default function CardList(): React.JSX.Element {
         : 0,
   }));
 
-  const filteredProducts = productsWithRating.filter((product) =>
-    product.name.toLowerCase().includes(searched.toLowerCase()),
-  );
+  // Определяем какие продукты показывать
+  const productsToDisplay = searchQuery.length > 0 ? searchedProducts : productsWithRating;
 
   return (
     <Container>
-      <TrialSearch />
       <ProductSortButtons />
       <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-        {filteredProducts.map((product) => (
+        {productsToDisplay.map((product) => (
           <Col key={product.id} className="d-flex">
             <ProductCard product={product} rating={product.averageRating} />
           </Col>

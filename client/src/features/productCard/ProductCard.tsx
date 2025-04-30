@@ -68,7 +68,7 @@ export default function ProductCard({ product, rating }: Props): React.JSX.Eleme
           transition: 'transform 0.2s',
           minHeight: '400px',
         }}
-        onClick={() => navigate(`/products/${product.id}`)}
+        onClick={() => navigate(`/products/${product.id.toString()}`)}
       >
         {/* Рейтинг */}
         {rating !== undefined && (
@@ -92,7 +92,7 @@ export default function ProductCard({ product, rating }: Props): React.JSX.Eleme
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/products/edit/${product.id}`);
+              void navigate(`/products/edit/${product.id.toString()}`);
             }}
             title="Edit"
           >
@@ -120,7 +120,6 @@ export default function ProductCard({ product, rating }: Props): React.JSX.Eleme
             className="h-100 object-fit-contain p-2"
           />
         </div>
-        Никита Петров, [27.04.2025 18:27]
         {/* Информация о товаре */}
         <Card.Body className="d-flex flex-column">
           <Card.Title className="text-truncate">{product.name}</Card.Title>
