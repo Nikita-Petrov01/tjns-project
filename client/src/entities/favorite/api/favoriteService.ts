@@ -10,6 +10,10 @@ class FavoriteService {
 
   async getFavorites(userId: number): Promise<FavoriteT[]> {
     try {
+      if (!userId || Number.isNaN(Number(userId))) {
+        throw new Error('Invalid user ID');
+      }
+
       const allFavorites = await this.client.get(`/favorites/${userId.toString()}`);
       return favoriteSchema.array().parse(allFavorites.data);
     } catch (error) {

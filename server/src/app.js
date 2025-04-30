@@ -15,13 +15,17 @@ const cartItemRouter = require('./routes/cartItemRouter');
 const chatRouter = require('./routes/chatRouter');
 const messageRouter = require('./routes/messageRouter');
 
+
+const searchRouter = require('./routes/searchRouter');
+const path = require('path');
+
 const app = express();
 
+app.use('/uploads', express.static('uploads'));
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-const searchRouter = require('./routes/searchRouter');
 
 app.use('/api/auth', authRouter);
 
