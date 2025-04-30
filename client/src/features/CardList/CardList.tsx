@@ -17,6 +17,7 @@ export default function CardList(): React.JSX.Element {
   const reviews = useAppSelector((store) => store.rewiew.reviews);
   const searchedProducts = useAppSelector((store) => store.search.results);
   const searchQuery = useAppSelector((store) => store.search.query);
+console.log(products);
 
   useEffect(() => {
     void dispatch(getProducts());

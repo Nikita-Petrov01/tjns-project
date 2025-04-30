@@ -16,6 +16,7 @@ import FilteredCardList from '../../features/FilteredCardList/FilteredCardList';
 import CartPage from '../../pages/CartPage/CartPage';
 import SuperAdminPage from '../../pages/SuperAdminPage/SuperAdminPage';
 import ProtectedRoute from '../../shared/ui/ProtectedRoute';
+import FavoritePage from '../../pages/FavoritePage/FavoritePage';
 
 function RouterProvider(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -33,6 +34,7 @@ function RouterProvider(): React.JSX.Element {
         <Route path="/products/:id" element={<OneProductPage />} />
         <Route path="categories/:id" element={<FilteredCardList />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/favorites" element={<FavoritePage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/products/create" element={<CreatePage />} />

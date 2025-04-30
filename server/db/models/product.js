@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(Review, { foreignKey: 'productId' });
       this.belongsTo(Category, { foreignKey: 'categoryId' });
       this.hasMany(OrderItem, { foreignKey: 'productId' });
-      this.hasMany(Favorite, { foreignKey: 'productId' });
+      this.hasMany(Favorite, { foreignKey: 'productId', as: 'favorites' });
       this.hasMany(CartItem, { foreignKey: 'productId' });
     }
   }
