@@ -59,9 +59,11 @@ export default function ProductCard({ product, rating }: Props): React.JSX.Eleme
 
   return (
     <>
+
       <div
         className="relative flex flex-col bg-white shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-200 cursor-pointer w-72 h-96"
-        onClick={() => navigate(`/products/${product.id}`)}
+        onClick={() => navigate(`/products/${product.id.toString()}`)}
+
       >
         {/* Рейтинг */}
         {rating !== undefined && (
@@ -76,8 +78,10 @@ export default function ProductCard({ product, rating }: Props): React.JSX.Eleme
             title="favorite"
             onClick={deleteFavoriteHandler}
           >
+
             {isLiked ? <BiSolidHeart className="text-red-500" size={18} /> : <BiHeart size={18} />}
           </button>
+
         </div>
         {/* Изображение товара */}
         <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">

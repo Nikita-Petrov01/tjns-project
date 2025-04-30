@@ -4,11 +4,11 @@ import { getProducts } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import { getReviews } from '../../entities/review/model/reviewThunk';
 import ProductSortButtons from '../ProducSortButton/ProducSortButton';
+
 import ProductCard from '../productCard/ProductCard';
 import ReactPaginate from 'react-paginate';
 import './pagination.css';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
-
 
 type RatingT = {
   sum: number;
@@ -30,7 +30,8 @@ export default function CardList(): React.JSX.Element {
   const navigate = useNavigate();
   const products = useAppSelector((store) => store.products.products);
   const reviews = useAppSelector((store) => store.rewiew.reviews);
-  const searched = useAppSelector((store) => store.products.searchProducts);
+  const searchedProducts = useAppSelector((store) => store.search.results);
+  const searchQuery = useAppSelector((store) => store.search.query);
 
   const averageRatings = reviews.reduce((acc: Record<number, RatingT>, review) => {
     if (!(review.productId in acc)) {
@@ -49,9 +50,7 @@ export default function CardList(): React.JSX.Element {
         : 0,
   }));
 
-  const filteredProducts = productsWithRating.filter((product) =>
-    product.name.toLowerCase().includes(searched.toLowerCase()),
-  );
+
 
   const sortedProducts = React.useMemo(() => {
     if (sortType === 'none') return filteredProducts;
@@ -76,18 +75,25 @@ export default function CardList(): React.JSX.Element {
   const pageCount = Math.ceil(sortedProducts.length / itemsPerPage);
   const offset = currentPage * itemsPerPage;
   const currentItems = sortedProducts.slice(offset, offset + itemsPerPage);
+  
+  
+    // Определяем какие продукты показывать
+  const productsToDisplay = searchQuery.length > 0 ? searchedProducts : currentItems;
+  
 
   const handlePageClick = (event: { selected: number }) => {
     setCurrentPage(event.selected);
   };
 
   return (
+
     <div className="container mx-auto px-4">
       <ProductSortButtons sortType={sortType} onSortChange={setSortType} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
-        {currentItems.map((product) => (
+        {productsToDisplay.map((product) => (
           <div key={product.id} className="flex">
+
             <ProductCard product={product} rating={product.averageRating} />
           </div>
         ))}

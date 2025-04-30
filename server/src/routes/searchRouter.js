@@ -1,24 +1,91 @@
 const express = require('express');
 const router = express.Router();
-const { Pool } = require('pg');
-// const { Products } = require('../../db/models');
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const { Product, Category } = require('../../db/models');
+const { Op } = require('sequelize');
 
 router.get('/', async (req, res) => {
-  const { q } = req.query;
   try {
-    const { rows } = await pool.query(
-      'SELECT * FROM public.products WHERE name ILIKE $1',
-      [`%${q}%`],
-    );
-    res.json(rows);
+    const { query, categoryName, limit = 10, offset = 0 } = req.query;
+    
+    if (!query && !categoryName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Поле query или categoryName не может быть пустым',
+      });
+    }
+
+    const where = {}
+
+    if (query) {
+      where.name = {
+        [Op.iLike]: `%${query}%`,
+      };
+    }
+
+    if (categoryName) {
+      const category = await Category.findOne({ where: { name: categoryName } });
+
+      if (!category) {
+        return res.status(404).json({
+          success: false,
+          message: 'Категория не найдена',
+        });
+      }
+      where.categoryId = category.id;
+    }
+
+    const products = await Product.findAll({ where, 
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+      include: [{model: Category}],
+      order: [['createdAt', 'DESC']],
+     });
+
+    
+    return res.status(200).json({
+      success: true,
+      results:products,
+      message: 'Поиск выполнен успешно',
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).send(`Ошибка сервера${error.message}`);
+    return res.status(500).json({ success: false, error: `Ошибка сервера: ${error.message}` });
   }
 });
 
-module.exports = router;
+// router.get('/', async (req, res) => {
+//   try {
+//     const { categoryName } = req.query;
+//     if (!categoryName) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Поле categoryName не может быть пустым',
+//       });
+//     }
+
+//     const category = await Category.findOne({ where: { name: categoryName } });
+//     if (!category) {
+//       return res.status(404).json({
+//         success: false,
+//         message: 'Категория не найдена',
+//       });
+//     }
+
+//     const products = await Product.findAll({
+//       where: {
+//         categoryId: category.id,
+//       },
+//     });
+
+//     res.status(200).json({
+//       success: true,
+//       results: products,
+//       message: 'Поиск выполнен успешно',
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, error: `Ошибка сервера: ${error.message}` });
+//   }
+// });
+
+// module.exports = router;

@@ -1,10 +1,17 @@
 import { z } from 'zod';
+import { productSchema } from '../../products/model/schema';
+import { categorySchema } from '../../category/model/categorySchema';
 
 export const searchSchema = z.object({
-  query: z.string(),
-  results: z.array(z.object({})),
-  suggestions: z.array(z.object({})),
-  history: z.array(z.string()),
-  loading: z.boolean(),
-  error: z.string().nullable(),
+  success: z.boolean(),
+  results: z.array(productSchema),
+  category: categorySchema.optional(),
+  message: z.string().optional(),
+  error: z.string().optional(),
+});
+
+export const searchQuerySchema  = z.object({
+  categoryName: z.string().min(1, 'Необходимо указать название категории'),
+  query: z.string().optional(),
+  imit: z.number().optional(),
 });

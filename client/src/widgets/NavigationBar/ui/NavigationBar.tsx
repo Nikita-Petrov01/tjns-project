@@ -23,6 +23,7 @@ export default function NavigationBar(): React.JSX.Element {
   const closeSidebar = () => setIsSidebarOpen(false);
 
   return (
+
     <>
    <nav className="bg-light shadow-lg h-16 flex items-center justify-between px-6 rounded-b-2xl">
         <div className="flex items-center gap-4">
@@ -59,6 +60,7 @@ export default function NavigationBar(): React.JSX.Element {
         </button>
           ) : (
             <>
+
               <button
                 className="text-dark px-5 py-2 rounded-3xl hover:bg-light text-sm transition-colors duration-300"
                 onClick={() => void navigate('/login')}
@@ -68,6 +70,7 @@ export default function NavigationBar(): React.JSX.Element {
               <button
                 className="text-light bg-primary hover:bg-secondary px-5 py-2 rounded-3xl text-sm shadow-lg transition-colors duration-300"
                 onClick={() => void navigate('/signup')}
+
               >
                 Зарегистрироваться
               </button>

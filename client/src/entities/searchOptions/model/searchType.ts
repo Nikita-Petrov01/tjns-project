@@ -1,13 +1,17 @@
 import type { z } from 'zod';
-import type { categorySchema } from '../../../entities/category/model/categorySchema';
+import type { searchQuerySchema, searchSchema } from './searchSchema';
+import type { productSchema } from '../../products/model/schema';
+import type { CategoryT } from '../../category/model/categoryType';
 
-export type CategoryT = z.infer<typeof categorySchema>;
+export type SearchT = z.infer<typeof searchSchema>;
+export type ProductT = z.infer<typeof productSchema>;
+export type SearchQueryT = z.infer<typeof searchQuerySchema>;
 
 export type SearchSliceT = {
   query: string;
-  results: CategoryT[];
-  suggestions: CategoryT[];
-  history: string[];
+  categoryName?: string;
+  results: ProductT[];
   loading: boolean;
   error: string | null;
+  currentCategory?: CategoryT | null;
 };
