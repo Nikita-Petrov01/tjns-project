@@ -1,18 +1,22 @@
-import React from 'react'
+import React from 'react';
 
 type AddToCartButtonProps = {
-    quantity: number,
-    stock: number,
-    add: () => void,
-    remove: () => void
-}
+  quantity: number;
+  stock: number;
+  add: () => void;
+  remove: () => void;
+};
 
 function AddToCartButton({ quantity, stock, add, remove }: AddToCartButtonProps): React.JSX.Element {
   const isOutOfStock = stock === 0;
   const isMaxReached = quantity >= stock;
 
   if (isOutOfStock) {
-    return <span className="text-danger">Нет в наличии</span>;
+    return (
+        <div className="w-full py-2 px-4 border border-gray-300 text-gray-400 text-center rounded-full cursor-not-allowed">
+        Товар закончился
+      </div>
+    )
   }
 
   return (
@@ -41,7 +45,6 @@ function AddToCartButton({ quantity, stock, add, remove }: AddToCartButtonProps)
       )}
     </div>
   );
+}
 
-  }
-
-export default AddToCartButton
+export default AddToCartButton;
