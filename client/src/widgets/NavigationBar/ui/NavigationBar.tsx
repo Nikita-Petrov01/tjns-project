@@ -4,23 +4,29 @@ import { useAppDispatch, useAppSelector } from '../../../shared/lib/hooks';
 import { getCategories } from '../../../entities/category/model/categoryThunks';
 import { logoutUser } from '../../../entities/user/model/userThunks';
 import SearchComponent from '../../../features/searchOptions/ui/SearchComponent';
-// import { getCart } from '../../../entities/cart/model/cartThunks';
+import { Heart, HeartFill, Cart, CartFill } from 'react-bootstrap-icons';
 
 export default function NavigationBar(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
+  const favorites = useAppSelector((state) => state.favorites.favorites);
+  const cartItems = useAppSelector((state) => state.cart.items);
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isFavoriteHovered, setIsFavoriteHovered] = useState(false);
+  const [isCartHovered, setIsCartHovered] = useState(false);
 
   useEffect(() => {
     void dispatch(getCategories());
   }, [dispatch]);
-  // const handleCreateCart = (): void => {
-  //   void dispatch(getCart()).unwrap().then(() => navigate('/cart'));
-  // };
+
   const categories = useAppSelector((store) => store.categories.categories);
   const toggleSidebar = (): void => setIsSidebarOpen((prev) => !prev);
   const closeSidebar = (): void => setIsSidebarOpen(false);
+
+  // Подсчет количества избранных товаров и товаров в корзине
+  const favoriteCount = favorites.filter((fav) => fav.userId === user?.id).length;
+  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <>
@@ -44,7 +50,53 @@ export default function NavigationBar(): React.JSX.Element {
           <SearchComponent />
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          {/* Кнопка избранного */}
+          <div
+            className="relative cursor-pointer p-2"
+            onMouseEnter={() => setIsFavoriteHovered(true)}
+            onMouseLeave={() => setIsFavoriteHovered(false)}
+            onClick={() => navigate('/favorites')}
+          >
+            {isFavoriteHovered ? (
+              <HeartFill size={20} className="text-red-500 transition-all duration-300" />
+            ) : (
+              <Heart
+                size={20}
+                className="text-gray-500 hover:text-red-500 transition-all duration-300"
+              />
+            )}
+
+            {favoriteCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {favoriteCount}
+              </span>
+            )}
+          </div>
+
+          {/* Кнопка корзины */}
+          <div
+            className="relative cursor-pointer p-2"
+            onMouseEnter={() => setIsCartHovered(true)}
+            onMouseLeave={() => setIsCartHovered(false)}
+            onClick={() => navigate('/cart')}
+          >
+            {isCartHovered ? (
+              <CartFill size={20} className="text-primary transition-all duration-300" />
+            ) : (
+              <Cart
+                size={20}
+                className="text-gray-500 hover:text-primary transition-all duration-300"
+              />
+            )}
+
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {cartItemCount}
+              </span>
+            )}
+          </div>
+
           {user && (
             <span className="text-dark bg-light px-4 py-2 rounded-full text-sm font-medium shadow-lg">
               {user.name}
@@ -111,22 +163,58 @@ export default function NavigationBar(): React.JSX.Element {
         </ul>
       </div>
 
-      {/* Floating Cart Button */}
-      <button
-        className="fixed bottom-6 right-6 w-16 h-16 flex items-center justify-center rounded-full bg-dark hover:bg-primary text-light transition-colors duration-200"
-        onClick={() => navigate('/cart')}
-        aria-label="Корзина"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          height="2em"
-          fill="currentColor"
-          viewBox="0 0 512 512"
+      {/* Floating Buttons */}
+      <div className="fixed bottom-6 right-6 flex flex-col gap-4">
+        <button
+          className="w-16 h-16 flex items-center justify-center rounded-full bg-primary hover:bg-secondary text-light transition-colors duration-200 shadow-lg relative group"
+          onClick={() => navigate('/favorites')}
+          aria-label="Избранное"
+          onMouseEnter={() => setIsFavoriteHovered(true)}
+          onMouseLeave={() => setIsFavoriteHovered(false)}
         >
-          {/* SVG path корзины */}
-          <path d="M...Z" />
-        </svg>
-      </button>
+          {isFavoriteHovered ? (
+            <HeartFill
+              size={24}
+              className="text-white transform group-hover:scale-110 transition-transform"
+            />
+          ) : (
+            <Heart
+              size={24}
+              className="text-white transform group-hover:scale-110 transition-transform"
+            />
+          )}
+          {favoriteCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {favoriteCount}
+            </span>
+          )}
+        </button>
+
+        <button
+          className="w-16 h-16 flex items-center justify-center rounded-full bg-dark hover:bg-primary text-light transition-colors duration-200 shadow-lg relative group"
+          onClick={() => navigate('/cart')}
+          aria-label="Корзина"
+          onMouseEnter={() => setIsCartHovered(true)}
+          onMouseLeave={() => setIsCartHovered(false)}
+        >
+          {isCartHovered ? (
+            <CartFill
+              size={24}
+              className="text-white transform group-hover:scale-110 transition-transform"
+            />
+          ) : (
+            <Cart
+              size={24}
+              className="text-white transform group-hover:scale-110 transition-transform"
+            />
+          )}
+          {cartItemCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {cartItemCount}
+            </span>
+          )}
+        </button>
+      </div>
     </>
   );
 }
