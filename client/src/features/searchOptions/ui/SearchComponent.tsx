@@ -60,6 +60,7 @@ function SearchComponent(): React.JSX.Element {
   }, []);
 
   return (
+
     <div className="relative max-w-lg mx-auto" ref={dropdownRef}>
       <div className="flex">
         <div className="relative w-full">
@@ -97,6 +98,7 @@ function SearchComponent(): React.JSX.Element {
               />
             </svg>
           </button>
+
         </div>
       </div>
 

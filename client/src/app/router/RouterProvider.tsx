@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router';
-import { useAppDispatch } from '../../shared/lib/hooks';
-import { refreshUser } from '../../entities/user/model/userThunks';
+import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
+import { getAdmin, refreshUser } from '../../entities/user/model/userThunks';
 import MainPage from '../../pages/Main/MainPage';
 import CreatePage from '../../pages/CreatePage/CreatePage';
 import UpdatePage from '../../pages/UpdatePage/UpdatePage';
@@ -13,7 +13,9 @@ import LoginPage from '../../pages/Login/LoginPage';
 import Layout from '../../pages/Layout/Layout';
 import OneProductPage from '../../pages/OneProductPage/OneProductPage';
 import FilteredCardList from '../../features/FilteredCardList/FilteredCardList';
-import CartPage from '../../pages/CartPage';
+import CartPage from '../../pages/CartPage/CartPage';
+import SuperAdminPage from '../../pages/SuperAdminPage/SuperAdminPage';
+import ProtectedRoute from '../../shared/ui/ProtectedRoute';
 
 function RouterProvider(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -28,14 +30,20 @@ function RouterProvider(): React.JSX.Element {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<MainPage />} />
-        <Route path="/products/create" element={<CreatePage />} />
-        <Route path="/products/edit/:id" element={<UpdatePage />} />
-        <Route path="/categories" element={<CategoryPage />} />
-        <Route path="/categories/create" element={<CategoryCreate />} />
-        <Route path="/categories/:id/edit" element={<CategoryUpdate />} />
         <Route path="/products/:id" element={<OneProductPage />} />
-        <Route path='categories/:id' element={<FilteredCardList />} />
-        <Route path='/cart' element={<CartPage />} />
+        <Route path="categories/:id" element={<FilteredCardList />} />
+        <Route path="/cart" element={<CartPage />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/products/create" element={<CreatePage />} />
+          <Route path="/categories" element={<CategoryPage />} />
+          <Route path="/admin" element={<SuperAdminPage />} />
+          <Route path="/categories/create" element={<CategoryCreate />} />
+          <Route path="/categories/:id/edit" element={<CategoryUpdate />} />
+          <Route path="/products/edit/:id" element={<UpdatePage />} />
+        </Route>
+
+        <Route path="*" element={<MainPage />} />
       </Route>
     </Routes>
   );

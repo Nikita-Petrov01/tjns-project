@@ -1,10 +1,8 @@
 import { toast } from 'react-toastify';
 import type { ProductT } from '../../entities/products/model/types';
-import { deleteById } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
-import { Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
-import { BiEdit, BiHeart, BiSolidHeart, BiTrash } from 'react-icons/bi';
+import { BiHeart, BiSolidHeart } from 'react-icons/bi';
 import {
   createFavorite,
   deleteFavorite,
@@ -61,82 +59,45 @@ export default function ProductCard({ product, rating }: Props): React.JSX.Eleme
 
   return (
     <>
-      <Card
-        className="h-100 shadow-sm position-relative"
-        style={{
-          cursor: 'pointer',
-          transition: 'transform 0.2s',
-          minHeight: '400px',
-        }}
+
+      <div
+        className="relative flex flex-col bg-white shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-200 cursor-pointer w-72 h-96"
         onClick={() => navigate(`/products/${product.id.toString()}`)}
+
       >
         {/* Рейтинг */}
         {rating !== undefined && (
-          <div className="position-absolute top-0 start-0 p-2 z-1 text-warning">
+          <div className="absolute top-2 left-2 bg-yellow-100 text-yellow-600 text-sm font-semibold px-2 py-1 rounded">
             ★ {rating.toFixed(1)}
           </div>
         )}
         {/* Кнопки действий */}
-        <div className="position-absolute top-0 end-0 p-2 d-flex gap-2 z-1">
-          <Button
-            variant="outline-primary"
-            size="sm"
+        <div className="absolute top-2 right-2 flex gap-2">
+          <button
+            className="p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
             title="favorite"
             onClick={deleteFavoriteHandler}
           >
-            {isLiked ? <BiSolidHeart color="red" size={18} /> : <BiHeart size={18} />}
-          </Button>
 
-          <Button
-            variant="outline-primary"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              void navigate(`/products/edit/${product.id.toString()}`);
-            }}
-            title="Edit"
-          >
-            <BiEdit />
-          </Button>
+            {isLiked ? <BiSolidHeart className="text-red-500" size={18} /> : <BiHeart size={18} />}
+          </button>
 
-          <Button
-            variant="outline-danger"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              void dispatch(deleteById(product.id));
-            }}
-            title="Delete"
-          >
-            <BiTrash />
-          </Button>
         </div>
         {/* Изображение товара */}
-        <div style={{ height: '200px', overflow: 'hidden' }}>
-          <Card.Img
-            variant="top"
+        <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+          <img
             src={product.images[0]}
             alt={product.name}
-            className="h-100 object-fit-contain p-2"
+            className="h-full object-contain p-2"
           />
         </div>
         {/* Информация о товаре */}
-        <Card.Body className="d-flex flex-column">
-          <Card.Title className="text-truncate">{product.name}</Card.Title>
-          <Card.Text
-            className="flex-grow-1 text-muted"
-            style={{
-              display: '-webkit-box',
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-            }}
-          >
-            {product.description}
-          </Card.Text>
-          <Card.Text className="fw-bold fs-5 mt-auto">{product.price.toLocaleString()} ₽</Card.Text>
-        </Card.Body>
-      </Card>
+        <div className="flex flex-col flex-grow p-4">
+          <h3 className="text-lg font-semibold text-gray-800 truncate">{product.name}</h3>
+          <p className="text-sm text-gray-600 flex-grow line-clamp-3">{product.description}</p>
+          <p className="text-lg font-bold text-gray-900 mt-4">{product.price.toLocaleString()} ₽</p>
+        </div>
+      </div>
 
       <LikeModal
         show={showAuthModal}

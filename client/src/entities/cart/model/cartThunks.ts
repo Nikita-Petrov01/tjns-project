@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import CartService from '../api/CartService';
-import type { NewCartItemT, UpdateCartItemT } from './cartTypes';
-import { clearCartLocally } from './cartSlice';
-import { cartItemArraySchem } from './cartSchema';
+import type { CartItemCheckT, CartItemValidationResponseT } from './cartTypes';
+import { type NewCartItemT, type UpdateCartItemT } from './cartTypes';
+import { cartItemCheckArraySchema, guestCartItemArraySchem } from './cartSchema';
 
 export const getCart = createAsyncThunk('cart/getCart', () => CartService.getOrCreateCart());
 
@@ -25,27 +25,51 @@ export const deleteCartItem = createAsyncThunk('cart/deleteCartItem', (itemId: n
   CartService.deleteCartItem(itemId),
 );
 
-export const transferGuestCartToServer = createAsyncThunk('cart/transferGuestCartToServer', async (_, { dispatch }) => {
-  const guestCart = localStorage.getItem('guestCart');
-  if (!guestCart) return;
+export const transferGuestCartToServer = createAsyncThunk(
+  'cart/transferGuestCartToServer',
+  async (_, { dispatch }) => {
+    try {
+      const guestCart = localStorage.getItem('guestCart');
+      if (!guestCart) {
+        console.log('🛒 localStorage.guestCart пустой');
+        return;
+      }
 
-  const items = cartItemArraySchem.parse(JSON.parse(guestCart));
+      const parsed = guestCartItemArraySchem.safeParse(JSON.parse(guestCart));
 
-  const now = new Date();
+      if (!parsed.success || parsed.data.length === 0) {
+        console.log('guestCart некорректный или пустой');
+        return;
+      }
 
-  await Promise.all(
-    items.map((item) => 
-      CartService.addCartItem({
+      const items = parsed.data.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
         price: item.price,
-        addedAt: item.addedAt ?? now.toISOString(),
-        expiresAt: item.expiresAt ?? new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
-      })
-    )
-  );
+      }));
+      console.log('🛒 Отправляем товары на сервер:', items);
 
-  dispatch(clearCartLocally());
-  void dispatch(getCartItems());
-  }
+      await CartService.createCartWithItems(items);
+
+      console.log('✅ Корзина успешно перенесена на сервер, очищаем localStorage');
+      localStorage.removeItem('guestCart');
+      console.log('🛒 localStorage.guestCart очищен');
+    } catch (error) {
+      console.error('❌ Ошибка при переносе корзины:', error);
+    }
+  },
+);
+
+export const checkCartItems = createAsyncThunk<CartItemValidationResponseT, CartItemCheckT[]>(
+  'cart/checkCartItems',
+  async (cartItems) => {
+    const parsed = cartItemCheckArraySchema.safeParse(cartItems);
+
+    if (!parsed.success) {
+      throw new Error('Неверные данные для проверки корзины');
+    }
+
+    const response = await CartService.checkCartItems(parsed.data);
+    return response;
+  },
 );

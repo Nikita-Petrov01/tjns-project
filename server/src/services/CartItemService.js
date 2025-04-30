@@ -1,23 +1,25 @@
 const { Cart, CartItem, Product } = require('../../db/models');
-const { Op } = require('sequelize');
 
 class CartItemService {
   static async getItems(userId) {
     const cart = await Cart.findOne({ where: { userId } });
     if (!cart) return [];
-
-    await CartItem.destroy({
-      where: {
-        cartId: cart.id,
-        expiresAt: { [Op.lt]: new Date() },
-      },
-    });
-
+    
     const cartItem = await CartItem.findAll({
       where: { cartId: cart.id },
-      include: [Product],
+      include: [{model: Product}],
     });
-    return cartItem;
+
+    const result = cartItem.map((item) => {
+      const plain = item.toJSON();
+
+      return {
+        ...plain,
+        product: plain.Product,
+      }
+    })
+    
+    return result;
   }
 
   static async addItem({ userId, productId, quantity, price }) {
@@ -49,9 +51,6 @@ class CartItemService {
         expiresAt: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       });
     }
-
-    await product.update({ stock: product.stock - quantity });
-
     return cartItem;
   }
 
@@ -68,20 +67,27 @@ class CartItemService {
     return deleted;
   }
 
-  static async clearExpiredItems() {
-    const now = new Date();
-    const expiredItems = await CartItem.findAll({
-      where: { expiresAt: { [Op.lt]: now } },
-    })
+  static async validateCartItems(userId, cartItems) {
+    const errors = [];
+    const updatedItems = [];
 
-    for (const item of expiredItems) {
-      const product = await Product.findByPk(item.productId);
+    for (const cartItem of cartItems) {
+      const product = await Product.findByPk(cartItem.productId);
 
-      if (product) {
-        await product.update({ stock: product.stock + item.quantity });
+      if (!product) {
+        errors.push({
+          productId: cartItem.productId,
+          message: 'Товар не найден',
+        })
+        continue;
       }
-      await item.destroy();
+
+      updatedItems.push({
+        productId: product.id,
+        availableStock: product.stock,
+      });
     }
+    return {errors, updatedItems};
   }
 }
 
