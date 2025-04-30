@@ -14,6 +14,7 @@ export default function CreatePage(): React.JSX.Element {
       images: [data.images],
       price: Number(data.price),
       categoryId: Number(data.categoryId),
+      stock: Number(data.stock),
     });
     void dispatch(create(validatedData));
   };
@@ -31,6 +32,10 @@ export default function CreatePage(): React.JSX.Element {
         <input type="number" name="price" />
         <div>categoryId</div>
         <input type="text" name="categoryId" />
+        <div>brand</div>
+        <input type="text" name="brand" />
+        <div>value</div>
+        <input type="number" name="stock" />
         <button type="submit">Submit</button>
       </form>
     </>

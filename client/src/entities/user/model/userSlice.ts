@@ -1,17 +1,36 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { UserSliceT } from './types';
-import { loginUser, logoutUser, refreshUser, signupUser } from './userThunks';
+import { getAdmin, loginUser, logoutUser, refreshUser, signupAdmin, signupUser } from './userThunks';
 
 const initialState: UserSliceT = {
   user: null,
-  isRefreshLoading: false
+  isRefreshLoading: false,
+  admin: [],
 };
 
 export const userSlice = createSlice({
     name: 'user',
     initialState,
-    reducers: {},
+    reducers: {
+      setAdmin: (state, action) => {
+      state.admin.push(action.payload);
+    },
+    },
     extraReducers(builder) {
+      builder.addCase(signupAdmin.fulfilled, (_, action) => {
+      console.log(action.payload);
+    });
+    builder.addCase(signupAdmin.rejected, (_, action) => {
+      console.error(action.error);
+    });
+
+    builder.addCase(getAdmin.fulfilled, (state, action) => {
+      state.admin = action.payload
+    });
+    builder.addCase(getAdmin.rejected, (_, action) => {
+      console.error(action.error);
+    });
+      
         builder.addCase(signupUser.fulfilled, (state, action) => {
             state.user = action.payload;
         })
@@ -50,4 +69,6 @@ export const userSlice = createSlice({
     }
 })
 
-export default userSlice.reducer
+export const { setAdmin } = userSlice.actions;
+
+export default userSlice.reducer;

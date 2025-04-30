@@ -1,9 +1,9 @@
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
-import { getOneProduct } from '../../entities/products/model/productThunk';
+import { useNavigate, useParams } from 'react-router';
+import { deleteById, getOneProduct } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
-import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
+import { BiChevronLeft, BiChevronRight, BiEdit, BiTrash } from 'react-icons/bi';
 import { createReview, getReviewsByProductId } from '../../entities/review/model/reviewThunk';
 import { newReviewSchema } from '../../entities/review/model/schema';
 import { Button, ButtonGroup } from 'react-bootstrap';
@@ -16,6 +16,7 @@ import { addCartItem, updateCartItem } from '../../entities/cart/model/cartThunk
 export default function OneProductPage(): React.JSX.Element {
   const { id } = useParams();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [selected, setSelected] = useState<number | null>(null);
   const [allComments, setAllComments] = useState<ReviewT[]>([]);
@@ -50,8 +51,6 @@ export default function OneProductPage(): React.JSX.Element {
     setAllComments(comments);
   }, [comments]);
 
-  
-
   const nextImage = (): void => {
     if (!product) return;
     setMainImageIndex((prev) => (prev + 1) % product.images.length);
@@ -61,8 +60,6 @@ export default function OneProductPage(): React.JSX.Element {
     if (!product) return;
     setMainImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
   };
-
-  // const findUserComennt = comments.find((comment) => comment.userId === user?.id);
 
   const handleComment: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -74,13 +71,14 @@ export default function OneProductPage(): React.JSX.Element {
         userId: user?.id,
         rating: selected,
       });
+      void dispatch(setStateReview(user.id));
       void dispatch(createReview(validatedData));
       setSelected(null);
       setAllComments((prev = []) => [
         ...prev,
         {
           ...validatedData,
-          id: 0,
+          id: user.id,
         },
       ]);
     }
@@ -140,6 +138,37 @@ export default function OneProductPage(): React.JSX.Element {
     
   return (
     <div className="container mt-4">
+      {user && user.status !== 'user' && product && (
+        <div className="mb-3 d-flex gap-2">
+          <Button
+            variant="outline-primary"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              void navigate(`/products/edit/${product.id.toString()}`);
+            }}
+            title="Редактировать"
+          >
+            <BiEdit />
+          </Button>
+
+          <Button
+            variant="outline-danger"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (confirm('Вы уверены, что хотите удалить товар?')) {
+                void dispatch(deleteById(product.id));
+               void  navigate('/');
+              }
+            }}
+            title="Удалить"
+          >
+            <BiTrash />
+          </Button>
+        </div>
+      )}
+
       <div className="row">
         {/* Галерея */}
         <div className="col-md-6">
