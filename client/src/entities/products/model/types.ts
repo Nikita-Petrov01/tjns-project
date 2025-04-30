@@ -15,4 +15,8 @@ export type ProductSliceT = {
   sortOrder: 1 | -1;
 };
 
-export type NewProductT = z.infer<typeof newProductSchema>;
+// export type NewProductT = z.infer<typeof newProductSchema>;
+
+export type NewProductT = z.infer<typeof newProductSchema> & {
+  files: File[];
+};

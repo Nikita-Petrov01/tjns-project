@@ -47,24 +47,57 @@ class ProductsService {
     }
   }
 
-  async create(product: NewProductT): Promise<ProductT> {
+  async create(product: any): Promise<ProductT> {
     try {
-      const response = await this.client.post('/products', product);
+      const formData = new FormData();
+      formData.append('name', product.name);
+      formData.append('description', product.description);
+      formData.append('price', String(product.price));
+      formData.append('categoryId', String(product.categoryId));
+      formData.append('brand', product.brand);
+      formData.append('stock', String(product.stock));
+
+      for (const file of product.files) {
+        formData.append('images', file); // ключ должен совпадать с multer
+      }
+
+      const response = await this.client.post('/products', formData);
+
       return productSchema.parse(response.data);
     } catch (error) {
-      console.error(error);
+      console.error('Ошибка при отправке продукта:', error);
       throw error;
     }
   }
 
-  async update(product: ProductT): Promise<ProductT> {
+  async update(product: any): Promise<ProductT> {
     try {
       const { id } = product;
-      const data = newProductSchema.parse(product);
-      const response = await this.client.put(`/products/${String(id)}`, data);
+      const formData = new FormData();
+
+      // Добавление текстовых полей
+      formData.append('name', product.name);
+      formData.append('description', product.description);
+      formData.append('price', String(product.price));
+      formData.append('categoryId', String(product.categoryId));
+      formData.append('brand', product.brand);
+      formData.append('stock', String(product.stock));
+
+      // Добавляем новые изображения, если есть
+      if (product.files && product.files.length > 0) {
+        for (const file of product.files) {
+          formData.append('images', file);
+        }
+      } else {
+        // Если нет новых файлов — передаём старые пути как JSON-строку
+        formData.append('oldImages', JSON.stringify(product.images));
+      }
+
+      const response = await this.client.put(`/products/${id}`, formData);
+
       return productSchema.parse(response.data);
     } catch (error) {
-      console.error(error);
+      console.error('Ошибка при обновлении продукта:', error);
       throw error;
     }
   }
