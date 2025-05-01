@@ -1,7 +1,7 @@
 const MessageService = require('../services/MessageService');
 
 class MessageController {
-
+     
     static async getAllMessagesByChat(req, res) {
         try {
             const { chatId } = req.params;
@@ -17,7 +17,7 @@ class MessageController {
         try {
             const { chatId } = req.params;
             const { sender, content } = req.body;
-            const messages = await MessageService.getAllMessagesByChat(chatId, sender, content);
+            const messages = await MessageService.createMessage(chatId, sender, content);
             res.json(messages);
         } catch (error) {
             console.error('Ошибка при создании сообщений чата', error);

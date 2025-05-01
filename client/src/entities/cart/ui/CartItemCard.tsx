@@ -47,16 +47,15 @@ export function CartItemCard({
               <Card.Title className="text-truncate">{name}</Card.Title>
               {isOutOfStock ? (
                 <Card.Text className="text-danger">Нет в наличии</Card.Text>
-              ) : (
-                <Card.Text>
-                  {price.toLocaleString()} ₽ × {quantity} шт. = <strong>{totalItemPrice.toLocaleString()} ₽</strong>
-                </Card.Text>
+                ) : (
+                <>
+              <Card.Text>
+                {price.toLocaleString()} ₽ × {quantity} шт. = <strong>{totalItemPrice.toLocaleString()} ₽</strong>
+              </Card.Text>
+              {isMaxReached && (
+                <Card.Text className="text-danger small">Максимум на складе</Card.Text>
               )}
-              {/* Показываем надпись, если максимум на складе достигнут */}
-              {isMaxReached && !isOutOfStock && (
-                <Card.Text className="text-danger small">
-                  Максимальное количество товара
-                </Card.Text>
+              </>
               )}
             </div>
   

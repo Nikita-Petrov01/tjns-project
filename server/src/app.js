@@ -14,6 +14,7 @@ const cartRouter = require('./routes/cartRouter');
 const cartItemRouter = require('./routes/cartItemRouter');
 const chatRouter = require('./routes/chatRouter');
 const messageRouter = require('./routes/messageRouter');
+const cors = require('cors');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors());
 const searchRouter = require('./routes/searchRouter');
 
 app.use('/api/auth', authRouter);

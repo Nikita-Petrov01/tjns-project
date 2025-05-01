@@ -1,23 +1,25 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import CartService from '../api/CartService';
-import type { CartItemCheckT, CartItemValidationResponseT } from './cartTypes';
-import { type NewCartItemT, type UpdateCartItemT } from './cartTypes';
-import { cartItemCheckArraySchema, guestCartItemArraySchem } from './cartSchema';
+import type { AddToCartT, UpdateCartT } from './cartTypes';
+import type { RootState } from '../../../app/store';
+import { clearGuestCart, setHasMerged } from './cartSlice';
+// import type { CartItemCheckT, CartItemValidationResponseT } from './cartTypes';
+// import { type NewCartItemT, type UpdateCartItemT } from './cartTypes';
+// import { cartItemCheckArraySchema, guestCartItemArraySchem } from './cartSchema';
 
 export const getCart = createAsyncThunk('cart/getCart', () => CartService.getOrCreateCart());
 
-export const deleteCart = createAsyncThunk('cart/deleteCart', () => CartService.deleteCart());
+// export const deleteCart = createAsyncThunk('cart/deleteCart', () => CartService.deleteCart());
 
 export const getCartItems = createAsyncThunk('cart/getCartItems', () => CartService.getCartItems());
 
-export const addCartItem = createAsyncThunk('cart/addCartItem', async (item: NewCartItemT) => {
-  const response = await CartService.addCartItem(item);
-  return response;
-});
+export const addCartItem = createAsyncThunk('cart/addCartItem', (item: AddToCartT) =>
+  CartService.addCartItem(item),
+);
 
 export const updateCartItem = createAsyncThunk(
   'cart/updateCartItem',
-  ({ itemId, updateData }: { itemId: number; updateData: UpdateCartItemT }) =>
+  ({ itemId, updateData }: { itemId: number; updateData: UpdateCartT }) =>
     CartService.updateCartItem(itemId, updateData),
 );
 
@@ -25,51 +27,72 @@ export const deleteCartItem = createAsyncThunk('cart/deleteCartItem', (itemId: n
   CartService.deleteCartItem(itemId),
 );
 
-export const transferGuestCartToServer = createAsyncThunk(
-  'cart/transferGuestCartToServer',
-  async (_, { dispatch }) => {
+// export const transferGuestCartToServer = createAsyncThunk(
+//   'cart/transferGuestCartToServer',
+//   async (_, { dispatch }) => {
+//     try {
+//       const guestCart = localStorage.getItem('guestCart');
+//       if (!guestCart) {
+//         console.log('🛒 localStorage.guestCart пустой');
+//         return;
+//       }
+
+//       const parsed = guestCartItemArraySchem.safeParse(JSON.parse(guestCart));
+
+//       if (!parsed.success || parsed.data.length === 0) {
+//         console.log('guestCart некорректный или пустой');
+//         return;
+//       }
+
+//       const items = parsed.data.map((item) => ({
+//         productId: item.productId,
+//         quantity: item.quantity,
+//         price: item.price,
+//       }));
+//       console.log('🛒 Отправляем товары на сервер:', items);
+
+//       await CartService.createCartWithItems(items);
+
+//       console.log('✅ Корзина успешно перенесена на сервер, очищаем localStorage');
+//       localStorage.removeItem('guestCart');
+//       console.log('🛒 localStorage.guestCart очищен');
+//     } catch (error) {
+//       console.error('❌ Ошибка при переносе корзины:', error);
+//     }
+//   },
+// );
+
+// export const checkCartItems = createAsyncThunk<CartItemValidationResponseT, CartItemCheckT[]>(
+//   'cart/checkCartItems',
+//   async (cartItems) => {
+//     const parsed = cartItemCheckArraySchema.safeParse(cartItems);
+
+//     if (!parsed.success) {
+//       throw new Error('Неверные данные для проверки корзины');
+//     }
+
+//     const response = await CartService.checkCartItems(parsed.data);
+//     return response;
+//   },
+// );
+
+export const mergeGuestCart = createAsyncThunk('cart/mergeGuestCart', async (_, thunkAPI) => {
+  const state = thunkAPI.getState() as RootState;
+  const { guestItems } = state.cart;
+
+  for (const guestItem of guestItems) {
     try {
-      const guestCart = localStorage.getItem('guestCart');
-      if (!guestCart) {
-        console.log('🛒 localStorage.guestCart пустой');
-        return;
-      }
-
-      const parsed = guestCartItemArraySchem.safeParse(JSON.parse(guestCart));
-
-      if (!parsed.success || parsed.data.length === 0) {
-        console.log('guestCart некорректный или пустой');
-        return;
-      }
-
-      const items = parsed.data.map((item) => ({
-        productId: item.productId,
-        quantity: item.quantity,
-        price: item.price,
-      }));
-      console.log('🛒 Отправляем товары на сервер:', items);
-
-      await CartService.createCartWithItems(items);
-
-      console.log('✅ Корзина успешно перенесена на сервер, очищаем localStorage');
-      localStorage.removeItem('guestCart');
-      console.log('🛒 localStorage.guestCart очищен');
+      // eslint-disable-next-line no-await-in-loop
+      await CartService.addCartItem({
+        productId: guestItem.productId,
+        price: guestItem.price,
+      });
     } catch (error) {
-      console.error('❌ Ошибка при переносе корзины:', error);
+      console.error(`Ошибка при переносе товара ${guestItem.productId.toString()}:`, error);
     }
-  },
-);
+  }
 
-export const checkCartItems = createAsyncThunk<CartItemValidationResponseT, CartItemCheckT[]>(
-  'cart/checkCartItems',
-  async (cartItems) => {
-    const parsed = cartItemCheckArraySchema.safeParse(cartItems);
-
-    if (!parsed.success) {
-      throw new Error('Неверные данные для проверки корзины');
-    }
-
-    const response = await CartService.checkCartItems(parsed.data);
-    return response;
-  },
-);
+  thunkAPI.dispatch(clearGuestCart());
+  thunkAPI.dispatch(setHasMerged());
+  return true;
+});

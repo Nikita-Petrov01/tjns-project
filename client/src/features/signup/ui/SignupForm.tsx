@@ -1,25 +1,30 @@
 import React from 'react';
-import { useAppDispatch } from '../../../shared/lib/hooks';
+import { useAppDispatch, useAppSelector } from '../../../shared/lib/hooks';
 import { userFormSchema } from '../../../entities/user/model/schema';
 import { Link, useNavigate } from 'react-router';
 import { signupUser } from '../../../entities/user/model/userThunks';
-import { transferGuestCartToServer } from '../../../entities/cart/model/cartThunks';
-import { clearCartLocally } from '../../../entities/cart/model/cartSlice';
+import { mergeGuestChatWithUser } from '../../../entities/chat/model/chatThunks';
 
 export default function SignupForm(): React.JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const guestId = useAppSelector((state) => state.user.guestId);
+  const chat = useAppSelector((state) => state.chat.chat);
+
+
 
   const submitHandler: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
     const validatedData = userFormSchema.parse(data);
     try {
-      void dispatch(signupUser(validatedData))
-        .then(() => dispatch(transferGuestCartToServer()).unwrap())
-        .then(() => navigate('/'))
-        .then(() => dispatch(clearCartLocally()))
-        .catch(console.error);
+      void dispatch(signupUser(validatedData)).unwrap().then((user) => {
+                        if (guestId && chat?.id) {
+                          return dispatch(mergeGuestChatWithUser({ guestId, userId: user.id })).unwrap();
+                        }
+                      })
+                .then(() => navigate('/'))
+                .catch(console.error);
     } catch (error) {
       console.error(error);
     }

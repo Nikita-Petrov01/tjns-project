@@ -1,25 +1,30 @@
 import React from 'react';
-import { useAppDispatch } from '../../../shared/lib/hooks';
+import { useAppDispatch, useAppSelector } from '../../../shared/lib/hooks';
 import { userLoginFormSchema } from '../../../entities/user/model/schema';
 import { loginUser } from '../../../entities/user/model/userThunks';
-import { transferGuestCartToServer } from '../../../entities/cart/model/cartThunks';
 import { Link, useNavigate } from 'react-router';
+import { mergeGuestChatWithUser } from '../../../entities/chat/model/chatThunks';
 
 export default function LoginForm(): React.JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const guestId = useAppSelector((state) => state.user.guestId);
+  const chat = useAppSelector((state) => state.chat.chat);
 
   const submitHandler: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
     const validatedData = userLoginFormSchema.parse(data);
     try {
-      void dispatch(loginUser(validatedData))
-      dispatch(transferGuestCartToServer()).unwrap()
-      .then(() => navigate('/'))
-      .catch(console.error);
+      void dispatch(loginUser(validatedData)).unwrap().then((user) => {
+                if (guestId && chat?.id) {
+                  return dispatch(mergeGuestChatWithUser({ guestId, userId: user.id })).unwrap();
+                }
+              })
+        .then(() => navigate('/'))
+        .catch(console.error);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   };
 
@@ -32,7 +37,9 @@ export default function LoginForm(): React.JSX.Element {
         <h2 className="text-4xl font-bold text-center text-[#3B945E]">Вход</h2>
 
         <div className="space-y-3">
-          <label htmlFor="email" className="block text-base">Email</label>
+          <label htmlFor="email" className="block text-base">
+            Email
+          </label>
           <input
             id="email"
             name="email"
@@ -44,7 +51,9 @@ export default function LoginForm(): React.JSX.Element {
         </div>
 
         <div className="space-y-3">
-          <label htmlFor="password" className="block text-base">Пароль</label>
+          <label htmlFor="password" className="block text-base">
+            Пароль
+          </label>
           <input
             id="password"
             name="password"

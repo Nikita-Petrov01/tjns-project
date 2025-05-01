@@ -15,9 +15,9 @@ export default function NavigationBar(): React.JSX.Element {
   useEffect(() => {
     void dispatch(getCategories());
   }, [dispatch]);
-  // const handleCreateCart = (): void => {
-  //   void dispatch(getCart()).unwrap().then(() => navigate('/cart'));
-  // };
+  const handleCreateCart = (): void => {
+    void dispatch(logoutUser())
+  };
   const categories = useAppSelector((store) => store.categories.categories);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   const closeSidebar = () => setIsSidebarOpen(false);
@@ -54,7 +54,7 @@ export default function NavigationBar(): React.JSX.Element {
           {user ? (
           <button
           className="bg-red-600 hover:bg-red-700 text-light px-5 py-2 rounded-full text-sm shadow-lg transition-colors duration-300"
-          onClick={() => void dispatch(logoutUser())}
+          onClick={handleCreateCart}
         >
           Выйти
         </button>

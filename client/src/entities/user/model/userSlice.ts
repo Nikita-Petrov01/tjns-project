@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { UserSliceT } from './types';
 import { getAdmin, loginUser, logoutUser, refreshUser, signupAdmin, signupUser } from './userThunks';
 import { v4 as uuidv4 } from 'uuid';
+import { remove } from 'lodash';
 const initialState: UserSliceT = {
   user: null,
   isRefreshLoading: false,
@@ -23,6 +24,10 @@ export const userSlice = createSlice({
         localStorage.setItem('guestId', id);
       }
       state.guestId = id;
+    }, 
+    removeGuestId: (state) => {
+      localStorage.removeItem('guestId');
+      state.guestId = null;
     }
     },
     extraReducers(builder) {
@@ -78,6 +83,6 @@ export const userSlice = createSlice({
     }
 })
 
-export const { initGuestId, setAdmin } = userSlice.actions;
+export const { removeGuestId, initGuestId, setAdmin } = userSlice.actions;
 
 export default userSlice.reducer;

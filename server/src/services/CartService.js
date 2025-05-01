@@ -2,10 +2,21 @@ const { Cart, CartItem, Product } = require('../../db/models');
 
 class CartService {
   static async getOrCreateCart(userId) {
-  let cart = await Cart.findOne({ where: { userId } });
+    console.log('юзерррррррррр', userId)
+  let cart = await Cart.findOne({ 
+    where: { userId }, 
+    include: [{
+      model: CartItem,
+      include: [Product]
+    }]
+  });
+  console.log('cart111111111111111111111111111111111111111111111', cart);
+
   if (!cart) {
     cart = await Cart.create({ userId });
+    cart.cartItems = [];
   }
+  console.log('cart22222222222222222222222222222222222222222222222222', cart);
   return cart;
   }
 
