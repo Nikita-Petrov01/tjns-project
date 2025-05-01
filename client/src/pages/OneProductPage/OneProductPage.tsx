@@ -17,6 +17,7 @@ import { setStateReview } from '../../entities/review/model/reviewSlice';
 import { addCartItem, updateCartItem } from '../../entities/cart/model/cartThunks';
 import { useFavoriteActions } from '../../entities/favorite/api/likeHook';
 import { LikeModal } from '../../features/LikeModal/ui/LikeModal';
+import { addGuestItemToCart, selectIsInCart } from '../../entities/cart/model/cartSlice';
 
 export default function OneProductPage(): React.JSX.Element {
   const { id } = useParams();
@@ -41,7 +42,6 @@ export default function OneProductPage(): React.JSX.Element {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  const guestCart = useGuestCart(product?.id ?? 0, product?.stock ?? 0, product?.price ?? 0);
 
   useEffect(() => {
     if (id) {
@@ -111,53 +111,6 @@ export default function OneProductPage(): React.JSX.Element {
 
   const rate =
     comments.map((comment) => comment.rating).reduce((a, b) => a + b, 0) / comments.length;
-
-  const quantity = user
-    ? (items.find((i) => i.productId === product?.id)?.quantity ?? 0)
-    : guestCart.quantity;
-
-  const add = (): void => {
-    if (!product) return;
-    if (quantity >= product.stock) return;
-    if (user) {
-      const existingItem = items.find((i) => i.productId === product.id);
-      if (existingItem) {
-        void dispatch(
-          updateCartItem({
-            itemId: existingItem.id,
-            updateData: { quantity: existingItem.quantity + 1 },
-          }),
-        );
-      } else {
-        void dispatch(
-          addCartItem({
-            productId: product.id,
-            quantity: 1,
-            price: product.price,
-          }),
-        );
-      }
-    } else {
-      guestCart.add();
-    }
-  };
-
-  const remove = (): void => {
-    if (!product) return;
-    if (user) {
-      const existingItem = items.find((i) => i.productId === product.id);
-      if (existingItem && existingItem.quantity > 1) {
-        void dispatch(
-          updateCartItem({
-            itemId: existingItem.id,
-            updateData: { quantity: existingItem.quantity - 1 },
-          }),
-        );
-      }
-    } else {
-      guestCart.remove();
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#E6F0FA] pt-20 sm:pt-24 font-poppins">
