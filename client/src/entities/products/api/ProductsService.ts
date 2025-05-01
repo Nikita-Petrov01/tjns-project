@@ -88,9 +88,13 @@ class ProductsService {
         for (const file of product.files) {
           formData.append('images', file);
         }
-      } else {
-        // Если нет новых файлов — передаём старые пути как JSON-строку
-        formData.append('oldImages', JSON.stringify(product.images));
+      }
+      
+      // Добавляем старые изображения (оставшиеся после удаления), всегда
+      if (product.oldImages && product.oldImages.length > 0) {
+        for (const img of product.oldImages) {
+          formData.append('oldImages', img);
+        }
       }
 
       const response = await this.client.put(`/products/${id}`, formData);

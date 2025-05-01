@@ -5,12 +5,8 @@ module.exports = {
     ],
     theme: {
       extend: {
-        colors: {
-          dark: '#182628',         // тёмный фон / текст
-          primary: '#65CCB8',      // основной акцент
-          secondary: '#57BA98',    // вторичный акцент
-          tertiary: '#3B945E',     // дополнительный акцент
-          light: '#F2F2F2',        // светлый фон
+        fontFamily: {
+          roboto: ['Roboto', 'sans-serif'],
         },
       },
     },
