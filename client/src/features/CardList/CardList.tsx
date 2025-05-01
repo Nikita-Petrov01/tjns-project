@@ -8,6 +8,7 @@ import ReactPaginate from 'react-paginate';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import './pagination.css';
 import { useSortedProducts } from '../ProducSortButton/useSortedProducts';
+import { getFavorites } from '../../entities/favorite/model/favoriteThunks';
 
 export default function CardList(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -17,11 +18,15 @@ export default function CardList(): React.JSX.Element {
   const reviews = useAppSelector((store) => store.rewiew.reviews);
   const searchedProducts = useAppSelector((store) => store.search.results);
   const searchQuery = useAppSelector((store) => store.search.query);
+  const user = useAppSelector((state) => state.user.user);
 
   useEffect(() => {
+    if (user) {
+      void dispatch(getFavorites(user.id));
+    }
     void dispatch(getProducts());
     void dispatch(getReviews());
-  }, [dispatch]);
+  }, [dispatch, user]);
 
   const activeProducts = searchQuery.length > 0 ? searchedProducts : products;
 
@@ -34,7 +39,7 @@ export default function CardList(): React.JSX.Element {
   // const currentItems = sortedProducts.slice(offset, offset + itemsPerPage);
 
   const productsToDisplay = sortedProducts.slice(offset, offset + itemsPerPage);
-  
+
   const handlePageClick = (event: { selected: number }) => {
     setCurrentPage(event.selected);
   };
