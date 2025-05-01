@@ -1,5 +1,3 @@
-
-import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../../shared/lib/hooks';
 import React, { useState } from 'react';
 
@@ -7,6 +5,7 @@ import { userLoginFormSchema } from '../../../entities/user/model/schema';
 import { loginUser } from '../../../entities/user/model/userThunks';
 import { Link, useNavigate } from 'react-router';
 import { mergeGuestChatWithUser } from '../../../entities/chat/model/chatThunks';
+import { setError, setIsLoading } from '../../../entities/chat/model/chatSlice';
 
 export default function LoginForm(): React.JSX.Element {
   const navigate = useNavigate();
@@ -23,10 +22,13 @@ export default function LoginForm(): React.JSX.Element {
     const data = Object.fromEntries(new FormData(e.currentTarget));
     try {
       const validatedData = userLoginFormSchema.parse(data);
-      void dispatch(loginUser(validatedData)).unwrap()
-        .then((user) => { if (guestId && chat?.id) { return dispatch(mergeGuestChatWithUser({ guestId, userId: user.id })).unwrap())
-                                                   }
-                        })
+      void dispatch(loginUser(validatedData))
+        .unwrap()
+        .then((user) => {
+          if (guestId && chat?.id) {
+            return dispatch(mergeGuestChatWithUser({ guestId, userId: user.id })).unwrap();
+          }
+        })
         .then(() => navigate('/'));
     } catch (error) {
       setError('Неверный email или пароль');
@@ -42,10 +44,8 @@ export default function LoginForm(): React.JSX.Element {
         onSubmit={submitHandler}
         className="w-full max-w-md sm:max-w-lg bg-white text-[#05386B] p-8 sm:p-10 rounded-3xl shadow-lg space-y-8 animate-fadeIn"
       >
-        <h2 className="text-3xl sm:text-4xl font-bold text-center text-[#05386B]">
-          Вход
-        </h2>
-        
+        <h2 className="text-3xl sm:text-4xl font-bold text-center text-[#05386B]">Вход</h2>
+
         {error && (
           <p className="text-[#05386B] text-sm text-center bg-[#8EE4AF]/50 p-2 rounded-lg">
             {error}
