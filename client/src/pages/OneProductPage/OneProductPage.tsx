@@ -3,7 +3,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { deleteById, getById, getOneProduct } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
-import { BiChevronLeft, BiChevronRight, BiEdit, BiTrash } from 'react-icons/bi';
+import {
+  BiChevronLeft,
+  BiChevronRight,
+  BiEdit,
+  BiHeart,
+  BiSolidHeart,
+  BiTrash,
+} from 'react-icons/bi';
 import { createReview, getReviewsByProductId } from '../../entities/review/model/reviewThunk';
 import { newReviewSchema } from '../../entities/review/model/schema';
 import type { ReviewT } from '../../entities/review/model/types';
@@ -11,11 +18,15 @@ import { setStateReview } from '../../entities/review/model/reviewSlice';
 import useGuestCart from '../../entities/cart/hooks/useGuestCart';
 import AddToCartButton from '../../entities/cart/ui/AddToCartButton';
 import { addCartItem, updateCartItem } from '../../entities/cart/model/cartThunks';
+import { useFavoriteActions } from '../../entities/favorite/api/likeHook';
+import { LikeModal } from '../../features/LikeModal/ui/LikeModal';
 
 export default function OneProductPage(): React.JSX.Element {
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const { handleFavoriteAction, isProductLiked } = useFavoriteActions();
 
   const prodByCat = useAppSelector((state) => state.products.productsByCategory);
 
@@ -23,17 +34,15 @@ export default function OneProductPage(): React.JSX.Element {
   const [allComments, setAllComments] = useState<ReviewT[]>([]);
   const [value, setValue] = useState<string>('');
   const [mainImageIndex, setMainImageIndex] = useState(0);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const product = useAppSelector((state) => state.products.product);
   const comments = useAppSelector((state) => state.rewiew.reviewsByProduct);
   const user = useAppSelector((state) => state.user.user);
   const items = useAppSelector((state) => state.cart.items);
+  const userId = useAppSelector((state) => state.user.user?.id);
 
-  const guestCart = useGuestCart(
-    product?.id ?? 0,
-    product?.stock ?? 0,
-    product?.price ?? 0
-  );
+  const guestCart = useGuestCart(product?.id ?? 0, product?.stock ?? 0, product?.price ?? 0);
 
   const show = useAppSelector((state) => state.rewiew.stateReview);
 
@@ -45,7 +54,7 @@ export default function OneProductPage(): React.JSX.Element {
     if (user) {
       void dispatch(setStateReview(user.id));
     }
-  }, [dispatch, id, user]);
+  }, [dispatch, id, user, userId]);
 
   useEffect(() => {
     void dispatch(getById(product?.categoryId ?? 0));
@@ -88,56 +97,60 @@ export default function OneProductPage(): React.JSX.Element {
 
   const rate =
     comments.map((comment) => comment.rating).reduce((a, b) => a + b, 0) / comments.length;
-  
-    const quantity = user
-    ? items.find((i) => i.productId === product?.id)?.quantity ?? 0
+
+  const quantity = user
+    ? (items.find((i) => i.productId === product?.id)?.quantity ?? 0)
     : guestCart.quantity;
 
-    const add = (): void => {
-      if (!product) return;
-  
-      if (quantity >= product.stock) {
-        // Больше на складе нет — ничего не делаем
-        return;
-      }
-  
-      if (user) {
-        const existingItem = items.find((i) => i.productId === product.id);
-        if (existingItem) {
-          void dispatch(updateCartItem({
+  const add = (): void => {
+    if (!product) return;
+
+    if (quantity >= product.stock) {
+      // Больше на складе нет — ничего не делаем
+      return;
+    }
+
+    if (user) {
+      const existingItem = items.find((i) => i.productId === product.id);
+      if (existingItem) {
+        void dispatch(
+          updateCartItem({
             itemId: existingItem.id,
-            updateData: { quantity: existingItem.quantity + 1 }
-          }));
-        } else {
-          void dispatch(addCartItem({
+            updateData: { quantity: existingItem.quantity + 1 },
+          }),
+        );
+      } else {
+        void dispatch(
+          addCartItem({
             productId: product.id,
             quantity: 1,
             price: product.price,
-          }));
-        }
-      } else {
-        guestCart.add();
+          }),
+        );
       }
-    };
+    } else {
+      guestCart.add();
+    }
+  };
 
-    
-    const remove = (): void => {
-      if (!product) return;
-  
-      if (user) {
-        const existingItem = items.find((i) => i.productId === product.id);
-        if (existingItem && existingItem.quantity > 1) {
-          void dispatch(updateCartItem({
+  const remove = (): void => {
+    if (!product) return;
+
+    if (user) {
+      const existingItem = items.find((i) => i.productId === product.id);
+      if (existingItem && existingItem.quantity > 1) {
+        void dispatch(
+          updateCartItem({
             itemId: existingItem.id,
-            updateData: { quantity: existingItem.quantity - 1 }
-          }));
-        }
-        // Если quantity === 1 — кнопку "-" можно скрыть или дизейблить
-      } else {
-        guestCart.remove();
+            updateData: { quantity: existingItem.quantity - 1 },
+          }),
+        );
       }
-    };
-    
+      // Если quantity === 1 — кнопку "-" можно скрыть или дизейблить
+    } else {
+      guestCart.remove();
+    }
+  };
 
   return (
     <div className="container mx-auto mt-4 px-4">
@@ -159,7 +172,7 @@ export default function OneProductPage(): React.JSX.Element {
             onClick={(e) => {
               e.stopPropagation();
               if (confirm('Вы уверены, что хотите удалить товар?')) {
-                dispatch(deleteById(product.id));
+                void dispatch(deleteById(product.id));
                 navigate('/');
               }
             }}
@@ -224,16 +237,49 @@ export default function OneProductPage(): React.JSX.Element {
 
         {/* Информация о товаре */}
         <div className="w-full md:w-1/2">
-          {/* Рейтинг */}
-          <div className="mb-4">
-            {rate > 0 ? (
-              <span className="text-yellow-500 text-2xl font-medium flex items-center gap-1">
-                ★ {rate.toFixed(1)}
-              </span>
-            ) : (
-              <span className="text-gray-300 text-2xl font-medium">★ 0</span>
+          <div className="mb-6 flex items-center gap-4">
+            {product && (
+              <AddToCartButton
+                quantity={quantity}
+                stock={product.stock}
+                add={add}
+                remove={remove}
+              />
             )}
+
+            {/* Рейтинг */}
+            <div className="mb-4">
+              {rate > 0 ? (
+                <span className="text-yellow-500 text-2xl font-medium flex items-center gap-1">
+                  ★ {rate.toFixed(1)}
+                </span>
+              ) : (
+                <span className="text-gray-300 text-2xl font-medium">★ 0</span>
+              )}
+            </div>
+
+            {/* Кнопка избранного */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (product) {
+                  handleFavoriteAction(product, setShowAuthModal);
+                }
+              }}
+              className="p-2 border rounded-full hover:bg-gray-100 transition-colors"
+              title={
+                isProductLiked(product?.id ?? 0) ? 'Удалить из избранного' : 'Добавить в избранное'
+              }
+            >
+              {isProductLiked(product?.id ?? 0) ? (
+                <BiSolidHeart className="w-6 h-6 text-red-500" />
+              ) : (
+                <BiHeart className="w-6 h-6" />
+              )}
+            </button>
           </div>
+
+          <LikeModal show={showAuthModal} onHide={() => setShowAuthModal(false)} />
 
           {/* Название товара */}
           <h1 className="text-3xl font-semibold text-gray-800 mb-4">{product?.name}</h1>
@@ -327,7 +373,7 @@ export default function OneProductPage(): React.JSX.Element {
                   key={comment.id}
                   className="w-150 border border-gray-200 rounded-2xl shadow-sm bg-white overflow-hidden"
                 >
-                  <div className="p-3" >
+                  <div className="p-3">
                     <div className="flex justify-between items-center mb-2">
                       <div className="flex space-x-1">
                         {[...Array(5)].map((_, i) => (

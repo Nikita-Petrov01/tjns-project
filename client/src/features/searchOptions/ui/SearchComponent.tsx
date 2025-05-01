@@ -12,15 +12,12 @@ function SearchComponent(): React.JSX.Element {
   const { results } = useAppSelector((state) => state.search);
   const navigate = useNavigate();
 
-  // Получаем все категории
   const categories = useAppSelector((state) => state.categories.categories);
 
-  // Загружаем категории при монтировании
   useEffect(() => {
     void dispatch(getCategories());
   }, [dispatch]);
 
-  // Поиск с debounce
   useEffect(() => {
     const timer = setTimeout(() => {
       if (query.length > 2) {
@@ -45,10 +42,8 @@ function SearchComponent(): React.JSX.Element {
   const handleItemClick = (itemName: string): void => {
     setQuery(itemName);
     setIsDropdownOpen(false);
-    // Здесь можно добавить логику для перехода к товару/категории
   };
 
-  // Закрытие dropdown при клике вне его области
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent): void => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -62,29 +57,26 @@ function SearchComponent(): React.JSX.Element {
   }, []);
 
   return (
-    <div className="relative max-w-lg mx-auto" ref={dropdownRef}>
-      <div className="flex">
+    <div className="relative w-full max-w-md" ref={dropdownRef}>
+      <div className="flex items-center w-full">
         <div className="relative w-full">
           <input
             type="search"
             value={query}
             onChange={handleChange}
             onFocus={() => setIsDropdownOpen(true)}
-            className="block py-2 px-4 w-full text-black bg-white rounded-lg border-2 border-gray-300 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-all duration-200 shadow-sm hover:border-blue-300"
-            placeholder="Введите название товара или категории..."
-            required
+            className="block w-full h-10 pl-4 pr-12 py-2 text-base text-gray-900 bg-white rounded-3xl border border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-transparent shadow-sm transition-all duration-200"
+            placeholder="Поиск по товарам и категориям"
             style={{
-              minWidth: '400px',
-              maxWidth: '500px',
-              height: '40px',
+              boxShadow: '0 2px 10px rgba(126, 34, 206, 0.2)',
             }}
           />
           <button
             type="submit"
-            className="absolute top-0 end-0 p-2.5 h-full text-white bg-blue-600 hover:bg-blue-700 rounded-e-lg border border-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300/50 transition-all"
+            className="absolute right-0 top-0 h-10 w-12 flex items-center justify-center text-white bg-purple-600 hover:bg-purple-700 rounded-r-3xl transition-colors"
           >
             <svg
-              className="w-4 h-4"
+              className="w-5 h-5"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -94,7 +86,7 @@ function SearchComponent(): React.JSX.Element {
                 stroke="currentColor"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="2.5"
+                strokeWidth="2"
                 d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
               />
             </svg>
@@ -103,22 +95,22 @@ function SearchComponent(): React.JSX.Element {
       </div>
 
       {isDropdownOpen && (results.length > 0 || filteredCategories.length > 0) && (
-        <div className="absolute z-20 w-full mt-2 bg-white rounded-lg shadow-xl border border-gray-200 max-h-80 overflow-auto">
+        <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-auto">
           {/* Секция категорий */}
           {filteredCategories.length > 0 && (
             <div className="border-b border-gray-200">
-              <div className="px-4 py-2 text-xs font-semibold text-gray-500 bg-gray-50">
+              <div className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100">
                 Категории
               </div>
               <ul>
                 {filteredCategories.map((category) => (
-                  <li key={category.id} className="hover:bg-blue-50 transition-colors">
+                  <li key={category.id} className="hover:bg-purple-50 transition-colors">
                     <button
                       type="button"
                       onClick={() => navigate(`/categories/${category.id.toString()}`)}
                       className="flex items-center w-full px-4 py-3 text-left"
                     >
-                      <div className="mr-3 text-blue-500">
+                      <div className="mr-3 text-purple-600">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-5 w-5"
@@ -145,19 +137,19 @@ function SearchComponent(): React.JSX.Element {
           {/* Секция товаров */}
           {results.length > 0 && (
             <div>
-              <div className="px-4 py-2 text-xs font-semibold text-gray-500 bg-gray-50">Товары</div>
+              <div className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100">Товары</div>
               <ul>
                 {results.map((item) => (
                   <li
                     key={item.id}
-                    className="hover:bg-blue-50 transition-colors border-t border-gray-100"
+                    className="hover:bg-purple-50 transition-colors border-t border-gray-100"
                   >
                     <button
                       type="button"
                       onClick={() => handleItemClick(item.name)}
                       className="flex items-center w-full px-4 py-3 text-left"
                     >
-                      <div className="mr-3 text-blue-500">
+                      <div className="mr-3 text-purple-600">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-5 w-5"
@@ -175,9 +167,9 @@ function SearchComponent(): React.JSX.Element {
                       </div>
                       <div>
                         <span className="block font-medium text-gray-800">{item.name}</span>
-                        <span className="block text-xs text-gray-500 mt-1">
-                          Категория:{' '}
-                          {categories.find((c) => c.id === item.categoryId)?.name ?? 'Не указана'}
+                        <span className="block text-sm text-gray-500 mt-1">
+                          {categories.find((c) => c.id === item.categoryId)?.name ??
+                            'Без категории'}
                         </span>
                       </div>
                     </button>

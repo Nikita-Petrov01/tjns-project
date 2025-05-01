@@ -18,8 +18,6 @@ import syncCartWithServer from '../../entities/cart/api/syncCartWithServer';
 import { store } from '../../app/store';
 import { toast } from 'react-toastify';
 import type { CartItemT } from '../../entities/cart/model/cartTypes';
-import { z } from 'zod';
-import { zip } from 'lodash';
 
 export default function CartPage(): React.JSX.Element {
   const dispatch = useAppDispatch();
