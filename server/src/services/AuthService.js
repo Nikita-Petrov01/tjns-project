@@ -21,6 +21,16 @@ class AuthService {
     return resultUser;
   }
 
+  static async getUsers(){
+    const users = await User.findAll({
+      where: {
+        status: 'user',
+      },
+    });
+
+    return users;
+  }
+
   static async getAdmins() {
     const admins = await User.findAll({
       where: {

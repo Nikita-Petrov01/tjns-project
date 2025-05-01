@@ -14,6 +14,8 @@ export default function FilteredCardList(): React.JSX.Element {
 
   const prodByCat = useAppSelector((state) => state.products.productsByCategory);
   const reviews = useAppSelector((state) => state.rewiew.reviews);
+  const categories = useAppSelector((state) => state.categories.categories);
+  const categoryName = categories.find((cat) => cat.id === Number(id))?.name || 'Категория';
 
   useEffect(() => {
     void dispatch(getById(Number(id)));
@@ -23,16 +25,28 @@ export default function FilteredCardList(): React.JSX.Element {
   const { sortedProducts, sortType, setSortType } = useSortedProducts(prodByCat, reviews);
 
   return (
-    <Container>
-      <ProductSortButtons sortType={sortType} onSortChange={setSortType} />
+    <div className="min-h-screen bg-gradient-to-b from-[#EDF5E1] to-[#8EE4AF] pt-20 sm:pt-24 font-roboto">
+      <Container>
+        <h1 className="text-2xl sm:text-3xl text-[#05386B] font-bold mb-6 text-center sm:text-left">
+          {categoryName}
+        </h1>
+        <ProductSortButtons
+          sortType={sortType}
+          onSortChange={setSortType}
+          className="flex justify-center sm:justify-start mb-6 z-10"
+        />
 
-      <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-        {sortedProducts.map((product) => (
-          <Col key={product.id} className="d-flex">
-            <ProductCard product={product} rating={product.averageRating} />
-          </Col>
-        ))}
-      </Row>
-    </Container>
+        <Row xs={1} sm={2} md={3} lg={4} className="g-3 sm:g-4">
+          {sortedProducts.map((product) => (
+            <Col
+              key={product.id}
+              className="d-flex transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            >
+              <ProductCard product={product} rating={product.averageRating} />
+            </Col>
+          ))}
+        </Row>
+      </Container>
+    </div>
   );
 }
