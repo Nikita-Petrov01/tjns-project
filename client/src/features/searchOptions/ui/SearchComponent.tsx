@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../shared/lib/hooks';
 import { searchProducts } from '../../../entities/searchOptions/model/searchThunks';
 import { getCategories } from '../../../entities/category/model/categoryThunks';
+import { useNavigate } from 'react-router';
 
 function SearchComponent(): React.JSX.Element {
   const [query, setQuery] = useState('');
@@ -9,6 +10,7 @@ function SearchComponent(): React.JSX.Element {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
   const { results } = useAppSelector((state) => state.search);
+  const navigate = useNavigate();
 
   // Получаем все категории
   const categories = useAppSelector((state) => state.categories.categories);
@@ -60,7 +62,6 @@ function SearchComponent(): React.JSX.Element {
   }, []);
 
   return (
-
     <div className="relative max-w-lg mx-auto" ref={dropdownRef}>
       <div className="flex">
         <div className="relative w-full">
@@ -98,7 +99,6 @@ function SearchComponent(): React.JSX.Element {
               />
             </svg>
           </button>
-
         </div>
       </div>
 
@@ -115,7 +115,7 @@ function SearchComponent(): React.JSX.Element {
                   <li key={category.id} className="hover:bg-blue-50 transition-colors">
                     <button
                       type="button"
-                      onClick={() => handleItemClick(category.name)}
+                      onClick={() => navigate(`/categories/${category.id.toString()}`)}
                       className="flex items-center w-full px-4 py-3 text-left"
                     >
                       <div className="mr-3 text-blue-500">

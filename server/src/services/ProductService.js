@@ -34,17 +34,38 @@ class ProductService {
 
   static async updateProduct(id, { name, description, images, price, categoryId, brand, stock }) {
     const product = await Product.findByPk(id);
-    if (!product) {
-      throw new Error('Товар не найден');
-    }
-
-    if (!name || !description || !images || !price || !categoryId || !brand || stock === undefined) {
+    if (!product) throw new Error('Товар не найден');
+  
+    // Приводим к числам, так как из FormData они строкой
+    const parsedPrice = Number(price);
+    const parsedStock = Number(stock);
+    const parsedCategoryId = Number(categoryId);
+  
+    if (
+      !name ||
+      !description ||
+      !images ||
+      isNaN(parsedPrice) ||
+      isNaN(parsedStock) ||
+      isNaN(parsedCategoryId) ||
+      !brand
+    ) {
       throw new Error('Не хватает данных для обновления товара');
     }
-
-    await product.update({ name, description, images, price, categoryId, brand, stock });
+  
+    await product.update({
+      name,
+      description,
+      images,
+      price: parsedPrice,
+      categoryId: parsedCategoryId,
+      brand,
+      stock: parsedStock,
+    });
+  
     return product;
   }
+  
 
   static async deleteProduct(id) {
     const deleteProduct = await Product.destroy({ where: { id } });

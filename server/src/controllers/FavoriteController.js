@@ -37,11 +37,22 @@ class FavoriteController {
 
   static async getAllFavoritesByUserId(req, res) {
     try {
-      const favorites = await FavoriteService.getAllFavoritesByUserId(req.params.userId);
-      res.json(favorites);
+      const userId = Number(req.params.userId);
+
+      if (Number.isNaN(userId) || userId <= 0) {
+        return res.status(400).json({
+          error: 'Некорректный ID пользователя',
+          details: 'ID пользователя должно быть положительным числом',
+        });
+      }
+
+      // Получаем данные
+      const favorites = await FavoriteService.getAllFavoritesByUserId(userId);
+
+      return res.json(favorites);
     } catch (error) {
       console.error('Ошибка при получении избранных товаров', error);
-      res.status(500).send(`Ошибка сервера при получении избранных товаров`);
+      return res.status(500).send(`Ошибка сервера при получении избранных товаров`);
     }
   }
 }

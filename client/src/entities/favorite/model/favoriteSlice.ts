@@ -13,13 +13,15 @@ export const favoriteSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+
     // getAllFavorites
     builder.addCase(getFavorites.fulfilled, (state, action) => {
       state.favorites = action.payload;
       state.loading = false;
     });
-    builder.addCase(getFavorites.rejected, (_, action) => {
+    builder.addCase(getFavorites.rejected, (state, action) => {
       console.error(action.error);
+      state.loading = false;
     });
     builder.addCase(getFavorites.pending, (state) => {
       state.loading = true;

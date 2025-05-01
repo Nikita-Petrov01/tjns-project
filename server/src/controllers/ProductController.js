@@ -43,7 +43,20 @@ class ProductController {
 
   static async createProduct(req, res) {
     try {
-      const product = await ProductService.createProduct(req.body);
+      const imagePaths = req.files.map((file) => `/uploads/${file.filename}`); // путь к файлам
+
+      const { name, description, price, categoryId, brand, stock } = req.body;
+
+      const product = await ProductService.createProduct({
+        name,
+        description,
+        images: imagePaths,
+        price,
+        categoryId,
+        brand,
+        stock,
+      });
+
       res.json(product);
     } catch (error) {
       console.error({ error: error.message }, 'Ошибка при создании товара');
@@ -54,10 +67,26 @@ class ProductController {
   static async updatePost(req, res) {
     try {
       const { id } = req.params;
-      const product = await ProductService.updateProduct(id, req.body);
+
+      const files = req.files || [];
+      const uploadedImages = files.map((file) => `/uploads/${file.filename}`);
+
+      const oldImages = Array.isArray(req.body.oldImages)
+        ? req.body.oldImages
+        : req.body.oldImages
+        ? [req.body.oldImages]
+        : [];
+
+      const allImages = [...oldImages, ...uploadedImages];
+
+      const product = await ProductService.updateProduct(id, {
+        ...req.body,
+        images: allImages,
+      });
+
       res.json(product);
     } catch (error) {
-      console.error({ error: error.message }, 'Ошибка при обновлении товара');
+      console.error('Ошибка при обновлении товара:', error);
       res.status(500).send('Ошибка сервера при обновлении товара');
     }
   }

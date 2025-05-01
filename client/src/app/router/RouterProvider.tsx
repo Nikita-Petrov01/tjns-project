@@ -24,6 +24,9 @@ import AdminChatPage from '../../pages/AdminChatPage/AdminChatPage';
 import { loadGuestCart } from '../../entities/cart/model/cartSlice';
 import { getCart, getCartItems, mergeGuestCart } from '../../entities/cart/model/cartThunks';
 
+import FavoritePage from '../../pages/FavoritePage/FavoritePage';
+
+
 function RouterProvider(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const {user, isRefreshLoading} = useAppSelector((state) => state.user);
