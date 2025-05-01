@@ -16,59 +16,56 @@ export default function ProductCard({ product, rating }: Props): React.JSX.Eleme
   const { handleFavoriteAction, isProductLiked, loading } = useFavoriteActions();
   const isLiked = isProductLiked(product.id);
 
-  if (loading) return <div className="text-[#05386B] text-center">Loading...</div>;
+  if (loading) return <div className="text-[#1A3C6D] text-center font-poppins">Загрузка...</div>;
 
   return (
     <>
       <div
-        className="relative flex flex-col bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 cursor-pointer w-full"
+        className="relative flex flex-col transition-all duration-300 cursor-pointer w-full"
         onClick={() => navigate(`/products/${product.id.toString()}`)}
       >
         {/* Рейтинг */}
         {rating !== undefined && (
-          <div className="absolute top-2 left-2 bg-[#5CD8B5] text-[#05386B] text-sm font-semibold px-2 py-1 rounded">
+          <div className="absolute top-3 left-3 bg-[#FBBF24] text-[#1A3C6D] text-xs font-semibold px-2 py-1 rounded-lg">
             ★ {rating.toFixed(1)}
           </div>
         )}
 
-        <div className="absolute top-2 right-2 flex gap-2">
+        <div className="absolute top-3 right-3 flex gap-2 z-10">
           <button
-            className="p-1 bg-[#EDF5E1] rounded-full shadow-sm hover:bg-[#8EE4AF] transition-colors duration-200"
-            title="favorite"
+            className="p-1.5 bg-[#D1E3F6] rounded-full hover:bg-[#B3CFF5] transition-colors duration-300"
+            title="Избранное"
             onClick={(e) => {
               e.stopPropagation();
               void handleFavoriteAction(product, setShowAuthModal);
             }}
           >
-
             {isLiked ? (
-              <BiSolidHeart className="text-[#379683]" size={18} />
+              <BiSolidHeart className="text-[#EF4444]" size={20} />
             ) : (
-              <BiHeart className="text-[#05386B]" size={18} />
+              <BiHeart className="text-[#6B7280]" size={20} />
             )}
-
           </button>
         </div>
 
         {/* Изображение товара */}
-
-        <div className="h-48 bg-[#EDF5E1] flex items-center justify-center overflow-hidden">
+        <div className="h-48 bg-white shadow-sm rounded-xl flex items-center justify-center overflow-hidden">
           <img
             src={product.images[0]}
             alt={product.name}
-            className="h-full w-full object-contain p-2"
+            className="h-full w-full object-contain rounded-xl p-4"
           />
-
         </div>
+
         {/* Информация о товаре */}
         <div className="flex flex-col flex-grow p-4">
-          <h3 className="text-base sm:text-lg font-semibold text-[#05386B] truncate">
+          <h3 className="text-base sm:text-lg font-semibold text-[#1A3C6D] truncate">
             {product.name}
           </h3>
-          <p className="text-sm text-[#05386B] flex-grow line-clamp-3">
+          <p className="text-sm text-[#6B7280] flex-grow line-clamp-2 mt-0.5">
             {product.description}
           </p>
-          <p className="text-base sm:text-lg font-bold text-[#379683] mt-4">
+          <p className="text-lg font-bold text-[#1A3C6D] mt-1">
             {product.price.toLocaleString()} ₽
           </p>
         </div>

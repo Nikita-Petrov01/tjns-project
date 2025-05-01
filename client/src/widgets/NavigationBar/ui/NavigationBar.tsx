@@ -53,50 +53,44 @@ export default function NavigationBar(): React.JSX.Element {
     <>
       {/* Затемнение фона при открытии сайдбара */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-30 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black bg-opacity-50 z-9999 transition-opacity duration-300 ${
           isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={closeSidebar}
       />
 
+      {/* Навбар */}
       <nav
-        className={`fixed top-0 left-0 w-full bg-[#05386B] text-[#EDF5E1] shadow-lg py-4 px-6 sm:px-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-8 z-50 font-roboto transition-transform duration-300 ${
+        className={`fixed top-0 left-0 w-full bg-white shadow-sm py-4 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 z-9999 font-poppins transition-transform duration-300 rounded-b-xl ${
           isScrolled ? '-translate-y-full' : 'translate-y-0'
         }`}
+      
       >
-        <svg
-          className="absolute bottom-0 left-0 w-full h-12"
-          viewBox="0 0 1440 100" 
-          preserveAspectRatio="none"
-        >
-          <path d="M0,0 C30,30 720,90 1440,20 V100 H0 Z" fill="#379683" />
-        </svg>
-
-        <div className="flex items-center gap-4 z-10">
+        <div className="flex items-center gap-4 z-9999">
           <button
-            className="text-[#EDF5E1] text-2xl hover:text-[#5CD8B5] transition-colors duration-300 focus:outline-none p-2 rounded-full"
+            className="text-gray-600 text-2xl hover:text-blue-500 transition-colors duration-300 focus:outline-none p-2 rounded-full"
             onClick={toggleSidebar}
           >
             {isSidebarOpen ? '✕' : '☰'}
           </button>
           <Link
             to="/"
-            className="text-[#8EE4AF] text-3xl font-bold tracking-tight hover:text-[#5CD8B5] transition-colors duration-300 no-underline"
+            className="text-gray-800 text-2xl font-semibold hover:text-blue-500 transition-colors duration-300 no-underline"
           >
             TJNS
           </Link>
         </div>
 
-        <div className="flex-1 flex justify-center items-center gap-4 z-10">
-          <div className="w-full max-w-xl">
+        <div className="flex-1 flex justify-center items-center gap-4 z-9999">
+          <div className="w-full max-w-md lg:max-w-lg">
             <SearchComponent />
           </div>
         </div>
 
-        <div className="flex items-center gap-4 z-10">
-          <div className="flex gap-4">
+        <div className="flex items-center gap-4">
+          <div className="flex gap-2">
             <button
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-[#379683] hover:bg-[#5CD8B5] text-[#EDF5E1] transition-colors duration-200 relative group"
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-500 transition-colors duration-200 relative"
               onClick={() => navigate('/favorites')}
               onMouseEnter={() => setIsFavoriteHovered(true)}
               onMouseLeave={() => setIsFavoriteHovered(false)}
@@ -104,14 +98,14 @@ export default function NavigationBar(): React.JSX.Element {
             >
               {isFavoriteHovered ? <HeartFill size={20} /> : <Heart size={20} />}
               {favoriteCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#5CD8B5] text-[#05386B] text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {favoriteCount}
                 </span>
               )}
             </button>
 
             <button
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-[#379683] hover:bg-[#5CD8B5] text-[#EDF5E1] transition-colors duration-200 relative group"
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-500 transition-colors duration-200 relative"
               onClick={() => navigate('/cart')}
               onMouseEnter={() => setIsCartHovered(true)}
               onMouseLeave={() => setIsCartHovered(false)}
@@ -119,7 +113,7 @@ export default function NavigationBar(): React.JSX.Element {
             >
               {isCartHovered ? <CartFill size={20} /> : <Cart size={20} />}
               {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#5CD8B5] text-[#05386B] text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {cartItemCount}
                 </span>
               )}
@@ -129,18 +123,20 @@ export default function NavigationBar(): React.JSX.Element {
           {user ? (
             <div className="relative" ref={menuRef}>
               <button
-                className="w-10 h-10 flex items-center justify-center bg-[#379683] text-[#EDF5E1] rounded-full font-bold hover:scale-105 transition-transform"
+                className="w-10 h-10 flex items-center justify-center bg-gray-100 text-gray-600 rounded-full font-semibold hover:bg-blue-100 hover:text-blue-500 transition-colors duration-200"
                 onClick={() => setIsUserMenuOpen((prev) => !prev)}
               >
                 {user.name[0].toUpperCase()}
               </button>
 
               {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-[#EDF5E1] border border-[#5CD8B5] rounded-xl shadow-lg z-50 overflow-hidden">
-                  <div className="px-4 py-3 font-semibold text-[#05386B] border-b">{user.name}</div>
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-[#D1E3F6] rounded-xl shadow-md z-9999 overflow-hidden">
+                  <div className="px-4 py-3 font-semibold text-[#1A3C6D] border-b border-[#D1E3F6]">
+                    {user.name}
+                  </div>
                   {isAdmin && (
                     <button
-                      className="w-full text-left px-4 py-3 hover:bg-[#8EE4AF] text-sm text-[#05386B]"
+                      className="w-full text-left px-4 py-2 text-sm text-[#1A3C6D] hover:bg-[#D1E3F6] hover:text-[#3B5A9A] transition-colors duration-300"
                       onClick={() => {
                         void navigate('/admin');
                         setIsUserMenuOpen(false);
@@ -150,7 +146,7 @@ export default function NavigationBar(): React.JSX.Element {
                     </button>
                   )}
                   <button
-                    className="w-full text-left px-4 py-3 hover:bg-[#8EE4AF] text-sm text-[#05386B]"
+                    className="w-full text-left px-4 py-2 text-sm text-[#1A3C6D] hover:bg-[#D1E3F6] hover:text-[#3B5A9A] transition-colors duration-300"
                     onClick={() => {
                       void navigate('/orders');
                       setIsUserMenuOpen(false);
@@ -159,7 +155,7 @@ export default function NavigationBar(): React.JSX.Element {
                     История заказов
                   </button>
                   <button
-                    className="w-full text-left px-4 py-3 hover:bg-[#8EE4AF] text-sm text-[#05386B]"
+                    className="w-full text-left px-4 py-2 text-sm text-[#1A3C6D] hover:bg-[#D1E3F6] hover:text-[#3B5A9A] transition-colors duration-300"
                     onClick={() => {
                       void navigate('/favorites');
                       setIsUserMenuOpen(false);
@@ -168,7 +164,7 @@ export default function NavigationBar(): React.JSX.Element {
                     Избранное
                   </button>
                   <button
-                    className="w-full text-left px-4 py-3 hover:bg-[#8EE4AF] text-sm text-[#05386B]"
+                    className="w-full text-left px-4 py-2 text-sm text-[#1A3C6D] hover:bg-[#D1E3F6] hover:text-[#3B5A9A] transition-colors duration-300"
                     onClick={() => {
                       void navigate(isAdmin ? '/admin/chat' : '/chat');
                       setIsUserMenuOpen(false);
@@ -177,7 +173,7 @@ export default function NavigationBar(): React.JSX.Element {
                     Чат поддержки
                   </button>
                   <button
-                    className="w-full text-left px-4 py-3 hover:bg-[#5CD8B5] text-sm text-[#05386B]"
+                    className="w-full text-left px-4 py-2 text-sm text-[#1A3C6D] hover:bg-[#D1E3F6] hover:text-[#3B5A9A] transition-colors duration-300"
                     onClick={() => {
                       void dispatch(logoutUser());
                       setIsUserMenuOpen(false);
@@ -191,13 +187,13 @@ export default function NavigationBar(): React.JSX.Element {
           ) : (
             <>
               <button
-                className="text-[#EDF5E1] px-4 py-2 rounded-3xl hover:bg-[#5CD8B5] text-sm transition-colors duration-300"
+                className="text-gray-600 px-4 py-2 rounded-full hover:bg-blue-100 hover:text-blue-500 text-sm transition-colors duration-300"
                 onClick={() => void navigate('/login')}
               >
                 Войти
               </button>
               <button
-                className="bg-[#379683] hover:bg-[#5CD8B5] text-[#EDF5E1] px-4 py-2 rounded-3xl text-sm shadow-lg transition-colors duration-300"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm transition-colors duration-300"
                 onClick={() => void navigate('/signup')}
               >
                 Зарегистрироваться
@@ -207,33 +203,43 @@ export default function NavigationBar(): React.JSX.Element {
         </div>
       </nav>
 
-      {/* Sidebar */}
+      {/* Сайдбар */}
       <div
-        className={`fixed top-0 left-0 h-screen w-72 bg-gradient-to-b from-[#8EE4AF] to-[#5CD8B5] shadow-2xl transform transition-transform duration-500 ease-in-out z-40 font-roboto ${
+        className={`fixed top-0 left-0 h-screen w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-9999 font-poppins ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between p-6 bg-[#379683] text-[#EDF5E1]">
-          <h2 className="text-2xl font-bold tracking-tight">Категории</h2>
+        <div className="flex items-center justify-between p-4 bg-gray-50 text-gray-800">
+          <h2 className="text-xl font-semibold">Категории</h2>
           <button
-            className="text-[#EDF5E1] hover:text-[#05386B] transition-colors duration-300 p-2 rounded-full hover:bg-[#8EE4AF]"
+            className="text-gray-600 hover:text-blue-500 transition-colors duration-300 p-2 rounded-full"
             onClick={closeSidebar}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
-        <ul className="p-6 space-y-3">
+        <ul className="p-4 space-y-2">
           <li>
             <Link
               to="/"
-              className="flex items-center gap-3 px-4 py-3 text-[#05386B] hover:bg-[#EDF5E1] hover:text-[#379683] rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg no-underline font-medium"
+              className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-500 rounded-lg transition-colors duration-300 no-underline font-medium"
               onClick={closeSidebar}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
               Все товары
             </Link>
@@ -243,11 +249,16 @@ export default function NavigationBar(): React.JSX.Element {
             <li key={category.id}>
               <Link
                 to={`/categories/${category.id.toString()}`}
-                className="flex items-center gap-3 px-4 py-3 text-[#05386B] hover:bg-[#EDF5E1] hover:text-[#379683] rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg no-underline font-medium"
+                className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-500 rounded-lg transition-colors duration-300 no-underline font-medium"
                 onClick={closeSidebar}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
                 </svg>
                 {category.name}
               </Link>
