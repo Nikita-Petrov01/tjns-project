@@ -42,8 +42,8 @@ export default function CardList(): React.JSX.Element {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#EDF5E1] to-[#8EE4AF] pt-20 sm:pt-24 font-roboto">
-      <div className="container mx-auto px-4 sm:px-6">
+    <div className="min-h-screen bg-[#E6F0FA] pt-20 sm:pt-24 font-poppins">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <ProductSortButtons
           sortType={sortType}
           onSortChange={setSortType}
@@ -54,7 +54,7 @@ export default function CardList(): React.JSX.Element {
           {productsToDisplay.map((product) => (
             <div
               key={product.id}
-              className="flex transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              className="flex transform transition-all duration-300 hover:scale-[1.02]"
             >
               <ProductCard product={product} rating={product.averageRating} />
             </div>
@@ -63,19 +63,19 @@ export default function CardList(): React.JSX.Element {
 
         <div className="mt-10 sm:mt-12 flex justify-center">
           <ReactPaginate
-            previousLabel={<ChevronLeft size={20} className="text-[#379683]" />}
-            nextLabel={<ChevronRight size={20} className="text-[#379683]" />}
-            breakLabel={<MoreHorizontal size={18} className="text-[#05386B]" />}
+            previousLabel={<ChevronLeft size={20} className="text-[#1A3C6D]" />}
+            nextLabel={<ChevronRight size={20} className="text-[#1A3C6D]" />}
+            breakLabel={<MoreHorizontal size={18} className="text-[#6B7280]" />}
             pageCount={pageCount}
             marginPagesDisplayed={2}
             pageRangeDisplayed={5}
             onPageChange={handlePageClick}
             renderOnZeroPageCount={null}
             containerClassName="flex items-center gap-2"
-            pageClassName="w-8 h-8 flex items-center justify-center text-[#05386B] hover:bg-[#8EE4AF] hover:text-[#379683] rounded-full transition-all duration-200"
-            activeClassName="bg-[#5CD8B5] text-[#05386B] font-bold"
-            previousClassName="w-8 h-8 flex items-center justify-center hover:bg-[#8EE4AF] rounded-full transition-all duration-200"
-            nextClassName="w-8 h-8 flex items-center justify-center hover:bg-[#8EE4AF] rounded-full transition-all duration-200"
+            pageClassName="w-8 h-8 flex items-center justify-center text-[#1A3C6D] hover:bg-[#D1E3F6] hover:text-[#3B5A9A] rounded-full transition-all duration-300"
+            activeClassName="bg-[#1A3C6D] text-white font-semibold"
+            previousClassName="w-8 h-8 flex items-center justify-center hover:bg-[#D1E3F6] rounded-full transition-all duration-300"
+            nextClassName="w-8 h-8 flex items-center justify-center hover:bg-[#D1E3F6] rounded-full transition-all duration-300"
             breakClassName="w-8 h-8 flex items-center justify-center"
             disabledClassName="opacity-50 cursor-not-allowed"
           />

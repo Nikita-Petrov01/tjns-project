@@ -5,6 +5,7 @@ import NavigationBar from '../../widgets/NavigationBar/ui/NavigationBar';
 function Layout(): React.JSX.Element {
   return (
     <>
+    
       <NavigationBar />
 
       <Outlet />

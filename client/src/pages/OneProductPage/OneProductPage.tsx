@@ -1,7 +1,5 @@
-import type React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { deleteById, getById, getOneProduct } from '../../entities/products/model/productThunk';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
 import {
   BiChevronLeft,
@@ -11,6 +9,7 @@ import {
   BiSolidHeart,
   BiTrash,
 } from 'react-icons/bi';
+import { deleteById, getById, getOneProduct } from '../../entities/products/model/productThunk';
 import { createReview, getReviewsByProductId } from '../../entities/review/model/reviewThunk';
 import { newReviewSchema } from '../../entities/review/model/schema';
 import type { ReviewT } from '../../entities/review/model/types';
@@ -29,6 +28,12 @@ export default function OneProductPage(): React.JSX.Element {
   const { handleFavoriteAction, isProductLiked } = useFavoriteActions();
 
   const prodByCat = useAppSelector((state) => state.products.productsByCategory);
+  const product = useAppSelector((state) => state.products.product);
+  const comments = useAppSelector((state) => state.rewiew.reviewsByProduct);
+  const user = useAppSelector((state) => state.user.user);
+  const items = useAppSelector((state) => state.cart.items);
+  const userId = useAppSelector((state) => state.user.user?.id);
+  const show = useAppSelector((state) => state.rewiew.stateReview);
 
   const [selected, setSelected] = useState<number | null>(null);
   const [allComments, setAllComments] = useState<ReviewT[]>([]);
@@ -36,15 +41,7 @@ export default function OneProductPage(): React.JSX.Element {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  const product = useAppSelector((state) => state.products.product);
-  const comments = useAppSelector((state) => state.rewiew.reviewsByProduct);
-  const user = useAppSelector((state) => state.user.user);
-  const items = useAppSelector((state) => state.cart.items);
-  const userId = useAppSelector((state) => state.user.user?.id);
-
   const guestCart = useGuestCart(product?.id ?? 0, product?.stock ?? 0, product?.price ?? 0);
-
-  const show = useAppSelector((state) => state.rewiew.stateReview);
 
   useEffect(() => {
     if (id) {
@@ -61,7 +58,7 @@ export default function OneProductPage(): React.JSX.Element {
     setAllComments(comments);
   }, [comments, dispatch, product?.categoryId]);
 
-  const recommended = prodByCat?.filter((item) => item.id !== product?.id).slice(0, 2);
+  const recommended = prodByCat?.filter((item) => item.id !== product?.id).slice(0, 3);
   const nextImage = (): void => {
     if (!product) return;
     setMainImageIndex((prev) => (prev + 1) % product.images.length);
@@ -74,7 +71,6 @@ export default function OneProductPage(): React.JSX.Element {
 
   const handleComment: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    // const data = Object.fromEntries(new FormData(e.currentTarget));
     if (value.length > 1) {
       const validatedData = newReviewSchema.parse({
         text: value,
@@ -104,12 +100,7 @@ export default function OneProductPage(): React.JSX.Element {
 
   const add = (): void => {
     if (!product) return;
-
-    if (quantity >= product.stock) {
-      // Больше на складе нет — ничего не делаем
-      return;
-    }
-
+    if (quantity >= product.stock) return;
     if (user) {
       const existingItem = items.find((i) => i.productId === product.id);
       if (existingItem) {
@@ -135,7 +126,6 @@ export default function OneProductPage(): React.JSX.Element {
 
   const remove = (): void => {
     if (!product) return;
-
     if (user) {
       const existingItem = items.find((i) => i.productId === product.id);
       if (existingItem && existingItem.quantity > 1) {
@@ -146,217 +136,186 @@ export default function OneProductPage(): React.JSX.Element {
           }),
         );
       }
-      // Если quantity === 1 — кнопку "-" можно скрыть или дизейблить
     } else {
       guestCart.remove();
     }
   };
 
   return (
-    <div className="container mx-auto mt-4 px-4">
-      {/* Кнопки управления (для админа) */}
-      {user && user.status !== 'user' && product && (
-        <div className="mb-3 flex gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              void navigate(`/products/edit/${product.id.toString()}`);
-            }}
-            className="p-2 border border-blue-500 text-blue-500 rounded hover:bg-blue-50 transition-colors"
-            title="Редактировать"
-          >
-            <BiEdit className="w-5 h-5" />
-          </button>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (confirm('Вы уверены, что хотите удалить товар?')) {
-                void dispatch(deleteById(product.id));
-                navigate('/');
-              }
-            }}
-            className="p-2 border border-red-500 text-red-500 rounded hover:bg-red-50 transition-colors"
-            title="Удалить"
-          >
-            <BiTrash className="w-5 h-5" />
-          </button>
-        </div>
-      )}
-
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Галерея */}
-        <div className="w-full md:w-1/2">
-          {/* Основное изображение */}
-          <div className="relative mb-6 border rounded-2xl h-96 bg-gray-50 shadow-sm overflow-hidden">
-            <img
-              src={product?.images[mainImageIndex]}
-              className="block w-full h-full object-contain p-6 transition-transform duration-300 ease-in-out hover:scale-105"
-              alt={product?.name}
-            />
-            {product?.images.length > 1 && (
-              <>
-                <button
-                  className="absolute top-1/2 left-4 -translate-y-1/2 bg-white border border-gray-200 rounded-full shadow-md p-2 hover:bg-gray-100 transition"
-                  onClick={prevImage}
-                >
-                  <BiChevronLeft className="w-6 h-6 text-gray-700" />
-                </button>
-                <button
-                  className="absolute top-1/2 right-4 -translate-y-1/2 bg-white border border-gray-200 rounded-full shadow-md p-2 hover:bg-gray-100 transition"
-                  onClick={nextImage}
-                >
-                  <BiChevronRight className="w-6 h-6 text-gray-700" />
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Миниатюры */}
-          <div className="flex flex-wrap gap-3 justify-center">
-            {product?.images.map((img, index) => (
-              <div
-                key={img}
-                className={`rounded-lg overflow-hidden border cursor-pointer transition-all duration-200 ${
-                  mainImageIndex === index
-                    ? 'border-blue-500 ring-2 ring-blue-300'
-                    : 'border-gray-200 hover:border-gray-400'
-                }`}
-                style={{ width: '80px', height: '80px' }}
-                onClick={() => setMainImageIndex(index)}
-              >
-                <img
-                  src={img}
-                  className="w-full h-full object-contain bg-white"
-                  alt={`${product.name} preview ${index}`}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Информация о товаре */}
-        <div className="w-full md:w-1/2">
-          <div className="mb-6 flex items-center gap-4">
-            {product && (
-              <AddToCartButton
-                quantity={quantity}
-                stock={product.stock}
-                add={add}
-                remove={remove}
-              />
-            )}
-
-            {/* Рейтинг */}
-            <div className="mb-4">
-              {rate > 0 ? (
-                <span className="text-yellow-500 text-2xl font-medium flex items-center gap-1">
-                  ★ {rate.toFixed(1)}
-                </span>
-              ) : (
-                <span className="text-gray-300 text-2xl font-medium">★ 0</span>
-              )}
-            </div>
-
-            {/* Кнопка избранного */}
+    <div className="min-h-screen bg-[#E6F0FA] pt-20 sm:pt-24 font-poppins">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Кнопки управления (для админа) */}
+        {user && user.status !== 'user' && product && (
+          <div className="mb-6 flex gap-3">
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                if (product) {
-                  handleFavoriteAction(product, setShowAuthModal);
+                navigate(`/products/edit/${product.id.toString()}`);
+              }}
+              className="p-2 rounded-lg bg-[#F1F5F9] text-[#1A3C6D] hover:bg-[#D1E3F6] transition-all duration-300"
+              title="Редактировать"
+            >
+              <BiEdit className="w-5 h-5" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (confirm('Вы уверены, что хотите удалить товар?')) {
+                  void dispatch(deleteById(product.id));
+                  navigate('/');
                 }
               }}
-              className="p-2 border rounded-full hover:bg-gray-100 transition-colors"
-              title={
-                isProductLiked(product?.id ?? 0) ? 'Удалить из избранного' : 'Добавить в избранное'
-              }
+              className="p-2 rounded-lg bg-[#F1F5F9] text-[#1A3C6D] hover:bg-[#D1E3F6] transition-all duration-300"
+              title="Удалить"
             >
-              {isProductLiked(product?.id ?? 0) ? (
-                <BiSolidHeart className="w-6 h-6 text-red-500" />
-              ) : (
-                <BiHeart className="w-6 h-6" />
-              )}
+              <BiTrash className="w-5 h-5" />
             </button>
           </div>
+        )}
 
-          <LikeModal show={showAuthModal} onHide={() => setShowAuthModal(false)} />
-
-          {/* Название товара */}
-          <h1 className="text-3xl font-semibold text-gray-800 mb-4">{product?.name}</h1>
-
-          {/* Цена */}
-          <div className="mb-6">
-            <h2 className="text-red-600 text-4xl font-bold tracking-tight">
-              {product?.price.toFixed(2)} ₽
-            </h2>
-          </div>
-
-          {/* Кнопки корзины */}
-          <div className="mb-6">
-            {product && (
-              <AddToCartButton
-                quantity={quantity}
-                stock={product.stock}
-                add={add}
-                remove={remove}
-              />
-            )}
-          </div>
-
-          {/* Описание */}
-          <div className="mb-6 border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-            <div className="bg-gray-100 px-5 py-3 border-b border-gray-200">
-              <h5 className="font-semibold text-gray-700 text-lg">Описание</h5>
+        {/* Основной контент: фото + информация */}
+        <div className="flex flex-col md:flex-row gap-6 mb-8">
+          {/* Галерея */}
+          <div className="w-full md:w-1/2">
+            <div className="relative mb-4">
+              <div className="h-96 bg-white shadow-sm rounded-xl flex items-center justify-center overflow-hidden">
+                <img
+                  src={product?.images[mainImageIndex]}
+                  className="h-full w-full object-contain p-6"
+                  alt={product?.name}
+                />
+              </div>
+              {/* Рейтинг */}
+              <div className="absolute top-4 left-4 bg-[#FBBF24] text-[#1A3C6D] text-sm font-semibold rounded-lg px-3 py-1 z-10">
+                {rate > 0 ? (
+                  <span className="flex items-center gap-1">★ {rate.toFixed(1)}</span>
+                ) : (
+                  <span className="flex items-center gap-1">★ 0</span>
+                )}
+              </div>
+              {/* Кнопка избранного */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (product) {
+                    handleFavoriteAction(product, setShowAuthModal);
+                  }
+                }}
+                className="absolute top-4 right-4 p-2 rounded-full bg-[#D1E3F6] hover:bg-[#B3CFF5] transition-all duration-300 z-10"
+                title={
+                  isProductLiked(product?.id ?? 0) ? 'Удалить из избранного' : 'Добавить в избранное'
+                }
+              >
+                {isProductLiked(product?.id ?? 0) ? (
+                  <BiSolidHeart className="w-6 h-6 text-[#EF4444]" />
+                ) : (
+                  <BiHeart className="w-6 h-6 text-[#6B7280]" />
+                )}
+              </button>
+              {product?.images.length > 1 && (
+                <>
+                  <button
+                    className="absolute top-1/2 left-4 -translate-y-1/2 bg-white rounded-full shadow-md p-2 hover:bg-[#D1E3F6] transition-all duration-300"
+                    onClick={prevImage}
+                  >
+                    <BiChevronLeft className="w-6 h-6 text-[#1A3C6D]" />
+                  </button>
+                  <button
+                    className="absolute top-1/2 right-4 -translate-y-1/2 bg-white rounded-full shadow-md p-2 hover:bg-[#D1E3F6] transition-all duration-300"
+                    onClick={nextImage}
+                  >
+                    <BiChevronRight className="w-6 h-6 text-[#1A3C6D]" />
+                  </button>
+                </>
+              )}
             </div>
-            <div className="p-5">
-              <p className="text-gray-700 leading-relaxed">{product?.description}</p>
+            {/* Миниатюры */}
+            <div className="flex flex-wrap gap-3 justify-center">
+              {product?.images.map((img, index) => (
+                <div
+                  key={img}
+                  className={`rounded-lg overflow-hidden cursor-pointer transition-all duration-300 ${
+                    mainImageIndex === index
+                      ? 'ring-2 ring-[#1A3C6D]/50'
+                      : 'hover:ring-2 hover:ring-[#1A3C6D]/30'
+                  }`}
+                  style={{ width: '64px', height: '64px', ['sm' as any]: { width: '80px', height: '80px' } }}
+                  onClick={() => setMainImageIndex(index)}
+                >
+                  <img
+                    src={img}
+                    className="w-full h-full object-contain bg-white"
+                    alt={`${product?.name} preview ${index}`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Информация о товаре */}
+          <div className="w-full md:w-1/2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1A3C6D] mb-2">
+              {product?.name}
+            </h1>
+            <p className="text-lg font-bold text-[#1A3C6D] mb-4">
+              {product?.price.toLocaleString()} ₽
+            </p>
+            {product && (
+              <div className="mb-4">
+                <AddToCartButton
+                  quantity={quantity}
+                  stock={product.stock}
+                  add={add}
+                  remove={remove}
+                />
+              </div>
+            )}
+            <div className="mb-4">
+              <h5 className="text-base font-semibold text-[#1A3C6D] mb-1">Описание</h5>
+              <p className="text-sm text-[#6B7280] leading-relaxed">{product?.description}</p>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Отзывы и рекомендации */}
-      <div className="mt-8 flex items-start gap-8">
-        {/* Левый столбец: отзывы */}
-        <div className="flex-1">
-          <h3 className="text-xl font-bold mb-1">Отзывы о товаре</h3>
-
+        {/* Отзывы */}
+        <div className="mb-8">
+          <h3 className="text-xl sm:text-2xl font-bold text-[#1A3C6D] mb-4">Отзывы о товаре</h3>
           {show && !comments.some((c) => c.userId === user?.id) && (
-            <div className="mb-2">
-              {/* Выбор рейтинга */}
-              <div className="flex gap-1 mb-2">
+            <div className="mb-6">
+              <div className="flex gap-1 mb-3">
                 {[1, 2, 3, 4, 5].map((num) => (
                   <button
                     key={num}
                     type="button"
                     onClick={() => setSelected(num)}
-                    className={`text-2xl transition-colors ${
-                      selected >= num ? 'text-violet-600' : 'text-gray-300 hover:text-violet-400'
+                    className={`text-xl transition-colors ${
+                      selected && selected >= num
+                        ? 'text-[#FBBF24]'
+                        : 'text-[#6B7280] hover:text-[#FBBF24]'
                     }`}
                   >
                     ★
                   </button>
                 ))}
               </div>
-              {/* Поле + кнопка */}
               <form
                 onSubmit={handleComment}
-                className="flex w-150 overflow-hidden rounded-lg border border-gray-300 shadow-sm focus-within:ring-2 focus-within:ring-violet-500"
+                className="flex w-full overflow-hidden rounded-lg bg-[#F1F5F9] shadow-sm focus-within:ring-2 focus-within:ring-[#1A3C6D]/50"
               >
                 <input
                   type="text"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
-                  className="flex-grow py-2 focus:outline-none"
+                  className="flex-grow py-2 px-4 bg-[#F1F5F9] text-[#1A3C6D] placeholder-[#6B7280] focus:outline-none"
                   placeholder="Напишите свой отзыв"
                 />
                 <button
                   type="submit"
                   disabled={!selected || value.length < 2}
-                  className={`px-5 font-medium transition-colors ${
+                  className={`px-5 font-medium transition-all duration-300 ${
                     !selected || value.length < 2
-                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                      : 'bg-violet-600 text-white hover:bg-violet-700'
+                      ? 'bg-[#F1F5F9] text-[#1A3C6D]/50 cursor-not-allowed'
+                      : 'bg-[#1A3C6D] text-white hover:bg-[#3B5A9A]'
                   }`}
                 >
                   Отправить
@@ -364,71 +323,70 @@ export default function OneProductPage(): React.JSX.Element {
               </form>
             </div>
           )}
-
-          {/* Список отзывов */}
           {allComments.length ? (
             <div className="space-y-4">
               {allComments.map((comment) => (
                 <div
                   key={comment.id}
-                  className="w-150 border border-gray-200 rounded-2xl shadow-sm bg-white overflow-hidden"
+                  className="p-4 rounded-xl bg-white shadow-sm"
                 >
-                  <div className="p-3">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex space-x-1">
-                        {[...Array(5)].map((_, i) => (
-                          <span
-                            key={i}
-                            className={`text-lg ${
-                              i < comment.rating ? 'text-yellow-400' : 'text-gray-300'
-                            }`}
-                          >
-                            ★
-                          </span>
-                        ))}
-                      </div>
-                      <span className="text-sm text-gray-500">Пользователь #{comment.userId}</span>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex space-x-1">
+                      {[...Array(5)].map((_, i) => (
+                        <span
+                          key={i}
+                          className={`text-base ${
+                            i < comment.rating ? 'text-[#FBBF24]' : 'text-[#6B7280]'
+                          }`}
+                        >
+                          ★
+                        </span>
+                      ))}
                     </div>
-                    <p className="text-gray-700 leading-snug text-sm">{comment.text}</p>
+                    <span className="text-sm text-[#6B7280]">
+                      Пользователь #{comment.userId}
+                    </span>
                   </div>
+                  <p className="text-sm text-[#1A3C6D] leading-snug">{comment.text}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="bg-violet-50 text-violet-800 px-5 py-4 rounded-xl border border-violet-100 text-left">
+            <div className="bg-[#F1F5F9] text-[#1A3C6D] px-5 py-4 rounded-xl">
               Пока нет отзывов о этом товаре
             </div>
           )}
         </div>
 
-        {/* Правый столбец: рекомендации */}
-        {recommended && (
-          <div className="w-full lg:w-1/2">
-            <h3 className="text-xl font-bold mb-4">Похожие товары</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* Рекомендации */}
+        {recommended && recommended.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-xl sm:text-2xl font-bold text-[#1A3C6D] mb-4">
+              Похожие товары
+            </h3>
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
               {recommended.map((product) => (
                 <div
                   key={product.id}
                   onClick={() => navigate(`/products/${product.id}`)}
-                  className="
-            w-60                        
-            border border-gray-200
-            rounded-xl
-            overflow-hidden
-            transform transition-all duration-300
-            hover:scale-105  hover:bg-gray-50
-          "
+                  className="transform transition-all duration-300 hover:scale-[1.02] cursor-pointer w-full sm:w-1/3"
                 >
-                  <div className="w-full h-48 flex items-center justify-center bg-gray-50">
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="object-contain object-center max-w-full max-h-full mt-4"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h4 className="text-lg font-semibold text-gray-800">{product.name}</h4>
-                    <p className="text-gray-600 mt-1">{product.price.toFixed(2)} ₽</p>
+                  <div className="rounded-xl bg-white shadow-sm overflow-hidden">
+                    <div className="h-48 bg-white flex items-center justify-center p-4">
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="object-contain max-w-full max-h-full"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h4 className="text-base font-semibold text-[#1A3C6D] truncate">
+                        {product.name}
+                      </h4>
+                      <p className="text-lg font-bold text-[#1A3C6D] mt-1">
+                        {product.price.toLocaleString()} ₽
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -436,6 +394,7 @@ export default function OneProductPage(): React.JSX.Element {
           </div>
         )}
       </div>
+      <LikeModal show={showAuthModal} onHide={() => setShowAuthModal(false)} />
     </div>
   );
 }

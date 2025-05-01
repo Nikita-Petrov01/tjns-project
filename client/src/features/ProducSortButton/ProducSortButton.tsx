@@ -27,11 +27,11 @@ export default function ProductSortButtons({
     <div className={`relative inline-block text-left ${className}`}>
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center justify-center w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base font-medium text-[#05386B] bg-[#EDF5E1] rounded-lg hover:bg-[#8EE4AF] hover:text-[#379683] transition-all duration-200 shadow-md focus:outline-none"
+        className="group inline-flex items-center justify-center w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base font-medium text-[#1A3C6D] bg-[#F1F5F9] rounded-lg hover:bg-[#D1E3F6] hover:text-[#3B5A9A] transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none font-poppins"
       >
         Сортировать: {sortOptions.find((o) => o.value === sortType)?.label}
         <svg
-          className="ml-2 h-4 sm:h-5 w-4 sm:w-5 text-[#379683]"
+          className="ml-2 h-4 sm:h-5 w-4 sm:w-5 text-[#1A3C6D] transition-colors duration-300 group-hover:text-[#3B5A9A]"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
@@ -41,7 +41,7 @@ export default function ProductSortButtons({
       </button>
 
       {open && (
-        <div className="absolute mt-2 w-48 sm:w-52 rounded-lg shadow-lg bg-[#EDF5E1] ring-1 ring-[#5CD8B5] z-50">
+        <div className="absolute mt-2 w-48 sm:w-52 rounded-lg shadow-md bg-white border border-[#D1E3F6] z-60 font-poppins">
           <div className="py-1">
             {sortOptions.map((option) => (
               <button
@@ -50,10 +50,10 @@ export default function ProductSortButtons({
                   onSortChange(option.value as SortType);
                   setOpen(false);
                 }}
-                className={`block w-full text-left px-4 py-2 text-sm sm:text-base text-[#05386B] transition-all duration-200 ${
+                className={`block w-full text-left px-4 py-2 text-sm sm:text-base text-[#1A3C6D] transition-all duration-300 ${
                   sortType === option.value
-                    ? 'bg-[#5CD8B5] text-[#05386B] font-semibold'
-                    : 'hover:bg-[#8EE4AF] hover:text-[#379683]'
+                    ? 'bg-[#1A3C6D] text-white font-bold'
+                    : 'hover:bg-[#D1E3F6] hover:text-[#3B5A9A]'
                 }`}
               >
                 {option.label}
