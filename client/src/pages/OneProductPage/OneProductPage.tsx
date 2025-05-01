@@ -14,8 +14,6 @@ import { createReview, getReviewsByProductId } from '../../entities/review/model
 import { newReviewSchema } from '../../entities/review/model/schema';
 import type { ReviewT } from '../../entities/review/model/types';
 import { setStateReview } from '../../entities/review/model/reviewSlice';
-import useGuestCart from '../../entities/cart/hooks/useGuestCart';
-import AddToCartButton from '../../entities/cart/ui/AddToCartButton';
 import { addCartItem, updateCartItem } from '../../entities/cart/model/cartThunks';
 import { useFavoriteActions } from '../../entities/favorite/api/likeHook';
 import { LikeModal } from '../../features/LikeModal/ui/LikeModal';
@@ -31,6 +29,8 @@ export default function OneProductPage(): React.JSX.Element {
   const product = useAppSelector((state) => state.products.product);
   const comments = useAppSelector((state) => state.rewiew.reviewsByProduct);
   const user = useAppSelector((state) => state.user.user);
+  const isInCart = useAppSelector((state) => selectIsInCart(state, product?.id ?? 0));
+
   const items = useAppSelector((state) => state.cart.items);
   const userId = useAppSelector((state) => state.user.user?.id);
   const show = useAppSelector((state) => state.rewiew.stateReview);
@@ -67,6 +67,24 @@ export default function OneProductPage(): React.JSX.Element {
   const prevImage = (): void => {
     if (!product) return;
     setMainImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
+  };
+
+  const handleAddToCart = (): void => {
+    if (!product) return;
+  
+    const payload = {
+      productId: product.id,
+      price: product.price,
+      product, // только для guest
+    };
+  
+    if (user) {
+      void dispatch(addCartItem(payload));
+      console.log('Клик: добавляем товар в базу данных')
+    } else {
+      dispatch(addGuestItemToCart(payload));
+      console.log('Клик: добавляем товар в guestCart')
+    }
   };
 
   const handleComment: React.FormEventHandler<HTMLFormElement> = (e) => {
@@ -251,6 +269,17 @@ export default function OneProductPage(): React.JSX.Element {
               ))}
             </div>
           </div>
+          <div className="mb-6">
+          <button
+          onClick={handleAddToCart}
+          className={`${
+            isInCart ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+          } text-white font-semibold py-2 px-4 rounded shadow`}
+          disabled={isInCart}
+        >
+          {isInCart ? 'Товар добавлен в корзину' : 'Добавить в корзину'}
+        </button>
+          </div>
 
           {/* Информация о товаре */}
           <div className="w-full md:w-1/2">
@@ -260,19 +289,11 @@ export default function OneProductPage(): React.JSX.Element {
             <p className="text-lg font-bold text-[#1A3C6D] mb-4">
               {product?.price.toLocaleString()} ₽
             </p>
-            {product && (
-              <div className="mb-4">
-                <AddToCartButton
-                  quantity={quantity}
-                  stock={product.stock}
-                  add={add}
-                  remove={remove}
-                />
-              </div>
-            )}
+
             <div className="mb-4">
               <h5 className="text-base font-semibold text-[#1A3C6D] mb-1">Описание</h5>
               <p className="text-sm text-[#6B7280] leading-relaxed">{product?.description}</p>
+
             </div>
           </div>
         </div>

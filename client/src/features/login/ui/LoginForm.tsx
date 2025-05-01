@@ -1,13 +1,18 @@
+
+import React from 'react';
+import { useAppDispatch, useAppSelector } from '../../../shared/lib/hooks';
 import React, { useState } from 'react';
-import { useAppDispatch } from '../../../shared/lib/hooks';
+
 import { userLoginFormSchema } from '../../../entities/user/model/schema';
 import { loginUser } from '../../../entities/user/model/userThunks';
-import { transferGuestCartToServer } from '../../../entities/cart/model/cartThunks';
 import { Link, useNavigate } from 'react-router';
+import { mergeGuestChatWithUser } from '../../../entities/chat/model/chatThunks';
 
 export default function LoginForm(): React.JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const guestId = useAppSelector((state) => state.user.guestId);
+  const chat = useAppSelector((state) => state.chat.chat);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,8 +23,10 @@ export default function LoginForm(): React.JSX.Element {
     const data = Object.fromEntries(new FormData(e.currentTarget));
     try {
       const validatedData = userLoginFormSchema.parse(data);
-      await dispatch(loginUser(validatedData))
-        .then(() => dispatch(transferGuestCartToServer()).unwrap())
+      void dispatch(loginUser(validatedData)).unwrap()
+        .then((user) => { if (guestId && chat?.id) { return dispatch(mergeGuestChatWithUser({ guestId, userId: user.id })).unwrap())
+                                                   }
+                        })
         .then(() => navigate('/'));
     } catch (error) {
       setError('Неверный email или пароль');
@@ -38,7 +45,7 @@ export default function LoginForm(): React.JSX.Element {
         <h2 className="text-3xl sm:text-4xl font-bold text-center text-[#05386B]">
           Вход
         </h2>
-
+        
         {error && (
           <p className="text-[#05386B] text-sm text-center bg-[#8EE4AF]/50 p-2 rounded-lg">
             {error}
@@ -58,7 +65,6 @@ export default function LoginForm(): React.JSX.Element {
             className="w-full px-4 sm:px-5 py-3 rounded-xl bg-[#EDF5E1] text-[#05386B] placeholder-[#05386B]/60 focus:outline-none focus:ring-2 focus:ring-[#5CD8B5] hover:border-[#5CD8B5] border-2 border-[#379683] transition-all duration-200"
           />
         </div>
-
         <div className="space-y-2">
           <label htmlFor="password" className="block text-sm sm:text-base font-medium">
             Пароль

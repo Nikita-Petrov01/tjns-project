@@ -4,6 +4,7 @@ class CartController {
     static async getOrCreate(req, res) {
       try {
         const cart = await CartService.getOrCreateCart(res.locals.user.id);
+        console.log('33333333333333333333333333333333333333333333333', cart);
         res.json(cart);
       } catch (e) {
         console.error('Ошибка при создании или получении корзины', e)

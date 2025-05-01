@@ -22,41 +22,58 @@ class CartItemService {
     return result;
   }
 
-  static async addItem({ userId, productId, quantity, price }) {
+  static async addItem({ userId, productId, price }) {
+    if ( !userId || !productId || !price) {
+      throw new Error('Недостаточно данных для добавления товара в корзину');
+    } 
     const cart = await Cart.findOne({ where: { userId } });
     if (!cart) throw new Error('Корзина не найдена');
 
     const product = await Product.findByPk(productId);
     if (!product) throw new Error('Товар не найден');
-    if (product.stock < quantity) throw new Error('Недостаточно товара в наличии');
 
-    let cartItem = await CartItem.findOne({
-      where: { cartId: cart.id, productId },
-    });
-    if (cartItem) {
-      if (product.stock < cartItem.quantity + quantity) {
-        throw new Error('Нельзя добавить больше товара, чем есть на складе');
-      }
-      await cartItem.update({
-        quantity: cartItem.quantity + quantity,
-        expiresAt: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-      });
-    } else {
-      cartItem = await CartItem.create({
+    const existingItem = await CartItem.findOne({
+      where: {
         cartId: cart.id,
         productId,
-        quantity,
-        price,
-        addedAt: new Date(),
-        expiresAt: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-      });
+      },
+    });
+    
+    if (existingItem) {
+      existingItem.quantity += 1;
+      await existingItem.save();
+      const result = await CartItem.findByPk(existingItem.id, { include: [Product] });
+      return result;
     }
+
+    const cartItem = await CartItem.create({
+        cartId: cart.id,
+        productId,
+        quantity: 1,
+        price,
+      });
     return cartItem;
   }
 
   static async updateItem(itemId, quantity) {
+    if (!itemId || !quantity) {
+      throw new Error('Недостаточно данных для обновления товара в корзине');
+    }
+
     const item = await CartItem.findByPk(itemId);
     if (!item) throw new Error('Товар не найден');
+
+    const product = await Product.findByPk(item.productId);
+    if (!product) throw new Error('Товар не найден');
+
+    if (quantity > product.stock) {
+      throw new Error(`На складе только ${product.stock} шт.`);
+    }
+
+    if (quantity === 0) {
+      throw new Error('Товар законничился');
+    }
+    
     const updateItem = await item.update({ quantity });
     return updateItem;
   }

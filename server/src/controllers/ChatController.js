@@ -21,6 +21,17 @@ class ChatController {
             res.status(500).send('Ошибка сервера при получении чата');
         }
     }
+
+    static async mergeGuestChatWithUser(req, res) {
+        try {
+            const {guestId, userId} = req.body
+            const chat = await ChatService.mergeGuestChatWithUser(guestId, userId);
+            res.json(chat);
+        } catch (e) {
+            console.error('Ошибка при получении чата', e);
+            res.status(500).send('Ошибка сервера при получении чата');
+        }
+    }
 }
 
 module.exports = ChatController

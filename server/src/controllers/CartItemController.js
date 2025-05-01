@@ -1,4 +1,3 @@
-const e = require('express');
 const CartItemService = require('../services/CartItemService');
 
 class CartItemController {
@@ -14,15 +13,11 @@ class CartItemController {
 
   static async add(req, res) {
     try {
-      const { productId, quantity, price } = req.body;
+      const { productId, price } = req.body;
 
-      if (!productId || !quantity || !price) {
-        return res.status(400).json({ error: 'Неверные данные для добавления в корзину' });
-      }
       const item = await CartItemService.addItem({
         userId: res.locals.user.id,
         productId,
-        quantity,
         price
       });
       res.status(201).json(item);
