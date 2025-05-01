@@ -5,11 +5,13 @@ type SortType = 'none' | 'rating-asc' | 'rating-desc' | 'price-asc' | 'price-des
 type ProductSortButtonsProps = {
   sortType: SortType;
   onSortChange: (sortType: SortType) => void;
+  className?: string;
 };
 
 export default function ProductSortButtons({
   sortType,
   onSortChange,
+  className,
 }: ProductSortButtonsProps): React.JSX.Element {
   const [open, setOpen] = useState(false);
 
@@ -22,14 +24,14 @@ export default function ProductSortButtons({
   ];
 
   return (
-    <div className="relative inline-block text-left my-6">
+    <div className={`relative inline-block text-left ${className}`}>
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex justify-center w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
+        className="group inline-flex items-center justify-center w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base font-medium text-[#1A3C6D] bg-[#F1F5F9] rounded-lg hover:bg-[#D1E3F6] hover:text-[#3B5A9A] transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none font-poppins"
       >
         Сортировать: {sortOptions.find((o) => o.value === sortType)?.label}
         <svg
-          className="ml-2 -mr-1 h-5 w-5 text-gray-400"
+          className="ml-2 h-4 sm:h-5 w-4 sm:w-5 text-[#1A3C6D] transition-colors duration-300 group-hover:text-[#3B5A9A]"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
@@ -39,7 +41,7 @@ export default function ProductSortButtons({
       </button>
 
       {open && (
-        <div className="absolute mt-2 w-52 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+        <div className="absolute mt-2 w-48 sm:w-52 rounded-lg shadow-md bg-white border border-[#D1E3F6] z-60 font-poppins">
           <div className="py-1">
             {sortOptions.map((option) => (
               <button
@@ -48,10 +50,10 @@ export default function ProductSortButtons({
                   onSortChange(option.value as SortType);
                   setOpen(false);
                 }}
-                className={`block w-full text-left px-4 py-2 text-sm transition ${
+                className={`block w-full text-left px-4 py-2 text-sm sm:text-base text-[#1A3C6D] transition-all duration-300 ${
                   sortType === option.value
-                    ? 'bg-gray-200 text-gray-900 font-semibold'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-[#1A3C6D] text-white font-bold'
+                    : 'hover:bg-[#D1E3F6] hover:text-[#3B5A9A]'
                 }`}
               >
                 {option.label}

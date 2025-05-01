@@ -17,6 +17,16 @@ class UserService {
     }
   }
 
+  async getUsers(): Promise<UserT[]> {
+    try {
+      const response = await this.client.get('/auth/getUsers');
+      return userSchema.array().parse(response.data);
+    } catch (error) {
+      console.error('Ошибка получения пользователей', error);
+      throw error;
+    }
+  }
+
   async getAdmin(): Promise<UserT[]> {
     try {
       const response = await this.client.get('/auth/getAdmin');

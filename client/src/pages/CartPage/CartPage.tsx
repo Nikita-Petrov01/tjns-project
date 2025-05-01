@@ -1,5 +1,17 @@
 import { useCartActions } from '../../entities/cart/hooks/useCartActions';
 import { CartItemCard } from '../../entities/cart/ui/CartItemCard';
+import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
+import {
+  checkCartItems,
+  deleteCartItem,
+  getCart,
+  getCartItems,
+  updateCartItem,
+} from '../../entities/cart/model/cartThunks';
+import syncCartWithServer from '../../entities/cart/api/syncCartWithServer';
+import { store } from '../../app/store';
+import { toast } from 'react-toastify';
+import type { CartItemT } from '../../entities/cart/model/cartTypes';
 
 
 

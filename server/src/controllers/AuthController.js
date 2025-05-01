@@ -13,6 +13,16 @@ class AuthController {
     }
   }
 
+  static async getUsers(req, res) {
+    try {
+      const users = await AuthService.getUsers();
+      return res.status(200).json(users);
+    } catch (error) {
+      console.error('Ошибка при получении пользователей', error);
+      res.status(500).send('Ошибка сервера при получении пользователей');
+    }
+  }
+
   static async getAdmin(req, res) {
     try {
       const user = await AuthService.getAdmins();
