@@ -16,7 +16,7 @@ const chatRouter = require('./routes/chatRouter');
 const messageRouter = require('./routes/messageRouter');
 const cors = require('cors');
 const searchRouter = require('./routes/searchRouter');
-const path = require('path');
+
 
 const app = express();
 

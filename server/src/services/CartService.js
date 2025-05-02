@@ -2,7 +2,7 @@ const { Cart, CartItem, Product } = require('../../db/models');
 
 class CartService {
   static async getOrCreateCart(userId) {
-    console.log('юзерррррррррр', userId)
+
   let cart = await Cart.findOne({ 
     where: { userId }, 
     include: [{
@@ -10,13 +10,11 @@ class CartService {
       include: [Product]
     }]
   });
-  console.log('cart111111111111111111111111111111111111111111111', cart);
 
   if (!cart) {
     cart = await Cart.create({ userId });
     cart.cartItems = [];
   }
-  console.log('cart22222222222222222222222222222222222222222222222222', cart);
   return cart;
   }
 
@@ -49,6 +47,40 @@ class CartService {
   static async deleteCart(userId) {
     const cart = await Cart.destroy({ where: { userId } });
     return cart
+  }
+
+  static async validateCart(items) {
+    const result = [];
+  
+    for (const item of items) {
+      const product = await Product.findByPk(item.productId);
+      if (!product) {
+        result.push({
+          productId: item.productId,
+          issue: 'not_found',
+          message: 'Товар не найден',
+        });
+        continue;
+      }
+  
+      const hasChanges =
+        product.stock === 0 ||
+        item.quantity > product.stock ||
+        product.price !== item.price;
+  
+      if (hasChanges) {
+        result.push({
+          productId: product.id,
+          product: product.toJSON(),
+          quantity: Math.min(item.quantity, product.stock),
+          price: product.price,
+          issue: 'updated',
+          message: 'Данные товара изменились',
+        });
+      }
+    }
+  
+    return result;
   }
 }
 

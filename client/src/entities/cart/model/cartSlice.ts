@@ -2,7 +2,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 import type { AddToCartT, CartItemT, CartSliceT, ProductForCartT } from './cartTypes';
-import { addCartItem, deleteCartItem, getCart, getCartItems, updateCartItem } from './cartThunks';
+import { addCartItem, deleteCartItem, getCart, getCartItems, updateCartItem, validateCart, validateCartBeforeOrder } from './cartThunks';
 import { toast } from 'react-toastify';
 import type { RootState } from '../../../app/store';
 // import {
@@ -23,6 +23,7 @@ const initialState: CartSliceT = {
   loading: false,
   error: null,
   hasMerged: false,
+  cartIsValid: false,
 };
 
 export const cartSlice = createSlice({
@@ -81,39 +82,6 @@ export const cartSlice = createSlice({
         localStorage.setItem('guestCart', JSON.stringify(state.guestItems));
       }
     },
-    // addItemLocally(state, action: PayloadAction<GuestCartItemT>) {
-    //   const existingItem = state.items.find((item) => item.productId === action.payload.productId);
-    //   if (existingItem) {
-    //     existingItem.quantity += action.payload.quantity;
-    //   } else {
-    //     state.items.push({
-    //       id: Date.now(),
-    //       cartId: 0,
-    //       productId: action.payload.productId,
-    //       quantity: action.payload.quantity,
-    //       price: action.payload.price,
-    //       addedAt: new Date().toISOString(),
-    //       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    //       product: {
-    //         id: action.payload.productId,
-    //         name: '', // можно поставить пусто
-    //         description: '',
-    //         images: [],
-    //         price: action.payload.price,
-    //         categoryId: 0,
-    //         stock: action.payload.stock,
-    //       },
-    //     });
-    //   }
-    //   localStorage.setItem('guestCart', JSON.stringify(state.items));
-    // },
-    // updateItemLocally(state, action: PayloadAction<{ productId: number; quantity: number }>) {
-    //   const item = state.items.find((i) => i.productId === action.payload.productId);
-    //   if (item) {
-    //     item.quantity = action.payload.quantity;
-    //   }
-    //   localStorage.setItem('guestCart', JSON.stringify(state.items));
-    // },
     removeItemLocally(state, action: PayloadAction<number>) {
       const updatedItems = state.guestItems.filter((item) => item.productId !== action.payload);
       state.guestItems = updatedItems;
@@ -123,20 +91,10 @@ export const cartSlice = createSlice({
       state.guestItems = [];
       localStorage.removeItem('guestCart');
     },
-    // loadFromLocalStorage(state) {
-    //   const savedCart = localStorage.getItem('guestCart');
-    //   if (savedCart) {
-    //     state.items = guestCartItemArraySchem.parse(JSON.parse(savedCart));
-    //   }
-    // },
-    // clearCartLocally(state) {
-    //   state.cart = null;
-    //   state.items = [];
-    //   localStorage.removeItem('guestCart');
-    // },
-    // setCartItems(state, action: PayloadAction<CartItemT[]>) {
-    //   state.items = action.payload
-    // }
+    replaceGuestCart(state, action: PayloadAction<CartItemT[]>) {
+      state.guestItems = action.payload;
+      localStorage.setItem('guestCart', JSON.stringify(action.payload));
+    }
   },
   extraReducers(builder) {
     // Получение корзины
@@ -152,7 +110,6 @@ export const cartSlice = createSlice({
       state.error = action.error.message ?? 'Ошибка при получении корзины';
     });
 
-    // // Получение элементов корзины
     builder.addCase(getCartItems.pending, (state) => {
       state.loading = true;
     });
@@ -219,20 +176,19 @@ export const cartSlice = createSlice({
       console.error(action.error);
     });
 
-    // // Очистка корзины
-    // builder.addCase(deleteCart.pending, (state) => {
-    //   state.loading = true;
-    // });
-    // builder.addCase(deleteCart.fulfilled, (state) => {
-    //   state.loading = false;
-    //   state.cart = null;
-    //   state.items = [];
-    // });
-    // builder.addCase(deleteCart.rejected, (state, action) => {
-    //   state.loading = false;
-    //   state.error = action.error.message ?? 'Ошибка при удалении корзины';
-    //   console.error(action.error);
-    // });
+    builder.addCase(validateCart.pending, (state) => {
+      state.loading = true;
+    })
+    builder.addCase(validateCart.fulfilled, (state) => {
+      state.loading = false;
+      state.cartIsValid = true;
+    })
+    builder.addCase(validateCart.rejected, (state) => {
+      state.loading = false;
+      state.cartIsValid = false;
+      toast.error('Проверьте товары в корзине: что-то устарело');
+    })
+    
   },
 });
 
@@ -242,12 +198,8 @@ export const {
   clearGuestCart,
   setHasMerged,
   addGuestItemToCart,
-  // setCartItems,
-  // addItemLocally,
-  // updateItemLocally,
   removeItemLocally,
-  // loadFromLocalStorage,
-  // clearCartLocally,
+  replaceGuestCart,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

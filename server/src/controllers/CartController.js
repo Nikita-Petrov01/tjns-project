@@ -22,22 +22,46 @@ class CartController {
       }
     }
 
-    static async createCartWithItems(req, res) {
+    // static async createCartWithItems(req, res) {
+    //   try {
+    //     const { items } = req.body;
+    //     console.log(items, '----------------------------------------------------------');
+
+    //     if (!Array.isArray(items)) {
+    //       return res.status(400).json({ error: 'Некорректные данные'});
+    //     }
+
+    //     await CartService.createCartWithItems(res.locals.user.id, items);
+    //     res.status(201).json({ message: 'Корзина с элементами успешно создана' });
+    //   } catch (error) {
+    //     console.error('Ошибка при создании корзины с элементами', error);
+    //     res.status(500).send('Ошибка сервера при создании корзины с элементами');
+    //   }
+    // }
+
+    static async validateCart(req, res) {
       try {
         const { items } = req.body;
-        console.log(items, '----------------------------------------------------------');
-
         if (!Array.isArray(items)) {
-          return res.status(400).json({ error: 'Некорректные данные'});
+          return res.status(400).json({ error: 'Неверный формат запроса' });
         }
-
-        await CartService.createCartWithItems(res.locals.user.id, items);
-        res.status(201).json({ message: 'Корзина с элементами успешно создана' });
-      } catch (error) {
-        console.error('Ошибка при создании корзины с элементами', error);
-        res.status(500).send('Ошибка сервера при создании корзины с элементами');
+    
+        const updatedItems = await CartService.validateCart(items);
+    
+        if (updatedItems.length === 0) {
+          return res.status(200).json({ valid: true });
+        }
+    
+        return res.status(200).json({
+          valid: false,
+          updatedItems, // тут уже есть и product, и сообщения
+        });
+      } catch (e) {
+        console.error('Ошибка при валидации корзины:', e);
+        return res.status(500).json({ error: 'Ошибка сервера при валидации корзины' });
       }
     }
+    
   }
   
   module.exports = CartController;

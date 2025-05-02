@@ -1,17 +1,5 @@
 import { useCartActions } from '../../entities/cart/hooks/useCartActions';
 import { CartItemCard } from '../../entities/cart/ui/CartItemCard';
-import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
-import {
-  checkCartItems,
-  deleteCartItem,
-  getCart,
-  getCartItems,
-  updateCartItem,
-} from '../../entities/cart/model/cartThunks';
-import syncCartWithServer from '../../entities/cart/api/syncCartWithServer';
-import { store } from '../../app/store';
-import { toast } from 'react-toastify';
-import type { CartItemT } from '../../entities/cart/model/cartTypes';
 import { useNavigate } from 'react-router';
 
 export default function CartPage(): React.JSX.Element {
@@ -49,7 +37,7 @@ export default function CartPage(): React.JSX.Element {
                     isOutOfStock={item.product.stock === 0}
                   />
                   <button
-                    onClick={() => navigate(`/products/${item.productId}`)}
+                    onClick={() => navigate("/products/${item.productId}")}
                     className="text-[#1A3C6D]  hover:bg-[#D1E3F6] rounded px-2 py-1 transition-all duration-300"
                   >
                     Подробнее
