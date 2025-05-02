@@ -37,8 +37,8 @@ class CartItemController {
 
   static async delete(req, res) {
     try {
-      await CartItemService.deleteItem(req.params.itemId);
-      res.status(204).send();
+      await CartItemService.deleteItem(req.params.itemId, res.locals.user.id);
+      res.status(204).send('Элемент корзины удален')
     } catch (e) {
       res.status(400).json({ error: e.message });
     }
