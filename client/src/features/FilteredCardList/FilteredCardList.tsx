@@ -25,9 +25,9 @@ export default function FilteredCardList(): React.JSX.Element {
   const { sortedProducts, sortType, setSortType } = useSortedProducts(prodByCat, reviews);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#EDF5E1] to-[#8EE4AF] pt-20 sm:pt-24 font-roboto">
+    <div className="min-h-screen bg-[#E6F0FA] pt-20 sm:pt-24 font-poppins">
       <Container>
-        <h1 className="text-2xl sm:text-3xl text-[#05386B] font-bold mb-6 text-center sm:text-left">
+        <h1 className="text-2xl sm:text-3xl text-[#1A3C6D] font-bold mb-6 text-center sm:text-left">
           {categoryName}
         </h1>
         <ProductSortButtons
@@ -40,7 +40,7 @@ export default function FilteredCardList(): React.JSX.Element {
           {sortedProducts.map((product) => (
             <Col
               key={product.id}
-              className="d-flex transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              className="d-flex transform transition-all duration-300 hover:scale-[1.02]"
             >
               <ProductCard product={product} rating={product.averageRating} />
             </Col>

@@ -1,8 +1,7 @@
 import type { AxiosInstance } from 'axios';
 import axiosInstance from '../../../shared/api/axiosInstance';
-import type { CartItemCheckT, CartItemT, CartItemValidationResponseT, CartT, NewCartItemT, UpdateCartItemT } from '../model/cartTypes';
-import { cartItemSchema, cartSchema, updateCartItemSchema } from '../model/cartSchema';
-import type { GuestCartItemT } from '../model/guestCartTypes';
+import type { AddToCartT, CartItemCheckT, CartItemT, CartItemValidationResponseT, CartT, NewCartItemT, UpdateCartItemT, UpdateCartT } from '../model/cartTypes';
+import { cartItemSchema, cartSchema, updateCartItemPayload, updateCartItemSchema } from '../model/cartSchema';
 
 class CartService {
   constructor(private readonly client: AxiosInstance) {}
@@ -12,30 +11,41 @@ class CartService {
   async getOrCreateCart(): Promise<CartT> {
     try {
       const response = await this.client.get('/carts');
-      return cartSchema.parse(response.data);
+      console.log('Сырые данные с сервера:', response.data);
+      const transformedData = {
+        ...response.data,
+        cartItems: (response.data.CartItems || []).map((item: any) => ({
+          ...item,
+          product: item.Product, // Преобразуем Product в product
+        })),
+      };
+      console.log('Преобразованные данные:', transformedData);
+      const parsedData = cartSchema.parse(transformedData);
+      console.log('Спарсенные данные:', parsedData);
+      return parsedData;
     } catch (error) {
       console.error('Ошибка при получении или создании корзины:', error);
       throw error;
     }
   }
 
-  async createCartWithItems(items: GuestCartItemT[]): Promise<void> {
-    try {
-      await this.client.post('/carts/with-items', { items });
-    } catch (error) {
-      console.error('Ошибка при создании корзины с элементами:', error);
-      throw error;
-    }
-  }
+  // async createCartWithItems(items: GuestCartItemT[]): Promise<void> {
+  //   try {
+  //     await this.client.post('/carts/with-items', { items });
+  //   } catch (error) {
+  //     console.error('Ошибка при создании корзины с элементами:', error);
+  //     throw error;
+  //   }
+  // }
 
-  async deleteCart(): Promise<void> {
-    try {
-      await this.client.delete('/carts');
-    } catch (error) {
-      console.error('Ошибка при удалении корзины:', error);
-      throw error;
-    }
-  }
+  // async deleteCart(): Promise<void> {
+  //   try {
+  //     await this.client.delete('/carts');
+  //   } catch (error) {
+  //     console.error('Ошибка при удалении корзины:', error);
+  //     throw error;
+  //   }
+  // }
 
   // CartItem
 
@@ -49,7 +59,7 @@ class CartService {
     }
   }
 
-  async addCartItem(item: NewCartItemT): Promise<CartItemT> {
+  async addCartItem(item: AddToCartT): Promise<CartItemT> {
     try {
       const respose = await this.client.post('/cartItem', item);
       return cartItemSchema.parse(respose.data);
@@ -59,9 +69,9 @@ class CartService {
     }
   }
 
-  async updateCartItem(itemId: number, updateData: UpdateCartItemT): Promise<CartItemT> {
+  async updateCartItem(itemId: number, updateData: UpdateCartT): Promise<CartItemT> {
     try {
-      updateCartItemSchema.parse(updateData); // Валидация входных данных
+      updateCartItemPayload.parse(updateData)
       const response = await this.client.put(`/cartItem/${itemId.toString()}`, updateData);
       return cartItemSchema.parse(response.data);
     } catch (error) {
@@ -80,15 +90,15 @@ class CartService {
     }
   }
 
-  async checkCartItems(cartItems: CartItemCheckT[]): Promise<CartItemValidationResponseT> {
-    try {
-      const response = await this.client.post('/cartItem/validate', { cartItems });
-      return response.data;
-    } catch (error) {
-      console.error('Ошибка при проверке элементов корзины:', error);
-      throw error;
-    }
-  }
+  // async checkCartItems(cartItems: CartItemCheckT[]): Promise<CartItemValidationResponseT> {
+  //   try {
+  //     const response = await this.client.post('/cartItem/validate', { cartItems });
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error('Ошибка при проверке элементов корзины:', error);
+  //     throw error;
+  //   }
+  // }
 }
 
 export default new CartService(axiosInstance);

@@ -1,4 +1,5 @@
 'use strict';
+
 const {
   Model
 } = require('sequelize');
@@ -9,8 +10,9 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Product }) {
+    static associate({ Product, Cart }) {
       this.belongsTo(Product, { foreignKey: 'productId' });
+      this.belongsTo(Cart, { foreignKey: 'cartId' });
     }
   }
   CartItem.init({
@@ -18,8 +20,6 @@ module.exports = (sequelize, DataTypes) => {
     productId: DataTypes.INTEGER,
     quantity: DataTypes.INTEGER,
     price: DataTypes.INTEGER,
-    addedAt: DataTypes.DATE,
-    expiresAt: DataTypes.DATE,
   }, {
     sequelize,
     modelName: 'CartItem',

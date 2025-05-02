@@ -9,6 +9,7 @@
 
 const app = require('./app');
 require('dotenv').config();
+const { Chat, User } = require('../db/models');
 
 const { createServer } = require('node:http');
 const { join } = require('node:path');
@@ -31,6 +32,21 @@ io.on('connection', (socket) => {
   socket.on('join', (chatId) => {
     socket.join(`chat_${chatId}`);
     console.log(`👤 Вошёл в чат chat_${chatId}`);
+  });
+
+  socket.on('join-as-admin', async (adminId) => {
+
+    const admin = await User.findByPk(adminId);
+    if (!admin || (admin.status !== 'admin' && admin.status !== 'superadmin')) {
+      console.log('❌ Доступ запрещён');
+      return;
+    }
+
+    const chats = await Chat.findAll();
+    chats.forEach(chat => {
+      socket.join(`chat_${chat.id}`);
+    });
+    console.log('🔐 Админ подключился ко всем чатам');
   });
 
   socket.on('message', (data) => {

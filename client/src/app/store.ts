@@ -9,6 +9,7 @@ import favoriteReduser from '../entities/favorite/model/favoriteSlice';
 import { searchSlice } from '../entities/searchOptions/model/searchSlice';
 
 import cartReducer from '../entities/cart/model/cartSlice';
+import chatReducer from '../entities/chat/model/chatSlice';
 
 
 export const store = configureStore({
@@ -22,7 +23,7 @@ export const store = configureStore({
     favorites: favoriteReduser,
 
     cart: cartReducer,
-
+    chat: chatReducer
   },
 });
 
