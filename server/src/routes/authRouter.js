@@ -8,4 +8,5 @@ authRouter.post('/signupAdmin', AuthController.signupAdmin);
 authRouter.get('/getAdmin', AuthController.getAdmin);
 authRouter.get('/getUsers', AuthController.getUsers);
 
+
 module.exports = authRouter
