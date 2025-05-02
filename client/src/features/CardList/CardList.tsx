@@ -31,7 +31,7 @@ export default function CardList(): React.JSX.Element {
 
   const { sortedProducts, sortType, setSortType } = useSortedProducts(activeProducts, reviews);
 
-  const itemsPerPage = 12;
+  const itemsPerPage = 8;
   const pageCount = Math.ceil(sortedProducts.length / itemsPerPage);
 
   const offset = currentPage * itemsPerPage;
