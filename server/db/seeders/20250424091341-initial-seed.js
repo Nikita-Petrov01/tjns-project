@@ -83,7 +83,7 @@ module.exports = {
         price: 149990,
         categoryId: 2,
         brand: 'Apple',
-        stock: 20,
+        stock: 10,
       },
       {
         name: 'Ноутбук ASUS ROG Zephyrus G14',
@@ -131,7 +131,7 @@ module.exports = {
         price: 199990,
         categoryId: 4,
         brand: 'Sony',
-        stock: 20,
+        stock: 10,
       },
       {
         name: 'Объектив Canon RF 50mm f/1.2',

@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { addToCartSchema, cartItemSchema, cartSchema, productForCartSchema, updateCartItemPayload } from './cartSchema';
+import type { addToCartSchema, cartItemSchema, cartSchema, cartValidationPayloadSchema, productForCartSchema, updateCartItemPayload } from './cartSchema';
 // import type { cartItemCheckSchema, cartItemSchema, cartSchema, newCartItemSchema, newCartSchema, updateCartItemSchema } from './cartSchema';
 
 // export type CartT = z.infer<typeof cartSchema>;
@@ -25,6 +25,7 @@ export type CartItemT = z.infer<typeof cartItemSchema>;
 export type CartT = z.infer<typeof cartSchema>;
 export type AddToCartT = z.infer<typeof addToCartSchema>;
 export type UpdateCartT = z.infer<typeof updateCartItemPayload>;
+export type CartValidationPayload = z.infer<typeof cartValidationPayloadSchema>;
 
 export type CartSliceT = {
   cart: CartT | null;
@@ -33,4 +34,5 @@ export type CartSliceT = {
   loading: boolean;
   error: string | null;
   hasMerged: boolean;
+  cartIsValid: boolean;
 };

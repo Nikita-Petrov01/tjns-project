@@ -1,8 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import CartService from '../api/CartService';
-import type { AddToCartT, UpdateCartT } from './cartTypes';
+import type { AddToCartT, CartItemT, UpdateCartT } from './cartTypes';
 import type { RootState } from '../../../app/store';
 import { clearGuestCart, setHasMerged } from './cartSlice';
+import axios from 'axios';
+import { GuestCartItemT } from './guestCartTypes';
 // import type { CartItemCheckT, CartItemValidationResponseT } from './cartTypes';
 // import { type NewCartItemT, type UpdateCartItemT } from './cartTypes';
 // import { cartItemCheckArraySchema, guestCartItemArraySchem } from './cartSchema';
@@ -27,55 +29,6 @@ export const deleteCartItem = createAsyncThunk('cart/deleteCartItem', (itemId: n
   CartService.deleteCartItem(itemId),
 );
 
-// export const transferGuestCartToServer = createAsyncThunk(
-//   'cart/transferGuestCartToServer',
-//   async (_, { dispatch }) => {
-//     try {
-//       const guestCart = localStorage.getItem('guestCart');
-//       if (!guestCart) {
-//         console.log('🛒 localStorage.guestCart пустой');
-//         return;
-//       }
-
-//       const parsed = guestCartItemArraySchem.safeParse(JSON.parse(guestCart));
-
-//       if (!parsed.success || parsed.data.length === 0) {
-//         console.log('guestCart некорректный или пустой');
-//         return;
-//       }
-
-//       const items = parsed.data.map((item) => ({
-//         productId: item.productId,
-//         quantity: item.quantity,
-//         price: item.price,
-//       }));
-//       console.log('🛒 Отправляем товары на сервер:', items);
-
-//       await CartService.createCartWithItems(items);
-
-//       console.log('✅ Корзина успешно перенесена на сервер, очищаем localStorage');
-//       localStorage.removeItem('guestCart');
-//       console.log('🛒 localStorage.guestCart очищен');
-//     } catch (error) {
-//       console.error('❌ Ошибка при переносе корзины:', error);
-//     }
-//   },
-// );
-
-// export const checkCartItems = createAsyncThunk<CartItemValidationResponseT, CartItemCheckT[]>(
-//   'cart/checkCartItems',
-//   async (cartItems) => {
-//     const parsed = cartItemCheckArraySchema.safeParse(cartItems);
-
-//     if (!parsed.success) {
-//       throw new Error('Неверные данные для проверки корзины');
-//     }
-
-//     const response = await CartService.checkCartItems(parsed.data);
-//     return response;
-//   },
-// );
-
 export const mergeGuestCart = createAsyncThunk('cart/mergeGuestCart', async (_, thunkAPI) => {
   const state = thunkAPI.getState() as RootState;
   const { guestItems } = state.cart;
@@ -96,3 +49,14 @@ export const mergeGuestCart = createAsyncThunk('cart/mergeGuestCart', async (_, 
   thunkAPI.dispatch(setHasMerged());
   return true;
 });
+
+
+export const validateCart = createAsyncThunk(
+  'cart/validateCart',
+  async (items: GuestCartItemT[]) => {
+    console.log('🛠 validateCart — items:', items);
+    const response = await axios.post('/api/carts/validate', { items });
+    console.log('🛠 validateCart — response:', response.data);
+    return response.data; // должно быть: { valid: boolean, updatedItems?: GuestCartItemT[] }
+  }
+);
