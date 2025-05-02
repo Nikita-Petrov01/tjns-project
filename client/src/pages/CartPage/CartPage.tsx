@@ -19,8 +19,8 @@ export default function CartPage(): React.JSX.Element {
   console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', items);
 
   useEffect(() => {
-    void dispatch(getCartItems())
-  }, [items])
+    void dispatch(getCartItems());
+  }, []);
 
   if (items.length === 0) {
     return <div>Загрузка...</div>;

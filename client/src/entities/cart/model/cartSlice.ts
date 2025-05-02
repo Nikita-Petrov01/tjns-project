@@ -184,7 +184,7 @@ export const cartSlice = createSlice({
     builder.addCase(deleteCartItem.fulfilled, (state, action) => {
       state.loading = false;
       console.log(state.items, action.payload, '-----------------------');
-      state.items = state.items.filter((item) => item.id !== action.payload);
+      state.items = state.items.filter((item) => item.productId !== action.payload);
     });
     builder.addCase(deleteCartItem.rejected, (state, action) => {
       state.loading = false;

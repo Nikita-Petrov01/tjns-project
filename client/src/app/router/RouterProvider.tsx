@@ -41,14 +41,21 @@ function RouterProvider(): React.JSX.Element {
     if (!user) {
       dispatch(loadGuestCart());
     } else {
-      void dispatch(getCart());
-      void dispatch(getCartItems());
-      console.log('я диспач для создания корзины для юзера и я отработал');
-      if (guestItems.length > 0) {
-        void dispatch(mergeGuestCart());
-      }
-    }
-  }, [dispatch, isRefreshLoading, user]);
+      void dispatch(getCart()).unwrap()
+      .then(() => dispatch(getCartItems()).unwrap())
+      .then(() => {
+        if (guestItems.length > 0) {
+          return dispatch(mergeGuestCart()).unwrap(); 
+        }
+      })
+      .then(() => {
+        console.log('Все операции с корзиной завершены');
+      })
+      .catch((err) => {
+        console.error('Ошибка при работе с корзиной:', err);
+      });
+  }
+}, [dispatch, isRefreshLoading, user, guestItems.length]);
 
   return (
     <Routes>

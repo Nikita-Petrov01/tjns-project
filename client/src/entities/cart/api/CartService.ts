@@ -1,6 +1,6 @@
 import type { AxiosInstance } from 'axios';
 import axiosInstance from '../../../shared/api/axiosInstance';
-import type { AddCartItemT, AddToCartT, CartItemCheckT, CartItemT, CartItemValidationResponseT, CartT, CartValidationPayload, NewCartItem, NewCartItemT, UpdateCartItemT, UpdateCartT } from '../model/cartTypes';
+import type { AddCartItemT, AddForMergeT, AddToCartT, CartItemCheckT, CartItemT, CartItemValidationResponseT, CartT, CartValidationPayload, NewCartItem, NewCartItemT, UpdateCartItemT, UpdateCartT } from '../model/cartTypes';
 import { addCartItemSchema, cartItemSchema, cartSchema, newCartItemSchema, updateCartItemPayload, updateCartItemSchema } from '../model/cartSchema';
 
 class CartService {
@@ -43,6 +43,16 @@ class CartService {
   async addCartItem(item: AddToCartT): Promise<AddCartItemT> {
     try {
       const respose = await this.client.post('/cartItem', item);
+      return addCartItemSchema.parse(respose.data);
+    } catch (error) {
+      console.error('Ошибка при добавлении элемента в корзину:', error);
+      throw error;
+    }
+  }
+
+  async addCartItemForMerge(item: AddForMergeT): Promise<AddCartItemT> {
+    try {
+      const respose = await this.client.post('/cartItem/merge', item);
       return addCartItemSchema.parse(respose.data);
     } catch (error) {
       console.error('Ошибка при добавлении элемента в корзину:', error);
