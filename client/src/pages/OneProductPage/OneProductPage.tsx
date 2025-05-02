@@ -14,7 +14,7 @@ import { createReview, getReviewsByProductId } from '../../entities/review/model
 import { newReviewSchema } from '../../entities/review/model/schema';
 import type { ReviewT } from '../../entities/review/model/types';
 import { setStateReview } from '../../entities/review/model/reviewSlice';
-import { addCartItem, updateCartItem } from '../../entities/cart/model/cartThunks';
+import { addCartItem } from '../../entities/cart/model/cartThunks';
 import { useFavoriteActions } from '../../entities/favorite/api/likeHook';
 import { LikeModal } from '../../features/LikeModal/ui/LikeModal';
 import { addGuestItemToCart, selectIsInCart } from '../../entities/cart/model/cartSlice';
@@ -31,8 +31,6 @@ export default function OneProductPage(): React.JSX.Element {
   const comments = useAppSelector((state) => state.rewiew.reviewsByProduct);
   const user = useAppSelector((state) => state.user.user);
   const isInCart = useAppSelector((state) => selectIsInCart(state, product?.id ?? 0));
-
-  const items = useAppSelector((state) => state.cart.items);
   const userId = useAppSelector((state) => state.user.user?.id);
   const show = useAppSelector((state) => state.rewiew.stateReview);
 
@@ -41,7 +39,6 @@ export default function OneProductPage(): React.JSX.Element {
   const [value, setValue] = useState<string>('');
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
-
 
   useEffect(() => {
     if (id) {
@@ -71,19 +68,19 @@ export default function OneProductPage(): React.JSX.Element {
 
   const handleAddToCart = (): void => {
     if (!product) return;
-  
+
     const payload = {
       productId: product.id,
       price: product.price,
-      product, // только для guest
+      product,
     };
-  
+
     if (user) {
       void dispatch(addCartItem(payload));
-      console.log('Клик: добавляем товар в базу данных')
+      console.log('Клик: добавляем товар в базу данных');
     } else {
       dispatch(addGuestItemToCart(payload));
-      console.log('Клик: добавляем товар в guestCart')
+      console.log('Клик: добавляем товар в guestCart');
     }
   };
 
@@ -145,19 +142,19 @@ export default function OneProductPage(): React.JSX.Element {
         )}
 
         {/* Основной контент: фото + информация */}
-        <div className="flex flex-col md:flex-row gap-6 mb-8">
+        <div className="flex flex-col md:flex-row gap-8 mb-12">
           {/* Галерея */}
           <div className="w-full md:w-1/2">
             <div className="relative mb-4">
-              <div className="h-96 bg-white shadow-sm rounded-xl flex items-center justify-center overflow-hidden">
+              <div className="h-96 bg-white shadow-md rounded-2xl flex items-center justify-center overflow-hidden">
                 <img
                   src={product?.images[mainImageIndex]}
-                  className="h-full w-full object-contain p-6"
+                  className="h-full w-full object-contain p-6 transition-all duration-300"
                   alt={product?.name}
                 />
               </div>
               {/* Рейтинг */}
-              <div className="absolute top-4 left-4 bg-[#FBBF24] text-[#1A3C6D] text-sm font-semibold rounded-lg px-3 py-1 z-10">
+              <div className="absolute top-4 left-4 bg-[#FBBF24] text-[#1A3C6D] text-sm font-semibold rounded-lg px-3 py-1 z-10 shadow-sm">
                 {rate > 0 ? (
                   <span className="flex items-center gap-1">★ {rate.toFixed(1)}</span>
                 ) : (
@@ -172,7 +169,7 @@ export default function OneProductPage(): React.JSX.Element {
                     handleFavoriteAction(product, setShowAuthModal);
                   }
                 }}
-                className="absolute top-4 right-4 p-2 rounded-full bg-[#D1E3F6] hover:bg-[#B3CFF5] transition-all duration-300 z-10"
+                className="absolute top-4 right-4 p-2 rounded-full bg-[#D1E3F6] hover:bg-[#B3CFF5] hover:scale-110 transition-all duration-300 z-10 shadow-sm"
                 title={
                   isProductLiked(product?.id ?? 0) ? 'Удалить из избранного' : 'Добавить в избранное'
                 }
@@ -186,13 +183,13 @@ export default function OneProductPage(): React.JSX.Element {
               {product?.images.length > 1 && (
                 <>
                   <button
-                    className="absolute top-1/2 left-4 -translate-y-1/2 bg-white rounded-full shadow-md p-2 hover:bg-[#D1E3F6] transition-all duration-300"
+                    className="absolute top-1/2 left-4 -translate-y-1/2 bg-white rounded-full shadow-md p-2 hover:bg-[#D1E3F6] hover:scale-110 transition-all duration-300"
                     onClick={prevImage}
                   >
                     <BiChevronLeft className="w-6 h-6 text-[#1A3C6D]" />
                   </button>
                   <button
-                    className="absolute top-1/2 right-4 -translate-y-1/2 bg-white rounded-full shadow-md p-2 hover:bg-[#D1E3F6] transition-all duration-300"
+                    className="absolute top-1/2 right-4 -translate-y-1/2 bg-white rounded-full shadow-md p-2 hover:bg-[#D1E3F6] hover:scale-110 transition-all duration-300"
                     onClick={nextImage}
                   >
                     <BiChevronRight className="w-6 h-6 text-[#1A3C6D]" />
@@ -208,7 +205,7 @@ export default function OneProductPage(): React.JSX.Element {
                   className={`rounded-lg overflow-hidden cursor-pointer transition-all duration-300 ${
                     mainImageIndex === index
                       ? 'ring-2 ring-[#1A3C6D]/50'
-                      : 'hover:ring-2 hover:ring-[#1A3C6D]/30'
+                      : 'hover:ring-2 hover:ring-[#1A3C6D]/30 hover:scale-105'
                   }`}
                   style={{ width: '64px', height: '64px', ['sm' as any]: { width: '80px', height: '80px' } }}
                   onClick={() => setMainImageIndex(index)}
@@ -222,37 +219,37 @@ export default function OneProductPage(): React.JSX.Element {
               ))}
             </div>
           </div>
-          <div className="mb-6">
-          <button
-          onClick={handleAddToCart}
-          className={`${
-            isInCart ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-          } text-white font-semibold py-2 px-4 rounded shadow`}
-          disabled={isInCart}
-        >
-          {isInCart ? 'Товар добавлен в корзину' : 'Добавить в корзину'}
-        </button>
-          </div>
 
           {/* Информация о товаре */}
           <div className="w-full md:w-1/2">
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1A3C6D] mb-2">
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#1A3C6D] mb-3" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.1)' }}>
               {product?.name}
             </h1>
-            <p className="text-lg font-bold text-[#1A3C6D] mb-4">
+            <p className="text-2xl font-bold text-[#1A3C6D] mb-4">
               {product?.price.toLocaleString()} ₽
             </p>
-
-            <div className="mb-4">
-              <h5 className="text-base font-semibold text-[#1A3C6D] mb-1">Описание</h5>
+            <div className="mb-6">
+              <button
+                onClick={handleAddToCart}
+                className={`${
+                  isInCart
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-[#1A3C6D] to-[#3B5A9A] hover:scale-105 shadow-md'
+                } text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300`}
+                disabled={isInCart}
+              >
+                {isInCart ? 'Товар добавлен в корзину' : 'Добавить в корзину'}
+              </button>
+            </div>
+            <div className="mb-4 p-4 bg-[#F1F5F9] rounded-xl">
+              <h5 className="text-base font-semibold text-[#1A3C6D] mb-2">Описание</h5>
               <p className="text-sm text-[#6B7280] leading-relaxed">{product?.description}</p>
-
             </div>
           </div>
         </div>
 
         {/* Отзывы */}
-        <div className="mb-8">
+        <div className="mb-12">
           <h3 className="text-xl sm:text-2xl font-bold text-[#1A3C6D] mb-4">Отзывы о товаре</h3>
           {show && !comments.some((c) => c.userId === user?.id) && (
             <div className="mb-6">
@@ -262,10 +259,10 @@ export default function OneProductPage(): React.JSX.Element {
                     key={num}
                     type="button"
                     onClick={() => setSelected(num)}
-                    className={`text-xl transition-colors ${
+                    className={`text-xl transition-all duration-300 ${
                       selected && selected >= num
-                        ? 'text-[#FBBF24]'
-                        : 'text-[#6B7280] hover:text-[#FBBF24]'
+                        ? 'text-[#FBBF24] scale-110'
+                        : 'text-[#6B7280] hover:text-[#FBBF24] hover:scale-110'
                     }`}
                   >
                     ★
@@ -274,22 +271,22 @@ export default function OneProductPage(): React.JSX.Element {
               </div>
               <form
                 onSubmit={handleComment}
-                className="flex w-full overflow-hidden rounded-lg bg-[#F1F5F9] shadow-sm focus-within:ring-2 focus-within:ring-[#1A3C6D]/50"
+                className="flex w-full overflow-hidden rounded-xl bg-[#F1F5F9] shadow-sm focus-within:ring-2 focus-within:ring-[#1A3C6D]/50 transition-all duration-300"
               >
                 <input
                   type="text"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
-                  className="flex-grow py-2 px-4 bg-[#F1F5F9] text-[#1A3C6D] placeholder-[#6B7280] focus:outline-none"
+                  className="flex-grow py-3 px-4 bg-[#F1F5F9] text-[#1A3C6D] placeholder-[#6B7280] focus:outline-none"
                   placeholder="Напишите свой отзыв"
                 />
                 <button
                   type="submit"
                   disabled={!selected || value.length < 2}
-                  className={`px-5 font-medium transition-all duration-300 ${
+                  className={`px-6 py-3 font-medium transition-all duration-300 ${
                     !selected || value.length < 2
                       ? 'bg-[#F1F5F9] text-[#1A3C6D]/50 cursor-not-allowed'
-                      : 'bg-[#1A3C6D] text-white hover:bg-[#3B5A9A]'
+                      : 'bg-gradient-to-r from-[#1A3C6D] to-[#3B5A9A] text-white hover:scale-105 shadow-sm'
                   }`}
                 >
                   Отправить
@@ -302,7 +299,7 @@ export default function OneProductPage(): React.JSX.Element {
               {allComments.map((comment) => (
                 <div
                   key={comment.id}
-                  className="p-4 rounded-xl bg-white shadow-sm"
+                  className="p-4 rounded-xl bg-white shadow-md hover:scale-[1.01] transition-all duration-300"
                 >
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex space-x-1">
@@ -326,7 +323,7 @@ export default function OneProductPage(): React.JSX.Element {
               ))}
             </div>
           ) : (
-            <div className="bg-[#F1F5F9] text-[#1A3C6D] px-5 py-4 rounded-xl">
+            <div className="bg-[#F1F5F9] text-[#1A3C6D] px-5 py-4 rounded-xl shadow-sm">
               Пока нет отзывов о этом товаре
             </div>
           )}
@@ -334,7 +331,7 @@ export default function OneProductPage(): React.JSX.Element {
 
         {/* Рекомендации */}
         {recommended && recommended.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-12">
             <h3 className="text-xl sm:text-2xl font-bold text-[#1A3C6D] mb-4">
               Похожие товары
             </h3>
@@ -343,9 +340,9 @@ export default function OneProductPage(): React.JSX.Element {
                 <div
                   key={product.id}
                   onClick={() => navigate(`/products/${product.id}`)}
-                  className="transform transition-all duration-300 hover:scale-[1.02] cursor-pointer w-full sm:w-1/3"
+                  className="transform transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 cursor-pointer w-full sm:w-1/3"
                 >
-                  <div className="rounded-xl bg-white shadow-sm overflow-hidden">
+                  <div className="rounded-xl bg-white shadow-md overflow-hidden">
                     <div className="h-48 bg-white flex items-center justify-center p-4">
                       <img
                         src={product.images[0]}

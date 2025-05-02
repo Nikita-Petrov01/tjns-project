@@ -28,49 +28,28 @@ export default function CategoryCreate(): React.JSX.Element {
   };
 
   return (
-    <div>
-      <form onSubmit={addCategoryHandler} style={{ display: 'flex', flexDirection: 'column' }}>
-        <label htmlFor="name">Введите название категорию</label>
+    <div className="min-h-screen bg-[#E6F0FA] font-poppins px-6 py-20 sm:py-24">
+      <form onSubmit={addCategoryHandler} className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 space-y-6">
+        <label htmlFor="name" className="block text-sm font-medium text-[#1A3C6D]">
+          Введите название категорию
+        </label>
         <input
           type="text"
           name="name"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="Введите название категорию"
-          style={{
-            marginBottom: '10px',
-            marginTop: '5px',
-            borderRadius: '8px',
-            height: '40px',
-            padding: '5px',
-          }}
+          className="w-full px-4 py-2 rounded-xl bg-[#F1F5F9] text-[#1A3C6D] placeholder-[#6B7280] border-2 border-[#D1E3F6] focus:ring-2 focus:ring-[#1A3C6D]/50 hover:border-[#1A3C6D]/50 transition-all duration-200"
         />
 
         <button
-          style={{
-            marginBottom: '10px',
-            marginTop: '5px',
-            borderRadius: '8px',
-            height: '40px',
-            width: '100px',
-            background: 'black',
-            color: 'white',
-            fontWeight: 'bold',
-          }}
+          type="submit"
+          className="w-28 px-4 py-2 bg-[#1A3C6D] text-white rounded-xl hover:bg-[#3B5A9A] shadow-md hover:scale-105 transition-all duration-300"
         >
           Добавить
         </button>
         <button
-          style={{
-            marginBottom: '10px',
-            marginTop: '5px',
-            borderRadius: '8px',
-            height: '40px',
-            width: '100px',
-            background: 'black',
-            color: 'white',
-            fontWeight: 'bold',
-          }}
+          className="w-28 px-4 py-2 bg-[#1A3C6D] text-white rounded-xl hover:bg-[#3B5A9A] shadow-md hover:scale-105 transition-all duration-300"
           onClick={() => navigate('/categories')}
         >
           Закрыть

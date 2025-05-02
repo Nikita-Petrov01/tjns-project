@@ -16,15 +16,15 @@ function ChatWidget({ socket }: ChatWidgetProps): React.JSX.Element {
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-  
+
     if (!input.trim() || !chat?.id || !socket) return;
-  
+
     const newMessage = {
       chatId: chat.id,
       content: input,
       sender: user ? 'user' : 'guest',
     };
-  
+
     try {
       const result = dispatch(createMessage(newMessage)).unwrap();
       socket.emit('message', result); // отправляем уже сохранённое сообщение
@@ -35,29 +35,29 @@ function ChatWidget({ socket }: ChatWidgetProps): React.JSX.Element {
   };
 
   return (
-    <div className="flex flex-col h-full max-h-[500px] border rounded-lg shadow-md">
+    <div className="flex flex-col h-[500px] max-h-[500px] bg-[#F1F5F9] rounded-2xl shadow-lg">
       {/* Сообщения */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-2">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg, index) => (
-          <div key={index} className="bg-gray-100 p-2 rounded-lg">
-            <div className="text-sm text-gray-500">{msg.sender}</div>
-            <div className="mt-1 text-base">{msg.content}</div>
+          <div key={index} className="bg-white p-3 rounded-xl shadow-sm">
+            <div className="text-sm text-[#6B7280]">{msg.sender}</div>
+            <div className="mt-1 text-[#1A3C6D] text-base">{msg.content}</div>
           </div>
         ))}
       </div>
 
       {/* Форма */}
-      <form onSubmit={handleSubmit} className="flex items-center border-t p-2 space-x-2">
+      <form onSubmit={handleSubmit} className="flex items-center border-t p-4 space-x-4">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Введите сообщение..."
-          className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
+          className="flex-1 px-4 py-2 rounded-xl bg-[#F1F5F9] text-[#1A3C6D] placeholder-[#6B7280] border-2 border-[#D1E3F6] focus:ring-2 focus:ring-[#1A3C6D]/50 hover:border-[#1A3C6D]/50 transition-all duration-200"
         />
         <button
           type="submit"
-          className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600"
+          className="px-6 py-2 bg-[#1A3C6D] text-white rounded-xl hover:bg-[#3B5A9A] shadow-md hover:scale-105 transition-all duration-300"
         >
           Отправить
         </button>
