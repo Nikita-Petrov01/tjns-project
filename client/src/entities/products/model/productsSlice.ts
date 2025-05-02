@@ -147,6 +147,6 @@ export const companySlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setSortBy, reverseSortOrder, setSearchProducts, setRating } = companySlice.actions;
+export const { setSortBy, reverseSortOrder, setSearchProducts } = companySlice.actions;
 
 export default companySlice.reducer;
