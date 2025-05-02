@@ -26,8 +26,8 @@ export default function CardList(): React.JSX.Element {
     void dispatch(getProducts());
     void dispatch(getReviews());
   }, [dispatch, user]);
-
   const activeProducts = searchQuery.length > 0 ? searchedProducts : products;
+  console.log(searchQuery, 'tgyuhijokijhugf');
 
   const { sortedProducts, sortType, setSortType } = useSortedProducts(activeProducts, reviews);
 

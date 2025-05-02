@@ -95,9 +95,13 @@ export default function NavigationBar(): React.JSX.Element {
               onMouseLeave={() => setIsFavoriteHovered(false)}
               aria-label="Избранное"
             >
-              {isFavoriteHovered ? <HeartFill size={20} /> : <Heart size={20} />}
+              {isFavoriteHovered ? (
+                <HeartFill size={20} />
+              ) : (
+                <Heart size={20} />
+              )}
               {favoriteCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full z-100 h-4 w-4 flex items-center justify-center">
                   {favoriteCount}
                 </span>
               )}
@@ -129,7 +133,7 @@ export default function NavigationBar(): React.JSX.Element {
               </button>
 
               {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-[#D1E3F6] rounded-xl shadow-md z-9999 overflow-hidden">
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-[#D1E3F6] rounded-xl shadow-md overflow-hidden">
                   <div className="px-4 py-3 font-semibold text-[#1A3C6D] border-b border-[#D1E3F6]">
                     {user.name}
                   </div>

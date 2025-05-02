@@ -96,7 +96,7 @@ module.exports = {
         price: 149990,
         categoryId: 2,
         brand: 'Apple',
-        stock: 20,
+        stock: 10,
       },
       {
         name: 'Ноутбук ASUS ROG Zephyrus G14',
