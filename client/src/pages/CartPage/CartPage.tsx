@@ -49,7 +49,7 @@ export default function CartPage(): React.JSX.Element {
                     isOutOfStock={item.product.stock === 0}
                   />
                   <button
-                    onClick={() => navigate(`/products/${item.id.toString()}`)}
+                    onClick={() => navigate(`/products/${item.productId}`)}
                     className="text-[#1A3C6D]  hover:bg-[#D1E3F6] rounded px-2 py-1 transition-all duration-300"
                   >
                     Подробнее
