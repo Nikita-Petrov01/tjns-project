@@ -20,11 +20,7 @@ function SearchComponent(): React.JSX.Element {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (query.length > 2) {
-        void dispatch(searchProducts(query));
-      } else {
-        setIsDropdownOpen(false);
-      }
+      void dispatch(searchProducts(query));
     }, 500);
     return () => clearTimeout(timer);
   }, [query, dispatch]);
@@ -42,9 +38,10 @@ function SearchComponent(): React.JSX.Element {
   const handleItemClick = (itemName: string): void => {
     setQuery(itemName);
     setIsDropdownOpen(false);
+    void navigate('/');
   };
 
-  const handleClear = (): void => {
+   const handleClear = (): void => {
     setQuery('');
     setIsDropdownOpen(false);
   };
