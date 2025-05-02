@@ -68,6 +68,54 @@ class CartItemService {
     // return result;
   }
 
+  static async addItemMerge({ userId, productId, price, quantity }) {
+    if (!userId || !productId || !price) {
+      throw new Error('Недостаточно данных для добавления товара в корзину');
+    }
+    const cart = await Cart.findOne({ where: { userId } });
+    if (!cart) throw new Error('Корзина не найдена');
+
+    const product = await Product.findByPk(productId);
+    if (!product) throw new Error('Товар не найден');
+
+    const existingItem = await CartItem.findOne({
+      where: {
+        cartId: cart.id,
+        productId,
+      },
+    });
+
+    if (existingItem) {
+      existingItem.quantity += 1;
+      await existingItem.save();
+      const result = await CartItem.findByPk(existingItem.id, { include: [Product] });
+      return result;
+    }
+
+    const cartItem = await CartItem.create({
+      cartId: cart.id,
+      productId,
+      quantity,
+      price,
+    });
+
+    const newCart = await CartItem.findOne({
+      where: { id: cartItem.id },
+      include: [{ model: Product }],
+    });
+
+    const plain = newCart.toJSON();
+
+    return {
+      ...plain,
+      product: plain.Product,
+    };
+
+    // return result;
+  }
+
+
+
   static async updateItem(itemId, quantity) {
     if (!itemId || !quantity) {
       throw new Error('Недостаточно данных для обновления товара в корзине');

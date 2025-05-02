@@ -26,6 +26,22 @@ class CartItemController {
     }
   }
 
+  static async addMerge(req, res) {
+    try {
+      const { productId, price, quantity } = req.body;
+
+      const item = await CartItemService.addItem({
+        userId: res.locals.user.id,
+        productId,
+        price,
+        quantity,
+      });
+      res.status(201).json(item);
+    } catch (e) {
+      res.status(400).json({ error: e.message });
+    }
+  }
+
   static async update(req, res) {
     try {
       const item = await CartItemService.updateItem(req.params.itemId, req.body.quantity);

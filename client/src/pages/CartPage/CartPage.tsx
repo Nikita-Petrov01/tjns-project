@@ -1,4 +1,3 @@
-
 import { useCartActions } from '../../entities/cart/hooks/useCartActions';
 import { CartItemCard } from '../../entities/cart/ui/CartItemCard';
 import { useNavigate } from 'react-router';
@@ -8,18 +7,18 @@ import { getCartItems } from '../../entities/cart/model/cartThunks';
 
 export default function CartPage(): React.JSX.Element {
   const { items, totalPrice, handleAdd, handleRemove, handleDelete } = useCartActions();
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', items)
+  console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', items);
 
   useEffect(() => {
-    void dispatch(getCartItems())
-  }, [items])
+    void dispatch(getCartItems());
+  }, []);
 
   if (items.length === 0) {
-    return <div>Загрузка...</div>
+    return <div>Загрузка...</div>;
   }
-  
+
   console.log('🧾 Товары для отображения в корзине:', items);
   return (
     <div className="min-h-screen bg-[#E6F0FA] font-poppins py-20 sm:py-24">
@@ -41,15 +40,15 @@ export default function CartPage(): React.JSX.Element {
               {items.map((item) => (
                 <div key={item.id}>
                   <CartItemCard
-                    image={item?.product?.images[0]}
-                    name={item?.product?.name}
+                    image={item.product?.images[0]}
+                    name={item.product?.name}
                     price={item.price}
                     quantity={item.quantity}
-                    stock={item?.product?.stock}
+                    stock={item.product?.stock}
                     add={() => handleAdd(item.productId)}
                     remove={() => handleRemove(item.productId)}
                     onDelete={() => handleDelete(item.productId)}
-                    isOutOfStock={item?.product?.stock === 0}
+                    isOutOfStock={item.product?.stock === 0}
                   />
                   <button
                     onClick={() => navigate(`/products/${String(item.productId)}`)}

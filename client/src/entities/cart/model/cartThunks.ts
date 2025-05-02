@@ -37,9 +37,10 @@ export const mergeGuestCart = createAsyncThunk('cart/mergeGuestCart', async (_, 
   for (const guestItem of guestItems) {
     try {
       // eslint-disable-next-line no-await-in-loop
-      await CartService.addCartItem({
+      await CartService.addCartItemForMerge({
         productId: guestItem.productId,
         price: guestItem.price,
+        quantity: guestItem.quantity
       });
     } catch (error) {
       console.error(`Ошибка при переносе товара ${guestItem.productId.toString()}:`, error);

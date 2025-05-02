@@ -89,3 +89,9 @@ export const updateCartItemSchema = z.object({
     quantity: z.number(),
     price: z.number(),
   });
+
+export const addFormMerge = z.object({
+    price: z.number(),
+    productId: z.number(),
+    quantity: z.number(),
+})
