@@ -62,7 +62,9 @@ function SearchComponent(): React.JSX.Element {
   }, []);
 
   return (
+
     <div className="relative w-full max-w-lg mx-auto font-poppins" ref={dropdownRef}>
+
       <div className="flex items-center">
         <div className="relative w-full">
           <input
@@ -98,10 +100,12 @@ function SearchComponent(): React.JSX.Element {
           )}
           <button
             type="submit"
+
             className="absolute top-0 right-0 p-2.5 h-full text-white bg-[#1A3C6D] hover:bg-[#3B5A9A] rounded-r-lg border-none focus:ring-2 focus:ring-[#1A3C6D]/50 transition-all duration-300"
           >
             <svg
               className="w-5 h-5"
+
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 20 20"
@@ -122,19 +126,25 @@ function SearchComponent(): React.JSX.Element {
         <div className="absolute z-50 w-full mt-2 bg-white rounded-lg shadow-sm max-h-80 overflow-auto transition-all duration-300">
           {/* Секция категорий */}
           {filteredCategories.length > 0 && (
+
             <div className="border-b border-[#D1E3F6]">
               <div className="px-4 py-2 text-xs font-semibold text-[#1A3C6D] bg-[#F1F5F9]">
+
                 Категории
               </div>
               <ul>
                 {filteredCategories.map((category) => (
+
                   <li key={category.id} className="hover:bg-[#D1E3F6] transition-all duration-300">
+
                     <button
                       type="button"
                       onClick={() => navigate(`/categories/${category.id.toString()}`)}
                       className="flex items-center w-full px-4 py-3 text-left"
                     >
+
                       <div className="mr-3 text-[#1A3C6D]">
+
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-5 w-5"
@@ -161,21 +171,27 @@ function SearchComponent(): React.JSX.Element {
           {/* Секция товаров */}
           {results.length > 0 && (
             <div>
+
               <div className="px-4 py-2 text-xs font-semibold text-[#1A3C6D] bg-[#F1F5F9]">
+
                 Товары
               </div>
               <ul>
                 {results.map((item) => (
                   <li
                     key={item.id}
+
                     className="hover:bg-[#D1E3F6] transition-all duration-300 border-t border-[#D1E3F6]"
+
                   >
                     <button
                       type="button"
                       onClick={() => handleItemClick(item.name)}
                       className="flex items-center w-full px-4 py-3 text-left"
                     >
+
                       <div className="mr-3 text-[#1A3C6D]">
+
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-5 w-5"
@@ -192,8 +208,10 @@ function SearchComponent(): React.JSX.Element {
                         </svg>
                       </div>
                       <div>
+
                         <span className="block font-medium text-[#1A3C6D]">{item.name}</span>
                         <span className="block text-xs text-[#6B7280] mt-1">
+
                           Категория:{' '}
                           {categories.find((c) => c.id === item.categoryId)?.name ?? 'Не указана'}
                         </span>
