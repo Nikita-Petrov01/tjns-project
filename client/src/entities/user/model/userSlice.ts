@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { UserSliceT } from './types';
 import { getAdmin, loginUser, logoutUser, refreshUser, signupAdmin, signupUser } from './userThunks';
 import { v4 as uuidv4 } from 'uuid';
-import { remove } from 'lodash';
+
 const initialState: UserSliceT = {
   user: null,
   isRefreshLoading: false,
@@ -17,6 +17,9 @@ export const userSlice = createSlice({
       setAdmin: (state, action) => {
       state.admin.push(action.payload);
     },
+
+
+    
     initGuestId: (state) => {
       let id = localStorage.getItem('guestId');
       if (!id) {

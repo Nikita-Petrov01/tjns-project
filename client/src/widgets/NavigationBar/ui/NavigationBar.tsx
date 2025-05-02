@@ -5,6 +5,7 @@ import { getCategories } from '../../../entities/category/model/categoryThunks';
 import { logoutUser } from '../../../entities/user/model/userThunks';
 import SearchComponent from '../../../features/searchOptions/ui/SearchComponent';
 import { Heart, HeartFill, Cart, CartFill } from 'react-bootstrap-icons';
+import type { SearchComponentRef } from '../../../features/searchOptions/ui/SearchComponent';
 
 export default function NavigationBar(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -18,9 +19,21 @@ export default function NavigationBar(): React.JSX.Element {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [clearSearch, setClearSearch] = useState(false);
+  const searchRef = useRef<SearchComponentRef>(null);
+
+  console.log(clearSearch);
+
+  // Функция для очистки поиска
+  const handleClearSearch = (): void => {
+    setClearSearch((prev) => !prev); // Триггерим очистку
+    if (searchRef.current) {
+      searchRef.current.clear();
+    }
+  };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsUserMenuOpen(false);
       }
@@ -34,7 +47,7 @@ export default function NavigationBar(): React.JSX.Element {
   }, [dispatch]);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = (): void => {
       setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
@@ -48,6 +61,11 @@ export default function NavigationBar(): React.JSX.Element {
   const favoriteCount = favorites.filter((fav) => fav.userId === user?.id).length;
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   const isAdmin = user?.status === 'admin' || user?.status === 'superadmin';
+
+  const closeSidebarAndClearSearch = (): void => {
+    closeSidebar();
+    handleClearSearch();
+  };
 
   return (
     <>
@@ -82,7 +100,7 @@ export default function NavigationBar(): React.JSX.Element {
 
         <div className="flex-1 flex justify-center items-center gap-4 z-10">
           <div className="w-full max-w-md lg:max-w-lg">
-            <SearchComponent />
+            <SearchComponent ref={searchRef} onClear={() => setClearSearch(false)} />
           </div>
         </div>
 
@@ -95,11 +113,7 @@ export default function NavigationBar(): React.JSX.Element {
               onMouseLeave={() => setIsFavoriteHovered(false)}
               aria-label="Избранное"
             >
-              {isFavoriteHovered ? (
-                <HeartFill size={20} />
-              ) : (
-                <Heart size={20} />
-              )}
+              {isFavoriteHovered ? <HeartFill size={20} /> : <Heart size={20} />}
               {favoriteCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full z-100 h-4 w-4 flex items-center justify-center">
                   {favoriteCount}
@@ -235,7 +249,7 @@ export default function NavigationBar(): React.JSX.Element {
             <Link
               to="/"
               className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-500 rounded-lg transition-colors duration-300 no-underline font-medium"
-              onClick={closeSidebar}
+              onClick={closeSidebarAndClearSearch}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -254,7 +268,7 @@ export default function NavigationBar(): React.JSX.Element {
               <Link
                 to={`/categories/${category.id.toString()}`}
                 className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-500 rounded-lg transition-colors duration-300 no-underline font-medium"
-                onClick={closeSidebar}
+                onClick={closeSidebarAndClearSearch}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
