@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { number, z } from "zod";
 
 export const productForCartSchema = z.object({
     id: z.number(),
@@ -28,6 +28,14 @@ export const cartSchema = z.object({
 
 export const addToCartSchema = z.object({
     productId: z.number(),
+    price: z.number(),
+})
+
+export const newCartItemSchema = z.object({
+    id: number(),
+    cartId: z.number(),
+    productId: z.number(),
+    quantity: z.number(),
     price: z.number(),
 })
 

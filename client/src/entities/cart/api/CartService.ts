@@ -1,7 +1,7 @@
 import type { AxiosInstance } from 'axios';
 import axiosInstance from '../../../shared/api/axiosInstance';
-import type { AddToCartT, CartItemCheckT, CartItemT, CartItemValidationResponseT, CartT, CartValidationPayload, NewCartItemT, UpdateCartItemT, UpdateCartT } from '../model/cartTypes';
-import { cartItemSchema, cartSchema, updateCartItemPayload, updateCartItemSchema } from '../model/cartSchema';
+import type { AddToCartT, CartItemCheckT, CartItemT, CartItemValidationResponseT, CartT, CartValidationPayload, NewCartItem, NewCartItemT, UpdateCartItemT, UpdateCartT } from '../model/cartTypes';
+import { cartItemSchema, cartSchema, newCartItemSchema, updateCartItemPayload, updateCartItemSchema } from '../model/cartSchema';
 
 class CartService {
   constructor(private readonly client: AxiosInstance) {}
@@ -40,10 +40,10 @@ class CartService {
     }
   }
 
-  async addCartItem(item: AddToCartT): Promise<CartItemT> {
+  async addCartItem(item: AddToCartT): Promise<NewCartItem> {
     try {
       const respose = await this.client.post('/cartItem', item);
-      return cartItemSchema.parse(respose.data);
+      return newCartItemSchema.parse(respose.data);
     } catch (error) {
       console.error('Ошибка при добавлении элемента в корзину:', error);
       throw error;
