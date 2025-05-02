@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import CartService from '../api/CartService';
-import type { AddToCartT, CartItemT, UpdateCartT } from './cartTypes';
+import type { AddCartItemT, AddToCartT, CartItemT, UpdateCartT } from './cartTypes';
 import type { RootState } from '../../../app/store';
 import { clearGuestCart, setHasMerged } from './cartSlice';
 import axios from 'axios';
@@ -15,7 +15,7 @@ export const getCart = createAsyncThunk('cart/getCart', () => CartService.getOrC
 
 export const getCartItems = createAsyncThunk('cart/getCartItems', () => CartService.getCartItems());
 
-export const addCartItem = createAsyncThunk('cart/addCartItem', (item: AddToCartT) =>
+export const addCartItem = createAsyncThunk('cart/addCartItem', (item: AddCartItemT) =>
   CartService.addCartItem(item),
 );
 
@@ -25,9 +25,10 @@ export const updateCartItem = createAsyncThunk(
     CartService.updateCartItem(itemId, updateData),
 );
 
-export const deleteCartItem = createAsyncThunk('cart/deleteCartItem', (itemId: number) =>
-  CartService.deleteCartItem(itemId),
-);
+export const deleteCartItem = createAsyncThunk('cart/deleteCartItem', async (itemId: number) => {
+  await CartService.deleteCartItem(itemId)
+  return itemId
+});
 
 export const mergeGuestCart = createAsyncThunk('cart/mergeGuestCart', async (_, thunkAPI) => {
   const state = thunkAPI.getState() as RootState;
