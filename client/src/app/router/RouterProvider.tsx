@@ -26,10 +26,9 @@ import { getCart, getCartItems, mergeGuestCart } from '../../entities/cart/model
 
 import FavoritePage from '../../pages/FavoritePage/FavoritePage';
 
-
 function RouterProvider(): React.JSX.Element {
   const dispatch = useAppDispatch();
-  const {user, isRefreshLoading} = useAppSelector((state) => state.user);
+  const { user, isRefreshLoading } = useAppSelector((state) => state.user);
   const guestItems = useAppSelector((state) => state.cart.guestItems);
 
   useEffect(() => {
@@ -43,7 +42,7 @@ function RouterProvider(): React.JSX.Element {
       dispatch(loadGuestCart());
     } else {
       void dispatch(getCart());
-      void dispatch(getCartItems())
+      void dispatch(getCartItems());
       console.log('я диспач для создания корзины для юзера и я отработал');
       if (guestItems.length > 0) {
         void dispatch(mergeGuestCart());
@@ -61,6 +60,7 @@ function RouterProvider(): React.JSX.Element {
         <Route path="categories/:id" element={<FilteredCardList />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/chat" element={<ChatPage />} />
+        <Route path="/favorites" element={<FavoritePage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/products/create" element={<CreatePage />} />

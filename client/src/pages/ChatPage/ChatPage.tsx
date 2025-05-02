@@ -45,12 +45,16 @@ function ChatPage(): React.JSX.Element {
   }, [chat?.id, dispatch]);
 
   return (
-    <div className="max-w-2xl mx-auto mt-6">
-      {chat?.id ? (
-        <ChatWidget socket={socket} />
-      ) : (
-        <div className="text-gray-500">Чат не инициализирован</div>
-      )}
+    <div className="min-h-screen bg-[#E6F0FA] font-poppins py-20 sm:py-24">
+      <div className="max-w-3xl mx-auto p-6 bg-white rounded-2xl shadow-xl">
+        {chat?.id ? (
+          <ChatWidget socket={socket} />
+        ) : (
+          <div className="bg-[#F1F5F9] text-[#1A3C6D] px-6 py-4 rounded-xl shadow-sm text-center text-lg">
+            Чат не инициализирован
+          </div>
+        )}
+      </div>
     </div>
   );
 }

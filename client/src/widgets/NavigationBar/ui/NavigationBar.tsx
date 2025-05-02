@@ -53,7 +53,7 @@ export default function NavigationBar(): React.JSX.Element {
     <>
       {/* Затемнение фона при открытии сайдбара */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-9999 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 ${
           isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={closeSidebar}
@@ -61,12 +61,11 @@ export default function NavigationBar(): React.JSX.Element {
 
       {/* Навбар */}
       <nav
-        className={`fixed top-0 left-0 w-full bg-white shadow-sm py-4 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 z-9999 font-poppins transition-transform duration-300 rounded-b-xl ${
+        className={`fixed top-0 left-0 w-full bg-white shadow-sm py-4 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 z-20 font-poppins transition-transform duration-300 rounded-b-xl ${
           isScrolled ? '-translate-y-full' : 'translate-y-0'
         }`}
-      
       >
-        <div className="flex items-center gap-4 z-9999">
+        <div className="flex items-center gap-4 z-10">
           <button
             className="text-gray-600 text-2xl hover:text-blue-500 transition-colors duration-300 focus:outline-none p-2 rounded-full"
             onClick={toggleSidebar}
@@ -81,7 +80,7 @@ export default function NavigationBar(): React.JSX.Element {
           </Link>
         </div>
 
-        <div className="flex-1 flex justify-center items-center gap-4 z-9999">
+        <div className="flex-1 flex justify-center items-center gap-4 z-10">
           <div className="w-full max-w-md lg:max-w-lg">
             <SearchComponent />
           </div>
@@ -176,6 +175,7 @@ export default function NavigationBar(): React.JSX.Element {
                     className="w-full text-left px-4 py-2 text-sm text-[#1A3C6D] hover:bg-[#D1E3F6] hover:text-[#3B5A9A] transition-colors duration-300"
                     onClick={() => {
                       void dispatch(logoutUser());
+                      void navigate('/');
                       setIsUserMenuOpen(false);
                     }}
                   >
