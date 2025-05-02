@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../shared/lib/hooks';
-import { getAdmin } from '../../entities/user/model/userThunks';
+import { getAdmin, getUsers } from '../../entities/user/model/userThunks';
 import { getProducts } from '../../entities/products/model/productThunk';
 import { useNavigate } from 'react-router';
 import SignUpAdminModal from '../../shared/ui/signUpAdminModal/SignUpAdminModal';
@@ -12,10 +12,13 @@ export default function SuperAdminPage(): React.JSX.Element {
   const user = useAppSelector((state) => state.user.user);
   const admins = useAppSelector((state) => state.user.admin);
   const products = useAppSelector((state) => state.products.products);
+  const users = useAppSelector((state) => state.user.users);
+  const onlyusers = users.filter((user) => user.status === 'user');
 
   useEffect(() => {
     void dispatch(getAdmin());
     void dispatch(getProducts());
+    void dispatch(getUsers());
   }, [dispatch]);
 
   return (
@@ -39,7 +42,7 @@ export default function SuperAdminPage(): React.JSX.Element {
 
           <div className="bg-[#F1F5F9] p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-center flex flex-col items-center">
             <p className="text-sm text-[#6B7280]">Пользователей</p>
-            <p className="text-xl font-semibold text-[#1A3C6D] mb-2">{admins.length}</p>
+            <p className="text-xl font-semibold text-[#1A3C6D] mb-2">{onlyusers.length}</p>
           </div>
         </div>
 

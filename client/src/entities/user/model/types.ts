@@ -10,4 +10,5 @@ export type UserSliceT = {
     isRefreshLoading: boolean;
     admin: UserT[];
     guestId: string | null;
+    users: UserT[];
 }

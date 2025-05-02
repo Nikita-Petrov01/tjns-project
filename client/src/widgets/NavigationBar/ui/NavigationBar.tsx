@@ -18,6 +18,8 @@ export default function NavigationBar(): React.JSX.Element {
   const [isCartHovered, setIsCartHovered] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isFavoriteFloatingHovered, setIsFavoriteFloatingHovered] = useState(false);
+  const [isCartFloatingHovered, setIsCartFloatingHovered] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [clearSearch, setClearSearch] = useState(false);
   const searchRef = useRef<SearchComponentRef>(null);
@@ -162,15 +164,7 @@ export default function NavigationBar(): React.JSX.Element {
                       Личный кабинет
                     </button>
                   )}
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-[#1A3C6D] hover:bg-[#D1E3F6] hover:text-[#3B5A9A] transition-colors duration-300"
-                    onClick={() => {
-                      void navigate('/orders');
-                      setIsUserMenuOpen(false);
-                    }}
-                  >
-                    История заказов
-                  </button>
+
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-[#1A3C6D] hover:bg-[#D1E3F6] hover:text-[#3B5A9A] transition-colors duration-300"
                     onClick={() => {
@@ -283,6 +277,39 @@ export default function NavigationBar(): React.JSX.Element {
             </li>
           ))}
         </ul>
+      </div>
+
+      {/* Плавающие кнопки в правом нижнем углу */}
+      <div className="fixed bottom-6 right-6 flex flex-col gap-4 z-50">
+        <button
+          className="w-15 h-15 flex items-center justify-center rounded-full bg-[#F1F5F9] hover:bg-[#D1E3F6] text-[#1A3C6D] hover:text-[#3B5A9A] transition-colors duration-200 relative shadow-md"
+          onClick={() => navigate('/favorites')}
+          onMouseEnter={() => setIsFavoriteFloatingHovered(true)}
+          onMouseLeave={() => setIsFavoriteFloatingHovered(false)}
+          aria-label="Избранное"
+        >
+          {isFavoriteFloatingHovered ? <HeartFill size={20} /> : <Heart size={20} />}
+          {favoriteCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-[#EF4444] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hover:bg-[#DC2626] transition-colors duration-200">
+              {favoriteCount}
+            </span>
+          )}
+        </button>
+
+        <button
+          className="w-15 h-15 flex items-center justify-center rounded-full bg-[#F1F5F9] hover:bg-[#D1E3F6] text-[#1A3C6D] hover:text-[#3B5A9A] transition-colors duration-200 relative shadow-md"
+          onClick={() => navigate('/cart')}
+          onMouseEnter={() => setIsCartFloatingHovered(true)}
+          onMouseLeave={() => setIsCartFloatingHovered(false)}
+          aria-label="Корзина"
+        >
+          {isCartFloatingHovered ? <CartFill size={20} /> : <Cart size={20} />}
+          {cartItemCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-[#EF4444] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hover:bg-[#DC2626] transition-colors duration-200">
+              {cartItemCount}
+            </span>
+          )}
+        </button>
       </div>
     </>
   );
