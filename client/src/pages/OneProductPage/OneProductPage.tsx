@@ -77,6 +77,12 @@ export default function OneProductPage(): React.JSX.Element {
       price: product.price,
       product, // только для guest
     };
+
+    // const payloadUser = {
+    //   productId: pro
+    // }
+
+
   
     if (user) {
       void dispatch(addCartItem(payload));

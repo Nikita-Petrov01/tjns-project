@@ -1,7 +1,7 @@
 // import type { PayloadAction } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import type { AddToCartT, CartItemT, CartSliceT, ProductForCartT } from './cartTypes';
+import type { AddToCartT, CartItemT, CartSliceT, NewCartItem, ProductForCartT } from './cartTypes';
 import { addCartItem, deleteCartItem, getCart, getCartItems, updateCartItem, validateCart, validateCartBeforeOrder } from './cartThunks';
 import { toast } from 'react-toastify';
 import type { RootState } from '../../../app/store';
@@ -127,7 +127,7 @@ export const cartSlice = createSlice({
     builder.addCase(addCartItem.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(addCartItem.fulfilled, (state, action: PayloadAction<CartItemT>) => {
+    builder.addCase(addCartItem.fulfilled, (state, action: PayloadAction<NewCartItem>) => {
       state.loading = false;
       state.items.push(action.payload);
     });
