@@ -1,7 +1,7 @@
 import type { AxiosInstance } from 'axios';
 import axiosInstance from '../../../shared/api/axiosInstance';
-import type { AddToCartT, CartItemCheckT, CartItemT, CartItemValidationResponseT, CartT, CartValidationPayload, NewCartItem, NewCartItemT, UpdateCartItemT, UpdateCartT } from '../model/cartTypes';
-import { cartItemSchema, cartSchema, newCartItemSchema, updateCartItemPayload, updateCartItemSchema } from '../model/cartSchema';
+import type { AddCartItemT, AddForMergeT, AddToCartT, CartItemCheckT, CartItemT, CartItemValidationResponseT, CartT, CartValidationPayload, NewCartItem, NewCartItemT, UpdateCartItemT, UpdateCartT } from '../model/cartTypes';
+import { addCartItemSchema, cartItemSchema, cartSchema, newCartItemSchema, updateCartItemPayload, updateCartItemSchema } from '../model/cartSchema';
 
 class CartService {
   constructor(private readonly client: AxiosInstance) {}
@@ -40,10 +40,20 @@ class CartService {
     }
   }
 
-  async addCartItem(item: AddToCartT): Promise<NewCartItem> {
+  async addCartItem(item: AddToCartT): Promise<AddCartItemT> {
     try {
       const respose = await this.client.post('/cartItem', item);
-      return newCartItemSchema.parse(respose.data);
+      return addCartItemSchema.parse(respose.data);
+    } catch (error) {
+      console.error('Ошибка при добавлении элемента в корзину:', error);
+      throw error;
+    }
+  }
+
+  async addCartItemForMerge(item: AddForMergeT): Promise<AddCartItemT> {
+    try {
+      const respose = await this.client.post('/cartItem/merge', item);
+      return addCartItemSchema.parse(respose.data);
     } catch (error) {
       console.error('Ошибка при добавлении элемента в корзину:', error);
       throw error;
@@ -63,6 +73,7 @@ class CartService {
 
   async deleteCartItem(itemId: number): Promise<number> {
     try {
+      console.log(itemId, 'айдишка для удаления')
       await this.client.delete(`/cartItem/${itemId.toString()}`);
       return itemId;
     } catch (error) {

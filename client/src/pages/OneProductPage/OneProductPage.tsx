@@ -118,7 +118,7 @@ export default function OneProductPage(): React.JSX.Element {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/products/edit/${product.id.toString()}`);
+                void navigate(`/products/edit/${(product.id).toString()}`);
               }}
               className="p-2 rounded-lg bg-[#F1F5F9] text-[#1A3C6D] hover:bg-[#D1E3F6] transition-all duration-300"
               title="Редактировать"

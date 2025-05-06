@@ -1,8 +1,23 @@
 // import type { PayloadAction } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import type { AddToCartT, CartItemT, CartSliceT, NewCartItem, ProductForCartT } from './cartTypes';
-import { addCartItem, deleteCartItem, getCart, getCartItems, updateCartItem, validateCart, validateCartBeforeOrder } from './cartThunks';
+import type {
+  AddCartItemT,
+  AddToCartT,
+  CartItemT,
+  CartSliceT,
+  NewCartItem,
+  ProductForCartT,
+} from './cartTypes';
+import {
+  addCartItem,
+  deleteCartItem,
+  getCart,
+  getCartItems,
+  updateCartItem,
+  validateCart,
+  validateCartBeforeOrder,
+} from './cartThunks';
 import { toast } from 'react-toastify';
 import type { RootState } from '../../../app/store';
 // import {
@@ -94,7 +109,7 @@ export const cartSlice = createSlice({
     replaceGuestCart(state, action: PayloadAction<CartItemT[]>) {
       state.guestItems = action.payload;
       localStorage.setItem('guestCart', JSON.stringify(action.payload));
-    }
+    },
   },
   extraReducers(builder) {
     // Получение корзины
@@ -127,7 +142,7 @@ export const cartSlice = createSlice({
     builder.addCase(addCartItem.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(addCartItem.fulfilled, (state, action: PayloadAction<NewCartItem>) => {
+    builder.addCase(addCartItem.fulfilled, (state, action: PayloadAction<AddCartItemT>) => {
       state.loading = false;
       state.items.push(action.payload);
     });
@@ -143,7 +158,7 @@ export const cartSlice = createSlice({
     });
     builder.addCase(updateCartItem.fulfilled, (state, action: PayloadAction<CartItemT>) => {
       const updatedItem = action.payload;
-      const index = state.items.findIndex((i) => i.id === updatedItem.id);
+      const index = state.items.findIndex((i) => i.productId === updatedItem.id);
       if (index !== -1) {
         state.items[index] = updatedItem;
       }
@@ -166,9 +181,10 @@ export const cartSlice = createSlice({
     builder.addCase(deleteCartItem.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(deleteCartItem.fulfilled, (state, action: PayloadAction<number>) => {
+    builder.addCase(deleteCartItem.fulfilled, (state, action) => {
       state.loading = false;
-      state.items = state.items.filter((item) => item.id !== action.payload);
+      console.log(state.items, action.payload, '-----------------------');
+      state.items = state.items.filter((item) => item.productId !== action.payload);
     });
     builder.addCase(deleteCartItem.rejected, (state, action) => {
       state.loading = false;
@@ -178,17 +194,16 @@ export const cartSlice = createSlice({
 
     builder.addCase(validateCart.pending, (state) => {
       state.loading = true;
-    })
+    });
     builder.addCase(validateCart.fulfilled, (state) => {
       state.loading = false;
       state.cartIsValid = true;
-    })
+    });
     builder.addCase(validateCart.rejected, (state) => {
       state.loading = false;
       state.cartIsValid = false;
       toast.error('Проверьте товары в корзине: что-то устарело');
-    })
-    
+    });
   },
 });
 

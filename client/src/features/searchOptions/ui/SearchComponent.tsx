@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import type { ForwardedRef } from 'react';
+import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../shared/lib/hooks';
 import { searchProducts } from '../../../entities/searchOptions/model/searchThunks';
 import { getCategories } from '../../../entities/category/model/categoryThunks';
 import { useNavigate } from 'react-router';
+
 
 
 function SearchComponent(): React.JSX.Element {
@@ -53,11 +55,21 @@ function SearchComponent(): React.JSX.Element {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
+
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+
+    const handleItemClick = (itemName: string): void => {
+      setQuery(itemName);
+      setIsDropdownOpen(false);
+      void navigate('/');
     };
+
+    const handleClear = (): void => {
+      setQuery('');
+      setIsDropdownOpen(false);
+      onClear?.();
+    };
+
   }, []);
 
   return (
@@ -74,26 +86,28 @@ function SearchComponent(): React.JSX.Element {
             required
           />
           {query && (
+
+
             <button
-              type="button"
-              onClick={handleClear}
-              className="absolute top-1/2 right-12 transform -translate-y-1/2 text-[#1A3C6D] hover:text-[#3B5A9A] transition-colors duration-300"
+              type="submit"
+              className="absolute top-0 right-0 p-2.5 h-full text-white bg-[#1A3C6D] hover:bg-[#3B5A9A] rounded-r-lg border-none focus:ring-2 focus:ring-[#1A3C6D]/50 transition-all duration-300"
             >
               <svg
                 className="w-5 h-5"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+                viewBox="0 0 20 20"
               >
                 <path
+                  stroke="currentColor"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
+                  strokeWidth="2"
+                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
                 />
               </svg>
             </button>
+
           )}
           <button
             type="submit"
@@ -208,5 +222,6 @@ function SearchComponent(): React.JSX.Element {
     </div>
   );
 }
+
 
 export default SearchComponent;

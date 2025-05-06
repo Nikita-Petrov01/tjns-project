@@ -13,7 +13,9 @@ export type ProductSliceT = {
   products: ProductT[];
   loading: boolean;
   product: ProductT | null;
+
   productsTodisplay: ProductT[];
+
   searchProducts: string;
 
   productsByCategory: ProductT[] | null;
