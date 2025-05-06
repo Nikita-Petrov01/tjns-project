@@ -8,11 +8,12 @@ const initialState: ProductSliceT = {
   loading: false,
   product: null,
   productsByCategory: null,
-
+  productsTodisplay: [],
   sortBy: 'price',
   sortOrder: 1,
-
   searchProducts: '',
+  pagination: null,
+  categoryPagination: null,
 };
 
 export const companySlice = createSlice({
@@ -63,7 +64,8 @@ export const companySlice = createSlice({
     // Все продукты
     builder.addCase(getProducts.fulfilled, (state, action) => {
       state.loading = false;
-      state.products = action.payload;
+      state.products = action.payload.products;
+      state.pagination = action.payload.pagination;
     });
     builder.addCase(getProducts.rejected, (state, action) => {
       state.loading = false;
@@ -92,7 +94,8 @@ export const companySlice = createSlice({
     // По id категории
     builder.addCase(getById.fulfilled, (state, action) => {
       state.loading = false;
-      state.productsByCategory = action.payload;
+      state.productsByCategory = action.payload.products;
+      state.categoryPagination = action.payload.pagination;
     });
     builder.addCase(getById.rejected, (state, action) => {
       state.loading = false;
@@ -147,6 +150,9 @@ export const companySlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setSortBy, reverseSortOrder, setSearchProducts } = companySlice.actions;
+
+export const { setSortBy, reverseSortOrder, setSearchProducts, setRating, setCurrentPage } =
+  companySlice.actions;
+
 
 export default companySlice.reducer;

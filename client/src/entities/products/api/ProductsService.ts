@@ -1,6 +1,6 @@
 import type { AxiosInstance } from 'axios';
-import type { NewProductT, ProductT } from '../model/types';
-import { newProductSchema, productSchema } from '../model/schema';
+import type { PaginationT, ProductResponceT, ProductT } from '../model/types';
+import { paginationSchema, productSchema } from '../model/schema';
 import axiosInstance from '../../../shared/api/axiosInstance';
 
 class ProductsService {
@@ -8,10 +8,17 @@ class ProductsService {
     this.client = client;
   }
 
-  async getProducts(): Promise<ProductT[]> {
+  async getProducts(
+    page = 1,
+    limit = 10,
+  ): Promise<ProductResponceT> {
     try {
-      const response = await this.client.get('/products');
-      return productSchema.array().parse(response.data);
+      const response = await this.client.get('/products', { params: { page, limit } });
+
+      return {
+        products: productSchema.array().parse(response.data.products),
+        pagination: paginationSchema.parse(response.data.pagination),
+      };
     } catch (error) {
       console.error(error);
       throw error;
@@ -28,10 +35,14 @@ class ProductsService {
     }
   }
 
-  async getProductsById(id: number): Promise<ProductT[]> {
+  async getProductsById(id: number, page = 1, limit = 10): Promise<ProductResponceT> {
     try {
-      const response = await this.client.get(`/products/category/${id.toString()}`);
-      return productSchema.array().parse(response.data);
+      const response = await this.client.get(`/products/category/${id.toString()}`, { params: { page, limit } });
+
+      return {
+        products: productSchema.array().parse(response.data.products),
+        pagination: paginationSchema.parse(response.data.pagination),
+      };
     } catch (error) {
       console.error(error);
       throw error;
@@ -89,7 +100,7 @@ class ProductsService {
           formData.append('images', file);
         }
       }
-      
+
       // Добавляем старые изображения (оставшиеся после удаления), всегда
       if (product.oldImages && product.oldImages.length > 0) {
         for (const img of product.oldImages) {

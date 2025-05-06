@@ -13,33 +13,54 @@ export default function CardList(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const [currentPage, setCurrentPage] = useState(0);
 
-  const products = useAppSelector((store) => store.products.products);
+  const { products, loading, pagination } = useAppSelector((store) => store.products);
+
   const reviews = useAppSelector((store) => store.rewiew.reviews);
   const searchedProducts = useAppSelector((store) => store.search.results);
   const searchQuery = useAppSelector((store) => store.search.query);
   const user = useAppSelector((state) => state.user.user);
 
   useEffect(() => {
-    if (user) {
-      void dispatch(getFavorites(user.id));
-    }
-    void dispatch(getProducts());
-    void dispatch(getReviews());
-  }, [dispatch, user]);
+    setCurrentPage(0);
+  }, [searchQuery]);
   const activeProducts = searchQuery.length > 0 ? searchedProducts : products;
   console.log(searchQuery, 'tgyuhijokijhugf');
 
   const { sortedProducts, sortType, setSortType } = useSortedProducts(activeProducts, reviews);
 
-  const itemsPerPage = 8;
-  const pageCount = Math.ceil(sortedProducts.length / itemsPerPage);
+  const itemsPerPage = 10;
+  const pageCount =
+    searchQuery.length > 0
+      ? Math.ceil(sortedProducts.length / itemsPerPage)
+      : pagination?.totalPages;
 
-  const offset = currentPage * itemsPerPage;
-  const productsToDisplay = sortedProducts.slice(offset, offset + itemsPerPage);
+  const productsToDisplay =
+    searchQuery.length > 0
+      ? sortedProducts.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+      : products;
 
-  const handlePageClick = (event: { selected: number }) => {
-    setCurrentPage(event.selected);
+  const handlePageClick = (event: { selected: number }): void => {
+    const newPage = event.selected;
+    setCurrentPage(newPage);
+
+    // Если нет поиска - запрашиваем новую страницу с сервера
+    if (searchQuery.length === 0) {
+      void dispatch(getProducts({ page: newPage + 1, limit: itemsPerPage }));
+    }
   };
+
+  useEffect(() => {
+    if (user) {
+      void dispatch(getFavorites(user.id));
+    }
+    void dispatch(getProducts({ page: 0, limit: itemsPerPage }));
+    void dispatch(getReviews());
+    setCurrentPage(0);
+  }, [dispatch, user]);
+
+  if (loading && currentPage === 0) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-[#E6F0FA] pt-20 sm:pt-24 font-poppins">

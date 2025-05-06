@@ -21,3 +21,15 @@ export const newProductSchema = z.object({
   stock: z.number(),
   categoryId: z.number(),
 });
+
+export const paginationSchema = z.object({
+  totalItems: z.number(),
+  totalPages: z.number(),
+  currentPage: z.number(),
+  itemsPerPage: z.number(),
+});
+
+export const productSendSchema = z.object({
+  page: z.number(),
+  limit: z.number(),
+});
