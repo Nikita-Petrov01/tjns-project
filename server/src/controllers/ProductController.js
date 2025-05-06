@@ -3,8 +3,11 @@ const ProductService = require('../services/ProductService');
 class ProductController {
   static async getAllProducts(req, res) {
     try {
-      const products = await ProductService.getAllProducts();
-      res.json(products);
+     const page = +(req.query.page) || 1;
+     const limit = +(req.query.limit) || 10;
+
+     const products = await ProductService.getAllProducts({ page, limit });
+     res.json(products);
     } catch (error) {
       console.error({ error: error.message }, 'Ошибка при получении товаров');
       res.status(500).send('Ошибка сервера при получении товаров');
@@ -25,13 +28,16 @@ class ProductController {
   static async getAllProductsByCategoryId(req, res) {
     try {
       const { id } = req.params;
-      const products = await ProductService.getAllProductsByCategoryId(id);
-
+      const page = +(req.query.page) || 1;
+      const limit = +(req.query.limit) || 10;
+      const products = await ProductService.getAllProductsByCategoryId(id, { page, limit });
+      
       if (!products) {
-        throw new Error('Товар не найден');
+        throw new Error('Товары не найдены');
       }
 
       res.json(products);
+      
     } catch (error) {
       console.error(
         { error: error.message },

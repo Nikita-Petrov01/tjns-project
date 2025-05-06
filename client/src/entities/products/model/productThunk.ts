@@ -1,13 +1,16 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import ProductsService from '../api/ProductsService';
-import type { NewProductT, ProductT } from './types';
+import type { NewProductT, ProductSendT, ProductT } from './types';
 
-export const getProducts = createAsyncThunk('products/getProducts', async () =>
-  ProductsService.getProducts(),
+export const getProducts = createAsyncThunk(
+  'products/getProducts',
+  async ({ page, limit }: ProductSendT) => await ProductsService.getProducts(page, limit),
 );
 
-export const getById = createAsyncThunk('products/getById', async (id: ProductT['id']) =>
-  ProductsService.getProductsById(id),
+export const getById = createAsyncThunk(
+  'products/getById',
+  async ({ id, page, limit }: { id: number; page: number; limit: number }) =>
+    await ProductsService.getProductsById(id, page, limit),
 );
 
 export const getOneProduct = createAsyncThunk(
